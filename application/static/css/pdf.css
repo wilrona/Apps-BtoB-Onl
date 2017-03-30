@@ -1,0 +1,135 @@
+html, body{
+    background-color: #fff;
+}
+
+/*html, body {*/
+  /*overflow-x: hidden;*/
+/*}*/
+
+/*table, img, blockquote {page-break-inside: avoid;*/
+/*margin: 4px 0 4px 0;}*/
+/*thead {*/
+        /*display: table-header-group;*/
+    /*}*/
+/*table, tr, td, th, tbody, thead, tfoot {*/
+    /*page-break-inside: avoid !important;*/
+    /*white-space: nowrap;*/
+    /*word-wrap:break-word;*/
+/*}*/
+
+
+thead { display: table-header-group; }
+tfoot { display: table-row-group }
+tr { page-break-inside: avoid; }
+
+
+.break{
+    page-break-after: always;
+    position: relative;
+    height: 100%;
+
+}
+
+.uk-table :not(:last-child)>td{
+    border-bottom: none;
+}
+
+td.zone, table.uk-info-zone{
+    background-color: #d32f2f;
+    color: #fff;
+}
+
+td.title{
+    padding-bottom: 0 !important;
+}
+
+.subtitle span{
+    width: 50px;
+    display: inline-block;
+}
+
+.uk-info-zone .title{
+    color: #fff;
+}
+
+
+.uk-table-bordered tbody td{
+    border: 1px solid #e5e5e5;
+    /*padding: 5px 10px !important;*/
+}
+
+
+.image{
+    margin-left: 210px;
+    margin-top: -60px;
+
+}
+
+.no-border{
+    border: none !important;
+    background-color: #fff !important;
+}
+
+.no-border-first-child{
+
+    border-top: 1px solid #e5e5e5 !important;
+}
+
+
+.uk-background-custom{
+    background-color: #d32f2f !important;
+    color: #fff;
+    border: none !important;
+}
+
+
+.icon-width{
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.price{
+    position:fixed;
+    /*height:70px;*/
+    bottom:250px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+}
+
+/*.signature{*/
+    /*position:fixed;*/
+    /*height:70px;*/
+    /*bottom:100px;*/
+    /*left:0px;*/
+    /*right:0px;*/
+    /*margin-bottom:0px;*/
+/*}*/
+
+.footer {
+    position:fixed;
+    /*height:50px;*/
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+}
+.footer2 {
+    position:fixed;
+    height:50px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:-1355px;
+}
+.footer3 {
+    position:fixed;
+    height:50px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:-2711px;
+}
+
+
+

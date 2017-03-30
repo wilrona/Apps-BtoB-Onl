@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block  button %}
+    {% if current_user.has_roles([('super_admin', 'ecran')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('ecran.edit', ecran_id=ecran_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>
+    {% endif %}
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('ecran.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+{% endblock %}
+
+
+{% block layout_content %}
+<div class="uk-container uk-margin">
+            {% include 'includes/flash_message.html' %}
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-1">
+                    <form method="post" id="formulaire">
+                        <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                            <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
+                                <a href="#" class="uk-button waves-effect {% if data.actif %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small">
+                                    <span>{% if data.actif %} Activé {% else %} Desactivé {% endif %}</span>
+                                </a>
+                            </div>
+                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.name.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.name(class_='uk-input  uk-form-blank', id="enter") }}
+                                            {% for message in form.name.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                             <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.cout_passage.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.cout_passage(class_='uk-input  uk-form-blank', id="enter") }}
+                                            {% for message in form.cout_passage.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+{#                                <div class="uk-width-1-2@s">#}
+{#                                    <div class="uk-margin">#}
+{#                                        {{ form.multi_choice.label(class_='uk-form-label uk-text-bold') }}#}
+{#                                        <div class="uk-form-controls">#}
+{#                                            {{ form.multi_choice(class_='uk-checkbox', id="enter") }}#}
+{#                                            {% for message in form.multi_choice.errors %}#}
+{#                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>#}
+{#                                            {% endfor %}#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.outdoor.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.outdoor(class_='uk-checkbox', id="enter") }}
+                                            {% for message in form.outdoor.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+    </div>
+{% endblock %}

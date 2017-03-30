@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block search %}
+    <div class="uk-inline">
+        <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche">
+    </div>
+{% endblock %}
+
+
+
+{% block  button %}
+    {% if current_user.has_roles([('super_admin', 'tranche')], ['edit']) %}
+    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('tranche.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% endif %}
+{% endblock %}
+
+{% block layout_content %}
+
+    <div class="uk-container-expand">
+
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped"><table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="98%">Libelle de la tranche horaire</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in datas %}
+                          <tr data-link="{{ url_for('tranche.view', tranche_id=data.id) }}">
+                            <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                            <td>{{ data.name }}</td>
+                          </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="2">
+                                    <h3 class="uk-text-center">Aucune information</h3>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+        {% if request.args.get('paged')|int %}
+            <script>
+                table.page({{ request.args.get('paged')|int }}).draw( 'page' );
+            </script>
+        {% endif %}
+
+{% endblock %}

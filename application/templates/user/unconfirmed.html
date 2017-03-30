@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block layout_before_content %}
+
+    <nav class="uk-navbar uk-margin-medium-bottom uk-padding" uk-navbar>
+        <div class="uk-navbar-center">
+
+        </div>
+    </nav>
+
+{% endblock %}
+
+{% block layout_content %}
+    <div class="uk-container uk-container-small uk-login">
+        {% include 'includes/flash_message.html' %}
+        <div class="uk-card uk-card-default uk-card-body uk-border-rounded" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8) !important;">
+            <h3 class="uk-card-title uk-text-center">Bienvenue!</h3>
+            <br>
+            <p>Votre compte n'est pas confirmé. Consultez votre adresse email (et dans votre dossier spam) - Vous devriez avoir reçu un email avec un lien de confirmation.</p>
+            <p>Vous n'avez pas reçue d'email ? <a href="{{ url_for('user_param.resend_confirmation') }}">Renvoyez</a>.</p>
+
+        </div>
+    </div>
+
+
+{% endblock %}

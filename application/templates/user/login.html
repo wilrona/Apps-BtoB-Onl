@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+
+{% block title %} Login {% endblock %}
+
+
+{% block layout_before_content %}
+
+    <nav class="uk-navbar uk-margin-medium-bottom uk-padding" uk-navbar>
+        <div class="uk-navbar-center">
+
+        </div>
+    </nav>
+
+{% endblock %}
+
+
+
+{% block layout_content %}
+
+    <div class="uk-container uk-container-small uk-login">
+
+
+            {% include 'includes/flash_message.html' %}
+
+            <form class="uk-form-stacked" method="post" action="{{ url_for('user.login') }}">
+
+                <div class="uk-card uk-card-default uk-card-body uk-border-rounded" style="box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8) !important;">
+                    <img src="/static/images/logo.jpg" class="uk-margin-auto uk-display-block uk-margin" alt=""/>
+{#                    <h3 class="uk-card-title uk-text-center">Connexion</h3>#}
+
+
+                    {{ form.hidden_tag() }}
+                    <div class="uk-margin">
+{#                        {{ form.email.label(class_='uk-form-label uk-text-bold') }}#}
+                        <div class="uk-form-controls">
+                            {{ form.email(class_='uk-input', placeholder='Adresse Email') }}
+                            {% for message in form.email.errors %}
+                                <span class="uk-text-danger">{{ message }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin">
+{#                        {{ form.password.label(class_='uk-form-label uk-text-bold') }}#}
+                        <div class="uk-form-controls">
+                            {{ form.password(class_='uk-input', placeholder='Mot de passe') }}
+                            {% for message in form.password.errors %}
+                                <span class="uk-text-danger">{{ message }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="uk-margin">
+                        <button class="uk-button waves-effect uk-button-danger uk-width-1-1 uk-margin-small-bottom">Validez</button>
+                        {% if not exist %}
+                            <p uk-margin class="uk-text-center">
+                                <a href="{{ url_for('home.setting') }}" class="uk-button waves-effect uk-button-text">Configuration de l'application</a>
+                            </p>
+                        {% endif %}
+                    </div>
+
+
+                </div>
+
+
+
+            </form>
+        </div>
+
+{% endblock %}
+{% block footer_script %}
+    <script>
+        $('body').addClass('body-bg');
+    </script>
+{% endblock %}

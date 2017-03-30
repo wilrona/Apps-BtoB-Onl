@@ -1,0 +1,52 @@
+<button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Choix du package</h2>
+</div>
+<div class="uk-padding-small">
+    <form class="uk-form-stacked" role="form" id="formulaire_modal" method="post">
+        <div class="uk-margin">
+            <div class="uk-form-controls">
+                <select name="package_id" id="package_id" class="uk-select selected" required="required">
+                    <option value="">Selection du package</option>
+                    {% for list in list_package %}
+                        <option value="{{ list.id }}">{{ list.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-controls">
+                 <input type="number" class="uk-input" name="number_package" required="required" min="1" value="1" />
+            </div>
+        </div>
+
+        <div class="uk-margin uk-flex-right">
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-success uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s" id="submit_modal"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Continuer</a>
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-danger uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-modal-close"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    $(".selected").select2({width:'100%'});
+
+    $('#submit_modal').on('click', function(e){
+        e.preventDefault();
+        if($('#package_id').val() != ''){
+            $.ajax({
+                url: "{{ url_for('devis.add_package') }}",
+                data: $('#formulaire_modal').serialize(),
+                type: 'POST',
+                success: function(data) {
+                    $('#modal-id .uk-body-custom').html(data);
+                }
+            });
+        }
+    });
+    {% if success %}
+        $('#closing').trigger('click');
+        $('#full').trigger('click');
+    {% endif %}
+</script>

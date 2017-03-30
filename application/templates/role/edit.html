@@ -1,0 +1,72 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Creation/Modification du {% if roles.parent %} role {% else %} module {% endif %}</h2>
+</div>
+
+<form class="form-horizontal" role="form" id="formulaire">
+
+    {{ form.hidden_tag() }}
+    <div class="uk-modal-body" uk-overflow-auto>
+
+        <div class="uk-margin">
+            <label class="uk-form-label">
+                {% if roles.parent %} Titre du role {% else %} Titre du module {% endif %} :
+            </label>
+            <div class="uk-form-controls">
+                <input type="text" disabled class="uk-input " value="{{ roles.titre }}"/>
+            </div>
+        </div>
+      <div class="uk-margin">
+        {{ form.description.label(class_='uk-form-label') }}
+        <div class="uk-form-controls">
+        {{ form.description(class_='uk-textarea', id="enter") }}
+        {% for message in form.description.errors %}
+            <div class="uk-alert uk-alert-danger">{{ message }}</div>
+        {% endfor %}
+        </div>
+      </div>
+      <div class="uk-margin">
+            <div class="uk-form-controls">
+                <label>{{ form.active(class_="uk-radio") }}{{ form.active.label() }}</label>
+                {% for message in form.active.errors %}
+                    <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                {% endfor %}
+            </div>
+      </div>
+    </div>
+    <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button waves-effect uk-button-default uk-modal-close" type="button">Fermer</button>
+        <button type="button" id="submit" class="uk-button waves-effect uk-button-success">Enregistrer</button>
+    </div>
+</form>
+<script>
+    $('#submit').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+                url: "{{ url_for('role.edit', role_id=role_id) }}",
+                data: $('#formulaire').serialize(),
+                type: 'POST',
+                success: function(data) {
+                    $('#modal-id .uk-body-custom').html(data);
+                }
+            });
+    });
+
+    $('#enter').keypress(function(e) {
+        if (e.which == 13){
+            e.preventDefault();
+            $.ajax({
+                url: "{{ url_for('role.edit', role_id=role_id) }}",
+                data: $('#formulaire').serialize(),
+                type: 'POST',
+                success: function(data) {
+                    $('#modal-id .uk-body-custom').html(data);
+                }
+            });
+        }
+    });
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('role.index') }}").delay();
+    {% endif %}
+</script>

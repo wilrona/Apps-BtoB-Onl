@@ -1,0 +1,80 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Activité Suivante</h2>
+</div>
+<form class="form-horizontal" role="form" id="formulaire_modal">
+{{ form.hidden_tag() }}
+<div class="uk-modal-body" uk-overflow-auto>
+    <div class="uk-margin">
+            {{ form.activite_id.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+            {{ form.activite_id(class_='uk-select selected ', id="enter") }}
+            {% for message in form.activite_id.errors %}
+                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+            {% endfor %}
+            </div>
+          </div>
+
+    <div class="uk-margin">
+            {{ form.dateNext.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+            {{ form.dateNext(class_='uk-input', data_toggle="datepicker") }}
+            {% for message in form.dateNext.errors %}
+                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+            {% endfor %}
+            </div>
+          </div>
+
+    <div class="uk-margin">
+            {{ form.resume.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+            {{ form.resume(class_='uk-input ') }}
+            {% for message in form.resume.errors %}
+                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+            {% endfor %}
+            </div>
+          </div>
+
+    <div class="uk-margin">
+            {{ form.description.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+            {{ form.description(class_='uk-textarea') }}
+            {% for message in form.description.errors %}
+                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+            {% endfor %}
+            </div>
+          </div>
+
+
+
+
+
+</div>
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-success uk-button-small" type="button" id="submit_panning"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Planifier</button>
+    <button class="uk-button waves-effect uk-button-default uk-button-small uk-modal-close" type="button"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</button>
+</div>
+</form>
+
+<script>
+    $('[data-toggle="datepicker"]').datepicker({
+        zIndex:2000,
+        format: 'dd/mm/yyyy'
+    }).inputmask("date", { placeholder:"__/__/____"});
+
+    $('#submit_panning').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+                url: "{{ url_for('opportunite.relance_edit', opportunite_id=opportunite_id, planning='1') }}",
+                data: $('#formulaire_modal').serialize(),
+                type: 'POST',
+                success: function(data) {
+                    $('#modal-id .uk-body-custom').html(data);
+                }
+            });
+    });
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('opportunite.view', opportunite_id=opportunite_id) }}").delay();
+    {% endif %}
+</script>

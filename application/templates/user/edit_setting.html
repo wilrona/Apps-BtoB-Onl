@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+
+{% block title %} Configuration de l'application {% endblock %}
+
+
+{% block layout_before_content %}
+
+    <nav class="uk-navbar uk-navbar-container uk-margin-bottom" uk-navbar>
+        <div class="uk-navbar-center">
+            <span class="uk-margin-top uk-h1" style="height: 70px; line-height: 1.5em;">Entreprise CRM</span>
+        </div>
+    </nav>
+
+{% endblock %}
+
+{% block layout_content %}
+
+    <div class="uk-container uk-container-small">
+
+        <h1 class="uk-heading-divider">Création du compte administrateur</h1>
+
+        {% include 'includes/flash_message.html' %}
+
+        <form class="uk-form-stacked" method="post">
+
+            {{ form.hidden_tag() }}
+            <div class="uk-margin">
+                {{ form.last_name.label(class_='uk-form-label') }}
+                <div class="uk-form-controls">
+                    {{ form.last_name(class_='uk-input') }}
+                    {% for message in form.last_name.errors %}
+                        <span class="uk-text-danger">{{ message }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                {{ form.first_name.label(class_='uk-form-label') }}
+                <div class="uk-form-controls">
+                    {{ form.first_name(class_='uk-input') }}
+                    {% for message in form.first_name.errors %}
+                        <span class="uk-text-danger">{{ message }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                {{ form.email.label(class_='uk-form-label') }}
+                <div class="uk-form-controls">
+                    {{ form.email(class_='uk-input') }}
+                    {% for message in form.email.errors %}
+                        <span class="uk-text-danger">{{ message }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                {{ form.password.label(class_='uk-form-label') }}
+                <div class="uk-form-controls">
+                    {{ form.password(class_='uk-input') }}
+                    {% for message in form.password.errors %}
+                        <span class="uk-text-danger">{{ message }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="uk-margin">
+                {{ form.retype_password.label(class_='uk-form-label') }}
+                <div class="uk-form-controls">
+                    {{ form.retype_password(class_='uk-input') }}
+                    {% for message in form.retype_password.errors %}
+                        <span class="uk-text-danger">{{ message }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <button class="uk-button waves-effect uk-button-success uk-width-1-1 uk-margin-small-bottom" type="submit">Enregister</button>
+            </div>
+
+        </form>
+
+    </div>
+
+
+{% endblock %}

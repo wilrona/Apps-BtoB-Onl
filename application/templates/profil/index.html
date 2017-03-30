@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+{% block search %}
+    <nav class="" uk-navbar>
+        <div class="uk-navbar-right">
+            <div class="uk-navbar-item" style="height: 28px;">
+                <form class="uk-search uk-search-navbar">
+                    <span uk-search-icon></span>
+                    <input class="uk-search-input" type="search" placeholder="Recherche profil">
+                </form>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block  button %}
+        <a class="uk-button waves-effect uk-button-default uk-button-small modal" href="{{ url_for('profil.edit') }}" uk-toggle="target: #modal-id">Creer</a>
+{% endblock %}
+
+
+{% block layout_content %}
+
+
+<div class="uk-container-expand uk-margin">
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-1">
+            <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-small uk-table-middle uk-table-small">
+            <thead>
+            <tr>
+                <th><input type="checkbox" value="" class="uk-checkbox"/></th>
+                <th width="65%">Nom du profil</th>
+                <th width="25%">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for data in datas %}
+                  <tr>
+                    <td><input type="checkbox" value="{{ data.id }}"name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                    <td>{{ data.name }}
+                        {% if data.description %}
+                                <a class="uk-button waves-effect uk-button-small"><span uk-icon="icon: info"></span></a>
+                                <div uk-drop="pos: top-right">
+                                    <div class="uk-card uk-card-body uk-card-small uk-card-default">{{ data.description }}</div>
+                                </div>
+                        {% endif %}</td>
+                    <td>
+                        <a href="{{ url_for('profil.list', profil_id=data.id) }}" class="uk-button waves-effect uk-button-default uk-button-small modal" uk-toggle="target: #modal-id" ><span uk-icon="icon: list"></span> {% if data.count_role() %} ({{ data.count_role() }}) {% endif %} </a>
+                        <a href="{{ url_for('profil.edit', profil_id=data.id) }}" class="uk-button waves-effect uk-button-default uk-button-small modal" uk-toggle="target: #modal-id" ><span uk-icon="icon: pencil"></span></a>
+                        {% if not data.count_role() %}
+                            <a href="{{ url_for('profil.delete', profil_id=data.id) }}" class="uk-button waves-effect uk-button-default uk-button-small modal"><span uk-icon="icon: trash"></span></a>
+                        {% endif %}
+                    </td>
+                  </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">
+                            <h4 class="uk-text-center">Aucune information</h4>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {{ pagination.links }}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

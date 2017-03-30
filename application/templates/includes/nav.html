@@ -1,0 +1,68 @@
+<ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
+    <li><a href="{{ url_for('dashboard.index') }}" class="waves-effect">Tableau de bord</a></li>
+    <li class="uk-nav-divider"></li>
+{#    <li class="uk-parent">#}
+{#        <a href="#" class="waves-effect">Relance</a>#}
+{#        <ul class="uk-nav-sub">#}
+{#            <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>#}
+{#            <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>#}
+{#        </ul>#}
+{#    </li>#}
+{#    <li class="uk-nav-divider"></li>#}
+{#    <li><a href="#">Calendrier</a></li>#}
+{#    <li class="uk-nav-divider"></li>#}
+{#    <li class="uk-parent">#}
+{#        <a href="#" class="waves-effect">Vente</a>#}
+{#        <ul class="uk-nav-sub">#}
+{#            <li><a href="{{ url_for('devis.index') }}" class="waves-effect">Devis</a></li>#}
+{#            <li><a href="{{ url_for('commande.index') }}" class="waves-effect">Bon de commande</a></li>#}
+{#            <li><a href="{{ url_for('client.index') }}" class="waves-effect">Clients</a></li>#}
+{#            {% if current_user.has_roles([('super_admin', 'package')]) %}#}
+{#            <li><a href="{{ url_for('package.index') }}" class="waves-effect">Packages</a></li>#}
+{#            {% endif %}#}
+{#        </ul>#}
+{#    </li>#}
+{#    <li class="uk-nav-divider"></li>#}
+{#    <li class="uk-parent"><a href="#">Facturation</a></li>#}
+
+{#    <li class="uk-nav-divider"></li>#}
+{#    <li class="uk-parent"><a href="#">Rapport</a></li>#}
+{#    <li class="uk-nav-divider"></li>#}
+    {% if current_user.has_roles([('super_admin', 'user', 'entreprise', 'civilite', 'general', 'support', 'tranche', 'localisation', 'site', 'ecran', 'etape', 'activite')]) %}
+    <li class="uk-parent">
+        <a href="#" class="waves-effect">Configuration</a>
+        <ul class="uk-nav-sub">
+            {% if current_user.has_roles([('super_admin', 'user', 'entreprise')]) %}
+                <li class="uk-nav-header">Utilisateurs</li>
+                {% if current_user.has_roles([('super_admin')]) %}
+                    <li><a href="{{ url_for('role.index') }}" class="waves-effect">Roles</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'user')]) %}
+                    <li><a href="{{ url_for('user_param.index') }}" class="waves-effect">Utilisateur</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'entreprise')]) %}
+                    <li><a href="{{ url_for('company.view') }}" class="waves-effect">Entreprise</a></li>
+                {% endif %}
+            {% endif %}
+            {% if current_user.has_roles([('super_admin','general')]) %}
+                <li class="uk-nav-header">Ventes</li>
+                {% if current_user.has_roles([('super_admin', 'general')]) %}
+                    <li><a href="{{ url_for('parametrage.view') }}" class="waves-effect">Reférences générales</a></li>
+                {% endif %}
+            {% endif %}
+            {% if current_user.has_roles([('super_admin', 'etape', 'activite', 'libelle_opportunite')]) %}
+                    <li class="uk-nav-header">Relances</li>
+                {% if current_user.has_roles([('super_admin', 'etape')]) %}
+                    <li><a href="{{ url_for('etape.index') }}" class="waves-effect">Etapes</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'activite')]) %}
+                    <li><a href="{{ url_for('activite.index') }}" class="waves-effect">Activités</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'libelle_opportunite')]) %}
+                    <li><a href="{{ url_for('libelle_opportunite.index') }}" class="waves-effect">Opportunités</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
+</ul>

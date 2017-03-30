@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% if single %} - {{ current.name }} {% endif %} {% endblock %}
+
+{% block search %}
+    {% if not single %}
+        <div class="uk-inline">
+            <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+            <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche">
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block  button %}
+    {% if single %}
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('opportunite.view', opportunite_id=opportunite_id) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% else %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('opportunite.edit', relance='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> opportunité</a>
+    {% endif %}
+{% endblock %}
+
+{% block layout_content %}
+
+    <div class="uk-container-expand">
+
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="20%">Opportunité</th>
+                            <th width="15%">Client</th>
+                            <th width="15%">Tache suivante</th>
+                            <th width="15%">Resumé</th>
+                            <th width="10%">Etape</th>
+                            <th width="10%">Date prochaine action</th>
+                            <th width="10%">Date realisée</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in datas %}
+                            {% if data.opportunite_id.id not in ids_opportunity %}
+                                  <tr {% if not single %} data-link="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id, relance='1') }}" {% endif %}>
+                                    <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                    <td> {{ data.opportunite_id.name }} </td>
+                                    <td> {{ data.opportunite_id.client_id.name }} </td>
+                                    <td> {{ data.activite }} </td>
+                                    <td>  {{ data.resume }} </td>
+                                    <td> {{ data.etape }} </td>
+                                    <td> {{ data.dateNext|format_date('%d/%m/%Y') }} </td>
+                                    <td> {% if data.status %}
+                                            {{ data.updateDate|format_date('%d/%m/%Y') }}
+                                        {% else %}
+                                            En cours
+                                        {% endif %}
+                                    </td>
+                                  </tr>
+                            {% endif %}
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+        {% if request.args.get('paged')|int %}
+            <script>
+                table.page({{ request.args.get('paged')|int }}).draw( 'page' );
+            </script>
+        {% endif %}
+
+{% endblock %}

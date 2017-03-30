@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block  button %}
+    {% if current_user.has_roles([('super_admin', 'general')], ['edit'])%}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit"  href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</a>
+    {% endif %}
+{% endblock %}
+
+
+{% block layout_content %}
+
+    <div class="uk-container uk-margin">
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-1">
+                    <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                    {{ request.form['ref_devis'] }}
+                    <form class="uk-form-stacked" method="post" id="formulaire">
+                        <div class="uk-grid-small" uk-grid>
+                            <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">Préfix Reférence Facture :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" class="uk-input" name="ref_fact" {% if data.ref_fact %} value="{{ data.ref_fact }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">Préfix Reférence Devis :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" class="uk-input" name="ref_devis" {% if data.ref_devis %} value="{{ data.ref_devis }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">Préfix Reférence Sites :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" class="uk-input" name="ref_site" {% if data.ref_site %} value="{{ data.ref_site }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">TVA Appliqué sur la facturation :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="number" class="uk-input" name="taux_tva" {% if data.taux_tva %} value="{{ data.taux_tva }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">Email de service supplementaire sur la facturation :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="text" class="uk-input" name="email_service" {% if data.email_service %} value="{{ data.email_service }}" {% endif %}/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="uk-width-1-2@s">
+                                <div class="uk-margin">
+                                    <label for="" class="uk-form-label uk-text-bold">Nombre de passage mini par ecrant :</label>
+                                    <div class="uk-form-controls">
+                                        <input type="number" class="uk-input" name="min_pass_by_ecran" {% if data.min_pass_by_ecran %} value="{{ data.min_pass_by_ecran }}" {% else %} value="1" {% endif %} min="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+
+                    </div>
+                </div>
+            </div>
+    </div>
+
+{% endblock %}
+
+
+
+
+{% block footer_script %}
+
+    <script>
+        $('#submit').on('click', function(e){
+            e.preventDefault();
+            $('#formulaire').submit();
+        });
+    </script>
+
+{% endblock %}

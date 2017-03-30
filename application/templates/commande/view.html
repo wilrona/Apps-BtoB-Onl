@@ -1,0 +1,237 @@
+{% extends 'devis/edit.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+{% block  button %}
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('commande.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+{% endblock %}
+
+{% block layout_content %}
+    <div class="uk-container uk-container-expand uk-padding-small" id="uk-second-nav">
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-grid-small" uk-grid>
+                    <div class="uk-width-3-5@l uk-width-3-5@m uk-width-3-5@s">
+                        {% if not data.status == 3 %}
+                             <a class="uk-button waves-effect uk-button-default uk-button-small" href=""><span class="uk-margin-small-right"><i class="fa fa-print"></i></span>Imprimer</a>
+                             {% if data.status == 2 %}
+                                 <a class="uk-button waves-effect uk-button-success uk-button-small "  href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> facture</a>
+                             {% endif %}
+                         {% endif %}
+
+                    </div>
+                    <div class="uk-width-2-5@l uk-width-2-5@m uk-width-2-5@s">
+                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-center" uk-margin>
+                            <li {% if data.status == 0 %} class="uk-active" {% endif %}><a {% if data.status <= 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}"{% else %} href="#"{% endif %}>Devis</a></li>
+                            <li {% if data.status == 1 %} class="uk-active" {% endif %}><a href="#">Devis Envoyé</a></li>
+                            <li {% if data.status == 2 %} class="uk-active" {% endif %}><a {% if data.status > 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='2') }}"{% else %} href="#"{% endif %}>Bon de commande</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="uk-container uk-margin">
+            {% include 'includes/flash_message.html' %}
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-1">
+                    <form method="post" id="formulaire">
+                        {{ form.hidden_tag() }}
+                        <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                            {% if devis_id %}
+                                <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
+                                    <a href="" class="uk-button waves-effect uk-button-default">0 Factures</a>
+                                </div>
+                            {% endif %}
+
+                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
+                                 <div class="uk-width-1-1@s">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label uk-text-bold">Reference : </label>
+                                        <div class="uk-form-controls">
+                                            <input type="text" class="uk-input uk-form-blank uk-width-1-1 uk-form-large" {% if devis_id %} value="{{ current_ref.ref_devis }}/{{ data.ref }}" {% endif %}/>
+                                        </div>
+                                    </div>
+                                 </div>
+
+
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.client_id.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.client_id(class_='uk-select uk-form-blank') }}
+                                            {% for message in form.client_id.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.support_id.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.support_id(class_='uk-select uk-form-blank') }}
+                                            {% for message in form.support_id.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+
+                                    <div class="uk-margin">
+                                        <br/>
+                                        <label class="uk-form-label uk-text-bold"> Le client n'a pas un support ? (coché si oui) {{ form.have_support(class_='uk-checkbox uk-margin-left') }}</label>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                             <div class=" uk-clearfix uk-width-1-1">
+                                <hr class="uk-divider-icon"/>
+                                <ul uk-tab>
+                                    <li><a href="#">Ligne de commandes</a></li>
+                                </ul>
+
+
+                                <ul class="uk-switcher uk-margin">
+                                    <li>
+                                    {% if not devis_id %}
+                                        <a  class="uk-button waves-effect uk-button-success uk-button-small modal-full" href="{{ url_for('devis.add_site') }}" uk-toggle="target: #modal-full; bg-close: false;">Ajouter les sites</a>
+                                    {% endif %}
+                                        <div class="uk-overflow-auto" >
+                                            <table class="uk-table uk-table-small uk-table-middle" id="reload_site">
+                                                 <thead>
+                                                <tr>
+                                                    <th><input type="checkbox" value="" class="uk-checkbox"/></th>
+                                                    <th width="32%">Produits</th>
+                                                    <th width="20%">Nbre passage</th>
+                                                    <th width="20%">Prix unitaire</th>
+                                                    <th width="17%">Sous total</th>
+                                                    <th width="7%"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in list_site %}
+
+                                                        <tr>
+                                                            <td>
+                                                                <input type="checkbox" value="{{ item['id'] }}" name="item_id" class="uk-checkbox uk-checkbox-item" />
+                                                            </td>
+                                                            <td>{{ item['ref'] }} <br/> {{ item['name'] }}
+                                                            <input type="hidden" value="{{ item['id'] }}" name="id"/>
+                                                            </td>
+                                                            <td><input type="number" class="uk-input change_qte {% if devis_id %} uk-form-blank {% endif %}" value="{{ item['qte'] }}" name="qte" min="1"/></td>
+                                                            <td><input type="text" value="{{ item['prix'] }}" class="uk-input uk-form-blank prix" name="prix"/></td>
+                                                            <td><div class="utotal change_total">{{ item['total'] }}</div></td>
+                                                            <td>
+                                                                {% if not devis_id %}
+                                                                 <a href="{{ url_for('devis.delete_item', item=(loop.index - 1)) }}" class="uk-button waves-effect uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+
+                                                    {% else %}
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <h3 class="uk-text-center">Ajouter des produits</h3>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+
+                                            </table>
+                                            <hr/>
+
+
+                                        </div>
+                                        <div class="uk-float-right uk-width-2-5@s">
+                                            <table class="uk-table uk-table-small uk-table-middle">
+                                                <tbody>
+                                                <tr>
+                                                    <td><strong>Montant HT</strong></td>
+                                                    <td class="uk-text-right" id="global_total">0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Taxes</strong> (<span id="taxe_tva">{{ current_ref.taux_tva }}</span>%)</td>
+                                                    <td class="uk-text-right" id="tva_value">0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Total</strong></td>
+                                                    <td class="uk-text-right" id="total_ttc">0</td>
+                                                </tr>
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+    </div>
+{% endblock %}
+
+{% block footer_script %}
+
+     <script>
+
+        change_total();
+
+        $('body').on('input', '#reload_site tbody .change_qte', function(){
+            $prix = $(this).parent().next().find('.prix').val();
+            $total = parseInt($(this).val()) * parseFloat($prix);
+            $(this).parent().next().next().find('.change_total').text($total);
+            change_total();
+        });
+
+        function concat($value){
+            $int = $value.split(" ");
+
+            var $values = '';
+            $.each($int, function(index, value){
+                $values = $values + value;
+            });
+
+            return $values;
+        }
+
+         function change_total(){
+             total = 0;
+
+             $('#reload_site tbody .change_total').each(function(){
+                 total = total + parseInt(concat($(this).text()));
+             });
+
+             $('#global_total').text(total);
+
+             $tva = parseFloat($('#taxe_tva').text());
+             $tva_result = ($tva * total) / 100;
+
+             $('#tva_value').text($tva_result);
+
+             $ttc = $tva_result + total;
+             $('#total_ttc').text($ttc);
+
+             $('#global_total, .change_total, .prix, #tva_value, #total_ttc').formatCurrency({
+                symbol: '',
+                positiveFormat: '%s%n',
+                negativeFormat: '(%s%n)',
+                decimalSymbol: ',',
+                digitGroupSymbol: ' ',
+                groupDigits: true
+             });
+
+         }
+
+
+    </script>
+
+{% endblock %}

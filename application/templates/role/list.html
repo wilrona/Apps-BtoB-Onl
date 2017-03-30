@@ -1,0 +1,36 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Roles du module {{ module.titre }}</h2>
+</div>
+<div class="uk-modal-body" uk-overflow-auto>
+
+    <table class="uk-table uk-margin-remove-bottom" style="margin-bottom: 0;">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th width="65%">Nom du role</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in roles %}
+            <tr>
+                <td>{{ loop.index }} </td>
+                <td>{{ data.titre }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">
+                <h4 class="text-center">Aucune information</h4>
+                </td>
+            </tr>
+        {% endfor %}
+
+
+        </tbody>
+    </table>
+
+</div>
+
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-default uk-modal-close" type="button">Cancel</button>
+</div>

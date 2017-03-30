@@ -1,0 +1,121 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Liste des roles du profil {{ profil.name }}</h2>
+</div>
+<form role="form" id="formulaire">
+<div class="uk-modal-body" uk-overflow-auto>
+<dl class="uk-description-list uk-description-list-divider">
+
+            {% for data in liste_role %}
+                    <dt>
+                        <h4 class="uk-accordion-title uk-text-right">
+                          {{ data.titre }}
+                       </h4>
+                    </dt>
+                    <dd>
+
+
+                  <div  class="uk-accordion-content">
+                      <div class="uk-acco">
+                            <table class="uk-table">
+                                <thead>
+                                    <tr>
+                                        <th width="45%">Role</th>
+                                        <th width="25%">Attrib.</th>
+                                        <th width="25%">Editer</th>
+                                        <th width="25%">Suppr.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for role in data.role %}
+                                    <tr class="addlist">
+                                        <td>{{ role.titre }}</td>
+                                        <td>
+                                            <input type="checkbox" class="attrib uk-checkbox" name="attrib" value="{{ role.id }}" {% if role.id in attrib_list %} checked {% endif %}/>
+                                        </td>
+                                        <td>
+                                                <input type="checkbox" class="edit uk-checkbox" {% if role.action < 1 %} disabled = "disabled" {% endif %} name="edit" value="{{ role.id }}" {% if role.id in edit_list %} checked {% endif %}/>
+                                        </td>
+                                        <td>
+
+                                                <input type="checkbox" class="delete uk-checkbox" {% if role.action != 2 %} disabled = "disabled" {% endif %} name="delete" value="{{ role.id }}" {% if role.id in delete_list %} checked {% endif %} />
+
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4">
+                                        <h4 class="text-center">Aucune information</h4>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                      </div>
+                    </div>
+           </dd>
+            {% endfor %}
+
+</dl>
+</div>
+</form>
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-default uk-modal-close" type="button">Fermer</button>
+    {% if current_user.has_roles([('super_admin', 'profil')], ['edit']) %}
+        <button type="button" id="submit" class="uk-button waves-effect uk-button-success">Enregistrer</button>
+    {% endif %}
+</div>
+
+<script>
+    $('.attrib').on('click', function(){
+        if($(this).is(':checked')){
+            $(this).parent().parent().addClass('current');
+
+            if($('.current .edit').attr('disabled') != 'disabled'){
+                $('.current .edit').prop('checked', true);
+            }
+
+            if($('.current .delete').attr('disabled') != 'disabled'){
+                $('.current .delete').prop('checked', true);
+            }
+            $(this).parent().parent().removeClass('current');
+        }else{
+            $(this).parent().parent().addClass('current');
+
+            if($('.current .edit').attr('disabled') != 'disabled'){
+                $('.current .edit').prop('checked', false);
+            }
+
+            if($('.current .delete').attr('disabled') != 'disabled'){
+                $('.current .delete').prop('checked', false);
+            }
+            $(this).parent().parent().removeClass('current');
+        }
+    });
+
+     $(".edit, .delete").on('click', function(){
+        if($(this).is(':checked')){
+            $(this).parent().parent().addClass('current');
+            $('.current .attrib').prop('checked', true);
+            $(this).parent().parent().removeClass('current');
+        }
+    });
+
+    {% if current_user.has_roles([('super_admin', 'profil')], ['edit']) %}
+        $('#submit').on('click', function(e){
+            e.preventDefault();
+            $.ajax({
+                    url: "{{ url_for('profil.list', profil_id=profil_id) }}",
+                    data: $('#formulaire').serialize(),
+                    type: 'POST',
+                    success: function(data) {
+                        $('.modal-content').html(data);
+                    }
+                });
+        });
+    {% endif %}
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('profil.index') }}").delay();
+    {% endif %}
+</script>

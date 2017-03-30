@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+{% block button %}
+    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('role.generate') }}">Generer les roles</a>
+{% endblock %}
+
+
+{% block layout_content %}
+    <div class="uk-container-expand">
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-1">
+                {% include 'includes/flash_message.html' %}
+                    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-small uk-table-middle uk-table-striped">
+            <thead>
+            <tr>
+                <th><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                <th width="65%">Nom du module</th>
+                <th width="25%">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for data in datas %}
+                  <tr>
+                    <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                    <td>{{ data.titre }}
+                        {% if data.description %}
+                                <a class="uk-button waves-effect uk-button-small"><span uk-icon="icon: info"></span></a>
+                                <div uk-drop="pos: top-right">
+                                    <div class="uk-card uk-card-body uk-card-small uk-card-default">{{ data.description }}</div>
+                                </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('role.list', role_id=data.id) }}" class="uk-button waves-effect uk-button-default uk-button-small modal" uk-toggle="target: #modal-id"><span uk-icon="icon: list"></span></a>
+                        <a href="{{ url_for('role.edit', role_id=data.id) }}" class="uk-button waves-effect uk-button-default uk-button-small modal" uk-toggle="target: #modal-id"><span uk-icon="icon: pencil"></span></a>
+                    </td>
+                  </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">
+                            <h3 class="uk-text-center">Aucune information</h3>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+                    </div>
+                </div>
+            </div>
+    </div>
+{% endblock %}

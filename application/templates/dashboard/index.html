@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+
+{% block title %} Tableau de bord {% endblock %}
+
+{% block title_header %} Tableau de bord {% endblock %}
+
+{% block menu_header %} {% endblock %}
+
+{% block button %}
+    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('opportunite.edit', dashboard=1) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Opportunité </a>
+    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('devis.edit', dashboard=1) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> devis</a>
+{% endblock %}
+
+
+{% block layout_content %}
+
+<div class="uk-container uk-margin">
+    <div class="uk-grid-small uk-flex-center uk-grid-match" uk-grid uk-grid-margin>
+     <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+             <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-paper-plane-o"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ next_activite }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">Activités suiv.</div>
+
+                </div>
+            </div>
+     </div>
+     <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+         <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-clock-o"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ past_activite }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">Activités en retard</div>
+
+                </div>
+            </div>
+     </div>
+     <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+         <div class="info-box">
+            <div class="icon">
+                <i class="fa fa-user-o"></i>
+            </div>
+            <div class="content">
+                <div class="number count-to" data-from="0" data-to="{{ count_client }}" data-speed="1000" data-fresh-interval="20"></div>
+                <div class="text">Clients</div>
+
+            </div>
+        </div>
+     </div>
+     <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+         <div class="info-box">
+            <div class="icon">
+                <i class="fa fa-clone"></i>
+            </div>
+            <div class="content">
+                <div class="number count-to" data-from="0" data-to="{{ count_devis }}" data-speed="1000" data-fresh-interval="20"></div>
+                <div class="text">Devis</div>
+
+            </div>
+        </div>
+     </div>
+{#     <div class="uk-width-1-6@m uk-width-1-2@s uk-width-1-1">#}
+{#         <div class="uk-card uk-card-default uk-card-small uk-card-body">#}
+{#            <span class="uk-display-block uk-text-center uk-text-lead">0</span>#}
+{#            <span class="uk-display-block uk-text-center uk-text-bold">CA réel</span>#}
+{#         </div>#}
+{#     </div>#}
+     <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+         <div class="info-box">
+            <div class="icon">
+                <i class="fa fa-credit-card"></i>
+            </div>
+            <div class="content">
+                <div class="number count-to" data-from="0" data-to="{{ CA_prev }}" data-speed="1000" data-fresh-interval="20"></div>
+                <div class="text">CA prévisionnel</div>
+
+            </div>
+        </div>
+     </div>
+
+    </div>
+    <div class="uk-grid-small" uk-grid uk-grid-margin>
+
+         <div class="uk-width-1-1@s">
+             <hr class="uk-divider-icon">
+             <div class="uk-card uk-card-default uk-card-small">
+                 <div class="uk-card-header">
+                    <ul class="uk-subnav uk-subnav-pill" uk-switcher="connect: #switcher;">
+                        <li><a href="#">Activités suivantes</a></li>
+                        <li><a href="#">Activités en retard</a></li>
+                        <li><a href="#">Liste des opportunités</a></li>
+                        <li><a href="#">Liste des devis</a></li>
+                    </ul>
+                 </div>
+
+                 <div class="uk-card-body">
+                    <ul class="uk-switcher uk-margin" id="switcher">
+                        <li>
+                            <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                <thead>
+                                <tr>
+                                    <th width="25%">Opportunité</th>
+                                    <th width="15%">Client</th>
+                                    <th width="15%">Tache suivante</th>
+                                    <th width="15%">Resumé</th>
+                                    <th width="10%">Etape</th>
+                                    <th width="10%">Date prochaine action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for data in suivie_next %}
+                                    {% if data.opportunite_id.id not in ids_opportunity %}
+                                  <tr {% if not single %} data-link="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id, relance='1') }}"{% endif %}>
+
+                                    <td> {{ data.opportunite_id.name }} </td>
+                                    <td> {{ data.opportunite_id.client_id.name }} </td>
+                                    <td> {{ data.activite }} </td>
+                                    <td>  {{ data.resume }} </td>
+                                    <td> {{ data.etape }} </td>
+                                    <td> {{ data.dateNext|format_date('%d/%m/%Y') }} </td>
+
+                                  </tr>
+                                    {% endif %}
+                                {% endfor %}
+
+                                </tbody>
+
+                            </table>
+                            </div>
+
+                        </li>
+                        <li>
+                            <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                <thead>
+                                <tr>
+                                    <th width="25%">Opportunité</th>
+                                    <th width="15%">Client</th>
+                                    <th width="15%">Tache suivante</th>
+                                    <th width="15%">Resumé</th>
+                                    <th width="10%">Etape</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for data in suvie_later %}
+                                    {% if data.opportunite_id.id not in ids_opportunity %}
+                                  <tr {% if not single %} data-link="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id, relance='1') }}" {% endif %}>
+                                    <td> {{ data.opportunite_id.name }} </td>
+                                    <td> {{ data.opportunite_id.client_id.name }} </td>
+                                    <td> {{ data.activite }} </td>
+                                    <td>  {{ data.resume }} </td>
+                                    <td> {{ data.etape }} </td>
+
+                                  </tr>
+                                    {% endif %}
+                                {% endfor %}
+
+                                </tbody>
+
+                            </table>
+                            </div>
+
+                        </li>
+                        <li>
+                            <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                <thead>
+                                <tr>
+                                    <th width="30%">Opportunité</th>
+                                    <th width="25%">Client</th>
+                                    <th width="20%">Etape</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for data in list_opportunite %}
+                                  <tr data-link="{{ url_for('opportunite.view', opportunite_id=data.id) }}">
+                                    <td> {{ data.name }} </td>
+                                    <td> {{ data.client_id.name }} </td>
+                                    <td> {{ data.etape }} </td>
+
+                                  </tr>
+                                {% endfor %}
+
+                                </tbody>
+
+                            </table>
+                            </div>
+
+                        </li>
+                        <li>
+                            <div class="uk-overflow-auto">
+                             <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                <thead>
+                                <tr>
+                                    <th width="15%">N° de devis</th>
+                                    <th width="15%">Date de la commande</th>
+                                    <th width="20%">Clients</th>
+                                    <th width="20%">Vendeur</th>
+                                    <th width="15%">Total</th>
+                                    <th width="15%">Status</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                {% for data in list_devis %}
+                                  <tr data-link="{{ url_for('devis.view', devis_id=data.id) }}">
+                                    <td>{{ current_ref.ref_devis }}/{{ data.ref }}</td>
+                                    <td>{{ data.createDate|format_date('%d/%m/%Y') }}</td>
+                                    <td>{{ data.client_id.name }}</td>
+                                    <td>{{ data.vendeur_id.full_name() }}</td>
+                                    <td>{{ data.montant }}</td>
+                                    <td>
+                                        {% if data.status == 0 %} Nouveau {% endif %}
+                                        {% if data.status == 1 %} Envoyée {% endif %}
+                                        {% if data.status == 2 %} Bon de commande {% endif %}
+                                        {% if data.status == 3 %} Annulé {% endif %}
+                                    </td>
+                                  </tr>
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+                            </div>
+
+                        </li>
+                    </ul>
+                 </div>
+
+             </div>
+         </div>
+    </div>
+</div>
+
+{% endblock %}
+

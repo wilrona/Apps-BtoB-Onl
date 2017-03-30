@@ -1,0 +1,387 @@
+
+
+<div class="uk-grid-collapse uk-child-width-1-2@s" uk-grid>
+    <div class="uk-position-relative" uk-height-viewport>
+        <div class="uk-child-width-1-2@l uk-child-width-1-1@s uk-padding-small" uk-grid style="background: #eee;">
+            <form class="Formulaire_devis">
+                <div class="">
+                    <div class="uk-form-controls">
+                        <select name="ville" id="ville" class="uk-select selected">
+                            <option value="" selected>Select ville</option>
+                            {% for ville in data_ville %}
+                                <option value="{{ ville.id }}" >{{ ville.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <form class="Formulaire_devis">
+                <div class="">
+                    <div class="uk-form-controls">
+                        <select name="quartier" id="quartier" class="uk-select selected">
+                            <option value="" selected>Select quartier</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <form class="Formulaire_devis">
+                <div class="">
+                    <div class="uk-form-controls">
+                        <select name="ecran" id="ecran" class="uk-select selected">
+                            <option value="" selected>Choix type ecran</option>
+                            {% for ecran in data_ecran %}
+                                <option value="{{ ecran.id }}" >{{ ecran.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <form class="Formulaire_devis">
+                <div class="">
+                    <div class="uk-form-controls">
+                        <select name="secteur" id="secteur" class="uk-select selected">
+                            <option value="" selected>Choix secteur d'activité</option>
+                            {% for secteur in data_secteur %}
+                                <option value="{{ secteur.id }}" >{{ secteur.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="uk-padding-small">
+            <h2 class="uk-heading-line"><span>Liste des sites</span></h2>
+            <div class="uk-alert uk-alert-warning uk-hidden" id="alert_site">
+
+            </div>
+
+            <form action="" id="formulaire_produit">
+                <div class="uk-overflow-auto" style="min-height: 360px; max-height: 360px; overflow-y: auto;">
+                    <input type="hidden" name="package_id" value="{{ session.get('package')['current'] }}" id="package_id"/>
+                    <input type="hidden" name="ville_id" value="" id="ville_id"/>
+                    <table class="uk-table uk-table-small uk-table-middle" id="find_site">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" value="" name="all_item" class="uk-checkbox"/></th>
+                                <th>Nom du site</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td colspan="3">
+                                    <h3 class="uk-text-center">Aucune information</h3>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+
+        <div class="uk-padding-remove-vertical uk-padding-small uk-width-1-1" style="background: #fff;">
+            <button type="button" id="submit_continued_modal" class="uk-button waves-effect uk-button-success uk-button-small uk-width-auto@l uk-width-1-1@s  uk-margin-bottom"><span class="uk-margin-small-right"><i class="fa fa-check-square-o"></i></span> et Continuer</button>
+            <button type="button" id="submit_modal" class="uk-button waves-effect uk-button-success uk-button-small uk-width-auto@l uk-width-1-1@s  uk-margin-bottom"><span class="uk-margin-small-right"><i class="fa fa-check-square-o"></i></span>Valider</button>
+            <button class="uk-button waves-effect uk-button-danger uk-modal-close uk-button-small uk-width-auto@l uk-width-1-1@s  uk-margin-bottom" type="button" id="closed"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</button>
+            <button class="uk-button waves-effect uk-button-info uk-button-small uk-width-auto@l uk-width-1-1@s  uk-margin-bottom" type="button" id="fresh_map"><span class="uk-margin-small-right"><i class="fa fa-refresh"></i></span> map</button>
+        </div>
+
+
+
+
+    </div>
+<div class="content-map" id="content-map">
+
+    <div class="hero-section has-map"  uk-height-viewport>
+        <div class="map" id="map-homepage" style="height: 100%"></div>
+    </div>
+
+</div>
+
+
+</div>
+
+
+
+<script>
+    var multiselect = '';
+
+    $(".selected").select2({width:'100%'});
+
+
+
+    $('#submit_modal').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            url: "{{ url_for('devis.add_site') }}",
+            data: $('#formulaire_produit').serialize(),
+            type: 'POST',
+            dataType: "json",
+            success: function(data) {
+                $("body #reload_site tbody").empty();
+                var url = "{{ url_for('devis.delete_item') }}";
+                var url_pack = "{{ url_for('devis.add_site') }}";
+
+                $.each(data['data'], function(index, value) {
+                    url_pack = url_pack+'?package='+value['id'];
+                    $pack = $('<tr/>').addClass('uk-background-blue-grey').append(
+                            $('<td/>').attr('colspan', 3).append(
+                                value['name']+' x '+value['qte']+' = <span id="passage_total" data-id="'+value['id']+'">'+value['total']+'</span> Passages ',
+                                '<button type="button" class="uk-button uk-button-default uk-button-small uk-display-block uk-float-right add_pack" data-id="'+value['id']+'"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> sites</button>'
+                            ),
+                            $('<td/>').html('<div class="uk-text-uppercase uk-hidden uk-text-center"><span id="reste-pack" class="uk-text-bold uk-margin-small-right" data-pack="'+value['id']+'">0</span> Passage(s)</div>'),
+                            $('<td/>').html('<a href="'+url+''+index+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')
+                    );
+                    $("body #reload_site tbody").append($pack);
+                    var $nbr_ville = value['ville'].length;
+                    $.each(value['ville'], function(index_ville, value_ville) {
+
+                        $.each(value_ville['site'], function(index_site, value_site) {
+
+                            $select = $('<input/>').addClass('uk-input change_qte uk-width-auto uk-text-center').attr(
+                                    {
+                                        name:'qte',
+                                        value:value_site['qte'],
+                                        "data-nbre":$nbr_ville,
+                                        "data-ville":value_ville['id'],
+                                        "data-position": index_site,
+                                        "data-pack":value['id']
+
+                                    }
+                            );
+
+                            $ligne = $('<tr/>').append(
+                                    $('<td/>').html(value_site['ref']+' <br/>'+value_site['name']+'<input type="hidden" value="'+ value_site['id'] +'" name="id"/>'),
+                                    $('<td/>').append(
+                                            $('<div/>').addClass('uk-form-controls uk-form-qte').append(
+                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>',
+                                                    $select,
+                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>'
+                                            )
+                                    ),
+                                    $('<td/>').html(
+                                            '<input type="text" value="'+value_site['prix']+'" class="uk-input uk-form-blank prix" name="prix"/>'
+                                    ),
+                                    $('<td/>').html('<div class="utotal change_total">'+value_site['total']+'</div>'),
+                                    $('<td/>').html('<a href="'+url+''+index+'/'+index_ville+'/'+index_site+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')
+
+                            );
+                            $("body #reload_site tbody").append($ligne);
+
+
+
+                        });
+
+                    });
+                });
+
+                $('body #reload_site tbody .change_qte').each(function(){
+                    $prix = $(this).parent().parent().next().find('.prix').val();
+                    $total = parseInt($(this).val()) * parseFloat($prix);
+                    $(this).parent().parent().next().next().find('.change_total').text($total);
+                    change_total();
+
+                });
+
+                if(data['warning'] == 'OK'){
+                    $('#alert_site_valid').removeClass('uk-hidden').html('<a class="uk-alert-close" uk-close></a> Certains sites n\'ont pas été ajoutés car le nombre autorisé pour le package selectionné a été dépassé.');
+                    setTimeout(function(){
+                        $('#alert_site').fadeOut("slow");
+                    }, 2000);
+                }
+
+                $('#closed').trigger('click');
+
+            }
+        });
+    });
+
+    $('#submit_continued_modal').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+            url: "{{ url_for('devis.add_site_continuer') }}",
+            data: $('#formulaire_produit').serialize(),
+            type: 'POST',
+            dataType: "json",
+            success: function(data) {
+                if(data['statut'] === 'OK'){
+                    $("#find_site  tbody").empty().append('<tr><td colspan="3"> <h3 class="uk-text-center">Aucune information</h3> </td></tr>');
+                    $('#ecran,  #secteur').val('').trigger('change');
+                }
+
+                if(data['statut'] === 'warning'){
+                    $("#find_site  tbody").empty().append('<tr><td colspan="3"> <h3 class="uk-text-center">Aucune information</h3> </td></tr>');
+                    $('#ecran,  #secteur').val('').trigger('change');
+                    $('#alert_site').removeClass('uk-hidden').html('<a class="uk-alert-close" uk-close></a> Certains sites n\'ont pas été ajoutés car le nombre autorisé pour ce package a été dépassé.');
+                    setTimeout(function(){
+                        $('#alert_site').fadeOut("slow");
+                    }, 2000);
+                }
+
+            }
+        });
+    });
+
+
+
+    var $ville = $('#ville');
+    var $quartier = $('#quartier');
+    var $ecran = $('#ecran');
+    var $secteur = $('#secteur');
+    var $package = $('#package_id');
+
+
+
+    $ville.on('change', function(e){
+        e.preventDefault();
+        $('#ville_id').val($(this).val());
+        $('#quartier').val('');
+        $('#ecran').val('');
+        $('#secteur').val('');
+
+        if($(this).val() != '') {
+
+            var data = {};
+            data['ville'] = $(this).val();
+            var url_ville = '{{ url_for('devis.find_quartier') }}';
+            $.ajax({
+                url: url_ville,
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: "json",
+                success: function (data) {
+                    var count = 0;
+                    if (data['statut'] === 'OK') {
+                        $('#quartier option:gt(0)').remove();
+                        $.each(data['data'], function (index, value) {
+                            count++;
+                            $('#quartier').append(
+                                    $('<option/>').attr('value', value['id']).text(value['name'])
+                            );
+                        });
+                        if (count == 0 && $('#quartier').val() != '') {
+                            $('#quartier option:gt(0)').remove();
+                        }
+
+                    }
+                }
+            });
+        }else{
+            $('#quartier option:gt(0)').remove();
+        }
+        $("#find_site  tbody").empty().append('<tr><td colspan="3"> <h3 class="uk-text-center">Aucune information</h3> </td></tr>');
+        refreshMap();
+
+    });
+
+    $('body').on('change', '#ville, #quartier, #ecran, #secteur', function(e){
+
+{#        if($('#quartier').val() != ''){#}
+
+                var datas = {};
+                datas['ville'] = $ville.val();
+                datas['ecran'] = $ecran.val();
+                datas['quartier'] = $quartier.val();
+                datas['secteur'] = $secteur.val();
+                datas['package'] = $package.val();
+
+
+                var url = '{{ url_for('devis.find_site') }}';
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: JSON.stringify(datas),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    success: function(data) {
+                        var count = 0;
+                        if(data['statut'] === 'OK'){
+                            $("#find_site > tbody").empty();
+                            $.each(data['data'], function(index, value) {
+
+                                var $checked = '';
+                                if(value['check'] == 1){
+                                    $checked = 'checked="checked" disabled="disabled"';
+                                }
+
+                                count++;
+                                $("#find_site tbody").append('<tr><td><input type="checkbox" value="'+value['id']+'" name="item_id" class="uk-checkbox uk-checkbox-item" '+$checked+' /></td><td>'+value['name']+'</td><td>'+value['type']+'</td></tr>');
+
+                            });
+                            if(count == 0){
+                                $("#find_site  tbody").append('<tr><td colspan="3"> <h3 class="uk-text-center">Aucune information</h3></td></tr>');
+                            }
+
+
+                        }
+                    }
+                });
+
+{#            }else{#}
+{#                $("#find_site  tbody").empty().append('<tr><td colspan="3"> <h3 class="uk-text-center">Aucune information</h3> </td></tr>');#}
+{#            }#}
+
+            refreshMap();
+
+    });
+
+    refreshMap();
+
+    $('#fresh_map').on('click', function(e){
+
+        e.preventDefault();
+        refreshMap();
+
+    });
+
+    function refreshMap(){
+
+        var optimizedDatabaseLoading = 0;
+        var _latitude = 8.2495398;
+        var _longitude = 13.3471791;
+        var element = "map-homepage";
+        var markerTarget = "infobox"; // use "sidebar", "infobox" or "modal" - defines the action after click on marker
+        var sidebarResultTarget = "sidebar"; // use "sidebar", "modal" or "new_page" - defines the action after click on marker
+        var showMarkerLabels = false; // next to every marker will be a bubble with title
+        var mapDefaultZoom = 6; // default zoom
+        var formulaire = $('.Formulaire_devis').serialize();
+        var url_data = "{{ url_for('devis.search_site') }}";
+        var infobox_url = "{{ url_for('devis.infobox') }}";
+
+        heroMap(_latitude,_longitude, element, markerTarget, sidebarResultTarget, showMarkerLabels, mapDefaultZoom, formulaire, url_data, infobox_url);
+
+    }
+
+    {#    $('body').on('click', '#find_site .uk-checkbox-item', function(){#}
+{#        if(multiselect == false){#}
+{#            count = 0;#}
+{#            $('#find_site .uk-checkbox-item').each(function() {#}
+{#                if($(this).prop('checked')){#}
+{#                    count++;#}
+{#                }#}
+{#            });#}
+{#            if(count > 1){#}
+{#                var $check = $(this);#}
+{#                var $parent = $check.parent().parent();#}
+{#                if($check.prop('checked')){#}
+{#                    $parent.removeClass('uk-background-primary').attr({'style':''});#}
+{#                    $check.attr('checked', false);#}
+{#                    $('#alert_site').html('<a class="uk-alert-close" uk-close></a>  Vous ne pouvez pas faire plus de deux slections pour le type d\'écran en cours').removeClass('uk-hidden');#}
+{##}
+{#                    setTimeout(function(){#}
+{#                        $('#alert_site').fadeOut("slow");#}
+{#                    }, 2000);#}
+{#                }#}
+{##}
+{#            }#}
+{#        }#}
+{#    });#}
+
+
+
+
+</script>
