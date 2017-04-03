@@ -63,12 +63,12 @@ app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 app.config['SECRET_KEY'] = '4fdb4fed4631d84f17c9711'
 app.config['SECURITY_PASSWORD_SALT'] = '4fdb4fed4631d84f17c97112e3d85442324848a29c4291a65ff53dc64bfd9a10'
 
-# app.config["MAIL_SERVER"] = 'smtp.gmail.com'
-# app.config["MAIL_PORT"] = 465
-# app.config["MAIL_USE_TLS"] = False
-# app.config["MAIL_USE_SSL"] = True
-# app.config["MAIL_USERNAME"] = 'xxxx@gmail.com'
-# app.config["MAIL_PASSWORD"] = 'xxxxxx'
+app.config["MAIL_SERVER"] = 'smtp.gmail.com'
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USERNAME"] = 'wilrona@gmail.com'
+app.config["MAIL_PASSWORD"] = 'ElsamarieRapide'
 
 
 db = MongoEngine(app)

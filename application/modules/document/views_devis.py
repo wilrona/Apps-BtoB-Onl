@@ -725,7 +725,6 @@ def find_site():
     quartier_id = str(request.json['quartier'])
     secteur_id = str(request.json['secteur'])
 
-
     package_id = str(request.json['package'])
 
     sites = recherche(ville=ville_id, quartier=quartier_id, secteur=secteur_id, ecran=ecran_id)

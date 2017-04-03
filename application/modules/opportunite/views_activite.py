@@ -156,5 +156,29 @@ def etat(activite_id):
     return redirect(url_for('activite.edit', activite_id=activite_id))
 
 
+@prefix_activite.route('/generate')
+def generate():
+
+    for mod in global_activite_gene:
+
+        module_exite = Activite.objects(sigle=mod['sigle']).first()
+
+        if not module_exite:
+            module = Activite()
+            module.name = mod['name']
+            module.jour = mod['jour']
+            module.default = mod['default']
+            module.sigle = mod['sigle']
+            module.save()
+        else:
+            module = module_exite
+            module.name = mod['name']
+            module.jour = mod['jour']
+            module.default = mod['default']
+            module.sigle = mod['sigle']
+            module.save()
+
+    return redirect(url_for('etape.index'))
+
 
 

@@ -66,6 +66,83 @@ global_etape = [
     'win'
 ]
 
+global_etape_gene = [
+    {
+        'name':'Nouveau',
+        'proba':10,
+        'order':1,
+        'sigle':global_etape[0]
+
+    },
+    {
+        'name':'Qualifie',
+        'proba':25,
+        'order':2,
+        'sigle':global_etape[1]
+
+    },
+    {
+
+        'name':'Proposition',
+        'proba':70,
+        'order':3,
+        'sigle':global_etape[2]
+
+    },
+    {
+
+        'name':'Gagne',
+        'proba':100,
+        'order':4,
+        'sigle':global_etape[3]
+
+    }
+
+]
+
+
+global_activite_gene = [
+    {
+        'name':'Courriel',
+        'jour':0,
+        'default': False,
+        'sigle': 'courriel'
+
+    },
+    {
+        'name':'Appeler',
+        'jour':5,
+        'default': False,
+        'sigle': 'appeler'
+
+    },
+    {
+
+        'name':'Suivre le devis',
+        'jour':30,
+        'default': False,
+        'sigle': 'suivre_devis'
+
+    },
+    {
+
+        'name':'Faire le devis',
+        'jour':15,
+        'default': True,
+        'sigle': 'faire_devis'
+
+    },
+    {
+
+        'name':'Appel pour une demonstration',
+        'jour':10,
+        'default': False,
+        'sigle': 'appel_demonstration'
+
+    }
+
+
+]
 
 global_role = [
     {"module":"Configuration Generale", "valeur": "module_parametre",

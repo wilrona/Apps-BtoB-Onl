@@ -178,3 +178,28 @@ def etat(etape_id):
     flash('Les modifications de l\'etat de l\'etape ont ete effectues', 'success')
     return redirect(url_for('etape.edit', etape_id=etape_id))
 
+
+@prefix_etape.route('/generate')
+def generate():
+
+    for mod in global_etape_gene:
+
+        module_exite = Etape.objects(sigle=mod['sigle']).first()
+
+        if not module_exite:
+            module = Etape()
+            module.name = mod['name']
+            module.order = mod['order']
+            module.proba = float(mod['proba'])
+            module.sigle = mod['sigle']
+            module.save()
+        else:
+            module = module_exite
+            module.name = mod['name']
+            module.order = mod['order']
+            module.proba = float(mod['proba'])
+            module.sigle = mod['sigle']
+            module.save()
+
+    return redirect(url_for('etape.index'))
+

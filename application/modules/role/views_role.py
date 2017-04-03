@@ -92,6 +92,5 @@ def generate():
                 role.parent = save
                 role.save()
 
-    flash(u' All Role generated.', 'success')
     return redirect(url_for('role.index'))
 

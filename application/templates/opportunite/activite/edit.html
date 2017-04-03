@@ -72,7 +72,7 @@
                                     <div class="uk-margin">
                                         {{ form.description.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.description(class_='uk-input ') }}
+                                            {{ form.description(class_='uk-input') }}
                                             {% for message in form.description.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -95,11 +95,7 @@
                                         <div class="uk-margin">
                                             <label for="" class='uk-form-label uk-text-bold'>Sigle developpeur :</label>
                                             <div class="uk-form-controls">
-                                                <select name="sigle" id="" class='uk-select selected'>
-                                                    <option value="">Selection du sigle</option>
-                                                    <option value="faire_devis" {% if form.sigle.data == 'faire_devis' %} selected {% endif %}>Faire un devis</option>
-                                                    <option value="suivre_devis" {% if form.sigle.data == 'suivre_devis' %} selected {% endif %}>Suivre un devis</option>
-                                                </select>
+                                                {{ form.default(class_='uk-input') }}
                                             </div>
                                         </div>
                                     </div>

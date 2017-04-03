@@ -24,6 +24,9 @@
 
 {% block  button %}
     <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('etape.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% if current_user.has_roles([('super_admin')]) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('etape.generate') }}"><span class="uk-margin-small-right"><i class="fa fa-cloud-download"></i></span>Generer</a>
+    {% endif %}
 {% endblock %}
 
 {% block layout_content %}

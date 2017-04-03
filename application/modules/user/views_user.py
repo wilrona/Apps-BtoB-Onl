@@ -26,7 +26,7 @@ def login():
         try:
             password = hashlib.sha256(form.password.data).hexdigest()
         except UnicodeEncodeError:
-            flash('Adresse email ou mot de passe incorrect', 'danger')
+            flash('Adresse email ou mot de passe incorrect' 'danger')
             return redirect(url_for('home.index'))
 
         user_login = Users.objects(
@@ -39,6 +39,10 @@ def login():
         else:
             if not user_login.is_active():
                 flash('Votre compte est desactive. Contactez l\'administrateur', 'danger')
+                return redirect(url_for('home.index'))
+
+            if not user_login.user:
+                flash('Vous ne pouvez pas vous connecter sur cette interface', 'warning')
                 return redirect(url_for('home.index'))
 
             #implementation de l'heure local
@@ -54,7 +58,7 @@ def login():
 
             return redirect(url_for('dashboard.index'))
     else:
-        flash('Adresse email ou mot de passe incorrect', 'danger')
+        flash('Adresse email ou mot de passe incorrect ICI', 'danger')
         return redirect(url_for('home.index'))
 
 
@@ -376,10 +380,10 @@ def confirm_email(user_id, token):
                 password = id_generator(size=7)
                 user.password = hashlib.sha256(password).hexdigest()
 
-                html = render_template('user/activate.html', **locals())
+                html = render_template('user/password_mail.html', **locals())
 
                 msg = Message()
-                msg.recipients = [current_user.email]
+                msg.recipients = [user.email]
                 msg.subject = 'Votre mot de passe sur ici.cm'
                 msg.sender = ('ICI.CM CRM', 'no_reply@ici.cm')
 

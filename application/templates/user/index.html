@@ -18,6 +18,7 @@
                 <ul class="uk-nav uk-dropdown-nav">
                         <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
                         <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="removed" {% endif %}>Enlever Field soldier</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="removed_admin" {% endif %}>Enlever Administrateur</a></li>
                 </ul>
             </div>
         </div>

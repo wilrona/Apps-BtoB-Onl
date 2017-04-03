@@ -41,8 +41,8 @@
                 <div class="uk-width-1-1">
                     <div class="uk-card uk-card-default uk-card-small uk-card-body">
                         <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
-                            <a href="#" class="uk-button waves-effect {% if data.is_enabled %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small">
-                                <span>{% if data.is_enabled %} Activé {% else %} Desactivé {% endif %}</span>
+                            <a href="#" class="uk-button waves-effect {% if data.activated %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small">
+                                <span>{% if data.activated %} Activé {% else %} Desactivé {% endif %}</span>
                             </a>
                         </div>
                         <div class="uk-padding uk-padding-remove-horizontal uk-grid-small uk-margin-bottom" uk-grid>
@@ -54,33 +54,22 @@
                                     </div>
                                 </div>
                             </div>
-                                <div class="uk-width-1-3@s">
-                                    <div class="uk-margin">
-                                        {{ form.civilite.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.civilite(class_='uk-select selected uk-form-blank', id="enter") }}
-                                            {% for message in form.civilite.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form.last_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.last_name(class_='uk-input uk-form-blank', id="enter") }}
+                                            {{ form.last_name(class_='uk-input uk-form-blank') }}
                                             {% for message in form.last_name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form.first_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.first_name(class_='uk-input uk-form-blank', id="enter") }}
+                                            {{ form.first_name(class_='uk-input uk-form-blank') }}
                                             {% for message in form.first_name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -91,7 +80,7 @@
                                     <div class="uk-margin">
                                         {{ form.email.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.email(class_='uk-input uk-form-blank', id="enter") }}
+                                            {{ form.email(class_='uk-input uk-form-blank') }}
                                             {% for message in form.email.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -102,7 +91,7 @@
                                     <div class="uk-margin">
                                         {{ form.fonction.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.fonction(class_='uk-input uk-form-blank', id="enter") }}
+                                            {{ form.fonction(class_='uk-input uk-form-blank') }}
                                             {% for message in form.fonction.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -111,21 +100,10 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
-                                        {{ form.telephone.label(class_='uk-form-label uk-text-bold') }}
+                                        {{ form.phone.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.telephone(class_='uk-input uk-form-blank', id="enter") }}
-                                            {% for message in form.telephone.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.mobile.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.mobile(class_='uk-input uk-form-blank', id="enter") }}
-                                            {% for message in form.mobile.errors %}
+                                            {{ form.phone(class_='uk-input uk-form-blank') }}
+                                            {% for message in form.phone.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
                                         </div>
@@ -135,7 +113,7 @@
                                     <div class="uk-margin">
                                         {{ form.note.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.note(class_='uk-input uk-form-blank', id="enter") }}
+                                            {{ form.note(class_='uk-input uk-form-blank') }}
                                             {% for message in form.note.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
