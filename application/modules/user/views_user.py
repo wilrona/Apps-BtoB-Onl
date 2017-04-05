@@ -41,9 +41,9 @@ def login():
                 flash('Votre compte est desactive. Contactez l\'administrateur', 'danger')
                 return redirect(url_for('home.index'))
 
-            if not user_login.user:
+            if user_login.user < 2:
                 flash('Vous ne pouvez pas vous connecter sur cette interface', 'warning')
-                return redirect(url_for('home.index'))
+                return redirect(url_for('user.logout'))
 
             #implementation de l'heure local
             time_zones = pytz.timezone('Africa/Douala')
@@ -74,11 +74,13 @@ def logout():
     if change:
         session.pop('user_id')
         session.pop('company_name')
+
+        flash('Deconnexion reussie avec success', 'success')
+
         # if 'package' in session:
         #     session.pop('package');
         # session.pop('site')
 
-    flash('Deconnexion reussie avec success', 'success')
     return redirect(url_for('home.index'))
 
 
@@ -90,7 +92,7 @@ def index():
 
     admin_role = Roles.objects(valeur='super_admin').first()
 
-    datas = Users.objects(Q(user=True) & Q(roles__role_id__ne=admin_role))
+    datas = Users.objects(Q(user__gte=1) & Q(roles__role_id__ne=admin_role))
 
     return render_template('user/index.html', **locals())
 
@@ -111,7 +113,6 @@ def view(user_id):
 
     # liste des roles lie a l'utiliasteur en cours avec le droit de suppression
     delete_list = [role.role_id.id for role in data.roles if role.deleted == True]
-
 
     liste_role = []
     data_role = Roles.objects(
@@ -138,23 +139,79 @@ def view(user_id):
     return render_template('user/view.html', **locals())
 
 
-@prefix_param.route('/edit/password/<objectid:user_id>', methods=['GET', 'POST'])
+@prefix_param.route('/choice')
+def choice():
+    return render_template('user/choice_admin.html', **locals())
+
+
+@prefix_param.route('/choice/soldier')
+def choice_soldier():
+    return render_template('user/choice_soldier.html', **locals())
+
+
+@prefix_param.route('/edit/password/<objectid:user_id>')
 def edit_password(user_id):
 
-    form = FormPassword()
+    user = Users.objects.get(id=user_id)
 
-    success = False
-    if form.validate_on_submit():
-        user = Users.objects.get(id=user_id)
+    flash('Un mail avec votre mot de passe genere a ete envoye.', 'success')
+    password = id_generator(size=7)
+    user.password = hashlib.sha256(password).hexdigest()
 
-        password = hashlib.sha224(form.password.data).hexdigest()
+    html = render_template('user/password_mail_reset.html', **locals())
 
-        user.password = password
-        user.save()
+    msg = Message()
+    msg.recipients = [user.email]
+    msg.subject = 'Votre nouveau mot de passe sur ici.cm'
+    msg.sender = ('ICI.CM CRM', 'no_reply@ici.cm')
 
-        success = True
+    msg.html = html
+    mail.send(msg)
 
-    return render_template('user/password.html', **locals())
+    return redirect(url_for('user_param.view', user_id=user_id))
+
+
+@prefix_param.route('/edit/existant', methods=['GET', 'POST'])
+@login_required
+@roles_required([('super_admin', 'user')], ['edit'])
+def edit_exist():
+
+    title_page = 'Utilisateurs'
+
+    admin_role = Roles.objects(valeur='super_admin').first()
+
+    if request.args.get('field_soldier'):
+        datas = Users.objects(Q(user__lt=1) & Q(activated=True) & Q(roles__role_id__ne=admin_role))
+    else:
+        datas = Users.objects(Q(user__lt=2) & Q(activated=True) & Q(roles__role_id__ne=admin_role))
+
+    if request.method == 'POST':
+
+        if request.form.getlist('item_id'):
+
+            for id_user in request.form.getlist('item_id'):
+                current = Users.objects.get(id=id_user)
+                if request.args.get('field_soldier'):
+                    current.user = 1
+                else:
+                    current.user = 2
+                current.save()
+
+            flash('Ajout des administrateurs/Commerciaux reussis avec success', 'success')
+
+            datas = json.dumps({
+                'statut': 'OK'
+            })
+
+        else:
+
+            datas = json.dumps({
+                'statut': 'NOK'
+            })
+
+        return datas
+
+    return render_template('user/edit_exist.html', **locals())
 
 
 @prefix_param.route('/edit/<objectid:user_id>', methods=['GET', 'POST'])
@@ -184,7 +241,6 @@ def edit(user_id=None):
         # liste des roles lie a l'utiliasteur en cours avec le droit de suppression
         delete_list = [role.role_id.id for role in data.roles if role.deleted == True]
 
-
         liste_role = []
         data_role = Roles.objects(
             valeur__ne='super_admin'
@@ -210,6 +266,8 @@ def edit(user_id=None):
     else:
         data = Users()
         form = FormUser()
+        if request.args.get('field_soldier'):
+            form.user.data = request.args.get('field_soldier')
 
     if form.validate_on_submit() and request.method == 'POST' and current_user.has_roles([('super_admin', 'user')], ['edit']) and current_user.id != data:
 
@@ -221,13 +279,13 @@ def edit(user_id=None):
 
         if not user_id:
             data.email = form.email.data
+            data.user = int(form.user.data)
             count_user = Users.objects(user=True).count()
             data.ref = function.reference(count=count_user+1, caractere=4, user=True, refuser=None)
 
         data.fonction = form.fonction.data
         data.phone = form.phone.data
         data.note = form.note.data
-        data.user = True
 
         data.activated = False
 
@@ -336,7 +394,128 @@ def deleted():
     if count:
         info = {}
         info['statut'] = 'OK'
-        info['message'] = str(count)+' element(s) ont ete supprime avec success'
+        info['message'] = str(count)+' utilisateur(s) supprime(s) avec success'
+        info['element'] = element
+        data.append(info)
+
+    data = json.dumps(data)
+
+    return data
+
+
+@prefix_param.route('/removed', methods=['POST'])
+@login_required
+@roles_required([('super_admin', 'user')], ['delete'])
+def removed():
+
+    data = []
+    element = []
+    count = 0
+    for item in request.form.getlist('item_id'):
+        info = {}
+        item_found = Users.objects().get(id=item)
+
+        if item_found.user > 1:
+            info['statut'] = 'NOK'
+            if len(item_found.roles):
+                info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" est un Administrateur. IL ne peut etre ' \
+                                                                            'enlever comme Field Soldier. '
+            else:
+                info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" est un Commercial. IL ne peut etre ' \
+                                                                            'enlever comme Field Soldier. '
+
+            data.append(info)
+        else:
+            item_found.user = 0
+            element.append(str(item_found.id))
+            count += 1
+
+            item_found.save()
+
+    if count:
+        info = {}
+        info['statut'] = 'OK'
+        info['message'] = str(count)+' utilisateur(s) enleve(s) comme Field Soldier avec success'
+        info['element'] = element
+        data.append(info)
+
+    data = json.dumps(data)
+
+    return data
+
+
+@prefix_param.route('/removed_cam', methods=['POST'])
+@login_required
+@roles_required([('super_admin', 'user')], ['delete'])
+def removed_cam():
+
+    data = []
+    element = []
+    count = 0
+    for item in request.form.getlist('item_id'):
+        info = {}
+        item_found = Users.objects().get(id=item)
+
+        if item_found.user == 1 or len(item_found.roles):
+            info['statut'] = 'NOK'
+            if len(item_found.roles):
+                info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" est un Administrateur. IL ne peut etre ' \
+                                                                            'enlever comme Commercial. '
+            else:
+                info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" est un Field Soldier. IL ne peut etre ' \
+                                                                            'enlever comme Commercial. '
+            data.append(info)
+        else:
+            item_found.roles = []
+            item_found.user = 0
+            element.append(str(item_found.id))
+            count += 1
+
+            item_found.save()
+
+    if count:
+        info = {}
+        info['statut'] = 'OK'
+        info['message'] = str(count)+' utilisateur(s) enleve(s) comme Commercial avec success. ils sont redevenu des ' \
+                                     'simples utilisateurs '
+        info['element'] = element
+        data.append(info)
+
+    data = json.dumps(data)
+
+    return data
+
+
+@prefix_param.route('/removed_admin', methods=['POST'])
+@login_required
+@roles_required([('super_admin', 'user')], ['delete'])
+def removed_admin():
+
+    data = []
+    element = []
+    count = 0
+    for item in request.form.getlist('item_id'):
+        info = {}
+        item_found = Users.objects().get(id=item)
+
+        if not len(item_found.roles):
+            info['statut'] = 'NOK'
+            info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" n\' est plus Administrateur.'
+
+            data.append(info)
+        else:
+            item_found.roles = []
+            item_found.user = 0
+            element.append(str(item_found.id))
+            count += 1
+
+            item_found.save()
+
+    if count:
+        info = {}
+        info['statut'] = 'OK'
+        info['message'] = str(count)+' utilisateur(s) enleve(s) comme Admnistrateur avec success. ils sont redevenu ' \
+                                     'des commerciaux '
         info['element'] = element
         data.append(info)
 
@@ -415,6 +594,7 @@ def unconfirmed():
 def resend_confirmation():
 
     token = generate_confirmation_token(current_user.email)
+    reset = True
     confirm_url = url_for('user_param.confirm_email', user_id=current_user.id, token=token, _external=True)
     html = render_template('user/activate.html', **locals())
 

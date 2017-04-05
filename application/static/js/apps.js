@@ -145,14 +145,23 @@
             $('body #dataTable tbody tr').each(function(){
                 $link = $(this).data('link');
                 if($link){
-                    paged = '?paged='+table.page.info().page;
-                    $url = $link+paged;
-
+                    var exist_paged = $link.split("?");
+                    console.log(exist_paged);
+                    if (exist_paged.length >= 2){
+                        paged = '?paged='+table.page.info().page;
+                        $url = exist_paged[0]+paged;
+                    }else{
+                        paged = '?paged='+table.page.info().page;
+                        $url = $link+paged;
+                    }
                     $(this).data('link', $url);
                 }
             });
 
-            window.history.pushState('page '+table.page.info().page, 'Title', window.location.pathname+'?paged='+table.page.info().page);
+            if(table.page.info()){
+                window.history.pushState('page '+table.page.info().page, 'Title', window.location.pathname+'?paged='+table.page.info().page);
+            }
+
         });
 
 
@@ -180,9 +189,27 @@
 
         });
 
-        $('body #dataTable, body table.display').on('click', '.uk-checkbox-all', function(){
+        $('body #dataTable').on('click', '.uk-checkbox-all', function(){
 
             var rows = table.rows({ 'search': 'applied' }).nodes();
+
+
+            var $check = $('input.uk-checkbox-item', rows).prop('checked', this.checked);
+
+            var $parent = $check.parent().parent();
+            if($check.is(':checked')){
+                $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
+                $('.uk-div').removeClass('uk-hidden');
+            }else{
+                $parent.removeClass('uk-background-primary').attr({'style':''});
+                $('.uk-div').addClass('uk-hidden');
+            }
+
+        });
+
+        $('body table.display').on('click', '.uk-checkbox-all', function(){
+
+            var rows = table_display.rows({ 'search': 'applied' }).nodes();
 
 
             var $check = $('input.uk-checkbox-item', rows).prop('checked', this.checked);
@@ -261,8 +288,6 @@
             })
             .done(function( msg ) {
 
-                console.log(msg);
-
                 msg = $.parseJSON(msg);
                 var document = $("<p/>").addClass('uk-modal-body');
                 $.each(msg, function(i, item){
@@ -314,6 +339,10 @@
         // recherche sur DataTable
         $('#searchbox').on('keyup', function(){
             table.search($(this).val()).draw() ;
+        });
+
+        $('#searchbox_2').on('keyup', function(){
+            table_display.search($(this).val()).draw() ;
         });
 
 

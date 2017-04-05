@@ -399,7 +399,20 @@ html, div *{
 }
 
 
+.uk-alert-warning{
+    background-color: rgba(255,150,0, .7) !important;
+    color: #000;
+}
 
+.uk-alert-danger{
+    background-color: rgba(251,72,58, .7) !important;
+    color: #fff;
+}
+
+.uk-alert-success{
+    background-color: rgba(43,152,43,.7) !important;
+    color: #fff;
+}
 
 .uk-background-success{
     background-color: #2b982b !important;
@@ -410,6 +423,8 @@ html, div *{
     background-color: #00b0e4 !important;
     color: #fff;
 }
+
+
 
 .uk-background-warning{
     background-color: #ff9600 !important;

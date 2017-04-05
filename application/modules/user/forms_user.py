@@ -61,6 +61,7 @@ def error_phone(form, field):
 
 class FormUser(wtf.Form):
     id = wtf.HiddenField()
+    user = wtf.HiddenField()
     first_name = wtf.StringField(label='Prenom', validators=[validators.Required('Information obligatoire')])
     last_name = wtf.StringField(label='Nom', validators=[validators.Required('Information obligatoire')])
     email = wtf.StringField(label='Adresse Email', validators=[validators.Email('Email non valid'), validators.Required('Information obligatoire'), unique_email_validator])

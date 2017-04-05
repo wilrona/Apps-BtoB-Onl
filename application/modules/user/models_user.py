@@ -28,8 +28,7 @@ class Users(db.Document):
 
     logged = db.BooleanField()
     lastLogin = db.DateTimeField()
-    user = db.BooleanField(default=False)
-    agent = db.BooleanField(default=False)
+    user = db.IntField()
     note = db.StringField()
 
     roles = db.ListField(db.EmbeddedDocumentField(UserRole))

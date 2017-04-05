@@ -1,0 +1,16 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Creer un field soldier</h2>
+</div>
+<div class="uk-modal-body">
+
+    <ul class="uk-list uk-list-large uk-list-divider uk-list-striped">
+        <li><a href="{{ url_for('user_param.edit', field_soldier='1') }}">Creer un nouveau field soldier</a></li>
+        <li><a href="{{ url_for('user_param.edit_exist', field_soldier='1') }}">Creer un field soldier à partir d'un utilisateur existant</a></li>
+    </ul>
+
+</div>
+
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-danger uk-modal-close" type="button">Fermer</button>
+</div>

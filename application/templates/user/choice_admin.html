@@ -1,0 +1,16 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Creer un admin / commercial</h2>
+</div>
+<div class="uk-modal-body">
+
+    <ul class="uk-list uk-list-large uk-list-divider uk-list-striped">
+        <li><a href="{{ url_for('user_param.edit') }}">Creer un nouveau admin/cam</a></li>
+        <li><a href="{{ url_for('user_param.edit_exist') }}">Creer un admin/cam a partir d'un utilisateur existant</a></li>
+    </ul>
+
+</div>
+
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-danger uk-modal-close" type="button">Fermer</button>
+</div>

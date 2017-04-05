@@ -2,7 +2,7 @@
 
 {% block title %} {{ title_page }} {% endblock %}
 
-{% block title_header %} {{ title_page }} : Ajouter un Admin /  CAM {% endblock %}
+{% block title_header %} {{ title_page }} {% endblock %}
 
 {% block  button %}
     <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> Enreg.</a>
@@ -24,7 +24,7 @@
                     <div class="uk-grid-small" uk-grid>
                         <div class="uk-width-4-5@l uk-width-3-5@m uk-width-3-5@s">
 
-                             <a class="uk-button waves-effect uk-button-default uk-button-small uk-width-1-1@xs uk-width-auto@s modal" href="{{ url_for('user_param.edit_password', user_id=user_id) }}" uk-toggle="target: #modal-id">{% if data.password %} Modifier le mot de passe {% else %} Definir un mot de passe {% endif %}</a>
+                             <a class="uk-button waves-effect uk-button-default uk-button-small uk-width-1-1@xs uk-width-auto@s " href="{{ url_for('user_param.edit_password', user_id=user_id) }}"> Réinitialisation du mot de passe </a>
 
 
                         </div>
@@ -133,7 +133,7 @@
                                 </div>
                             </div>
 
-                            {% if user_id %}
+                            {% if user_id and data.user == 2 %}
 
                                 <div class="uk-padding uk-padding-remove-horizontal uk-clearfix uk-width-1-1">
                             <hr class="uk-divider-icon"/>

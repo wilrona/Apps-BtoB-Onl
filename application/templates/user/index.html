@@ -14,11 +14,12 @@
 {% block link %}
         <div class="uk-inline uk-div uk-width-1-3@l uk-width-1-1@s uk-margin-auto uk-display-block uk-hidden">
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
-            <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
+            <div uk-dropdown="boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
                         <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="removed" {% endif %}>Enlever Field soldier</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="removed_admin" {% endif %}>Enlever Administrateur</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed') }}" id="removed" {% endif %}>Enlever comme field soldier</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_cam') }}" id="removed_cam" {% endif %}>Enlever comme commercial</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_admin') }}" id="removed_admin" {% endif %}>Enlever comme administrateur</a></li>
                 </ul>
             </div>
         </div>
@@ -26,23 +27,26 @@
 
 {% block  button %}
     {% if current_user.has_roles([('super_admin', 'user')], ['edit']) %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('user_param.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Admin / Cam</a>
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('user_param.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Field Soldier</a>
+        <a class="uk-button waves-effect uk-button-success uk-button-small modal" uk-toggle="target: #modal-id" href="{{ url_for('user_param.choice') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Admin / Cam</a>
+        <a class="uk-button waves-effect uk-button-success uk-button-small modal" uk-toggle="target: #modal-id" href="{{ url_for('user_param.choice_soldier') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Field Soldier</a>
     {% endif %}
 {% endblock %}
 
 {% block layout_content %}
+
 <div class="uk-container-expand">
     <div class="uk-grid-small" uk-grid>
         <div class="uk-width-1-1">
+            {% include 'includes/flash_message.html' %}
             <div class="uk-overflow-auto">
                 <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
                     <thead>
                     <tr>
                         <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                        <th width="35%">Nom</th>
-                        <th width="35%">Prenom</th>
-                        <th width="30%">Status</th>
+                        <th width="25%">Nom</th>
+                        <th width="25%">Prenom</th>
+                        <th width="25%">Status</th>
+                        <th width="25%">Etat</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -51,7 +55,8 @@
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ data.last_name }}</td>
                             <td>{{ data.first_name }}</td>
-                            <td>{% if data.roles|length %} Gestionnaires {% else %} {% if data.agent %} Field Soldier {% else %} Commercial {% endif %} {% endif %}</td>
+                            <td>{% if data.roles|length %} Gestionnaires {% else %} {% if data.user == 1 %} Field Soldier {% else %} Commercial {% endif %} {% endif %}</td>
+                            <td>{% if data.activated %} Activé {% else %}  {% if data.password %} Désactivé {% else %} En attente de confirmation {% endif %} {% endif %}</td>
                           </tr>
                         {% endfor %}
                     </tbody>
@@ -72,5 +77,67 @@
                 table.page({{ request.args.get('paged')|int }}).draw( 'page' );
             </script>
         {% endif %}
+
+    <script>
+
+        // function de suppression des elements selectionnes sur le tableau
+        $('body').on('click', '#removed, #removed_admin, #removed_cam', function(e){
+            e.preventDefault();
+            var url =  $(this).attr('href');
+            $.ajax({
+                method: "POST",
+                data: table.$('input.uk-checkbox-item').serialize(),
+                url: url
+            }).done(function( msg ) {
+
+                    msg = $.parseJSON(msg);
+                    var document = $("<p/>").addClass('uk-modal-body');
+                    $.each(msg, function(i, item){
+                        if(item['statut'] == 'OK'){
+
+                            for(var x=0; x<item['element'].length; x++){
+                                $input = $('input[value='+item['element'][x]+']');
+                                $parent = $input.parent().parent();
+                                table.row($parent).remove().draw( false );
+                            };
+
+                            document.append(
+                                $('<br/>')
+                            ).append(
+                                $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
+                                    $('<p/>').html(item['message'])
+                                )
+                            );
+                            // activer la reactualisation de la page en cours
+                            if(item['reload'] == 1){
+                                reload = true;
+                                reloading();
+                            }
+
+                        }
+                        if(item['statut'] == 'NOK'){
+                            document.append(
+                                $('<br/>')
+                            ).append(
+                                $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(
+                                    $('<p/>').html(item['message'])
+                                )
+                            )
+                        }
+                    });
+
+                    var rows = table.rows({ 'search': 'applied' }).nodes();
+                    $('input.uk-checkbox-item', rows).prop('checked', false).parent().parent().removeClass('uk-background-primary').attr({'style':''});
+
+                    UIkit.modal.dialog('<div class="uk-body-custom"></div>');
+                    document.appendTo('.uk-body-custom');
+                    $('.uk-div').addClass('uk-hidden');
+                    $('.uk-checkbox-all').prop('checked', false);
+
+                });
+
+        });
+
+    </script>
 
 {% endblock %}

@@ -16,7 +16,7 @@
 {% block link %}
         <div class="uk-inline uk-div uk-width-1-3@l uk-width-1-1@s uk-margin-auto uk-display-block uk-hidden">
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
-            <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
+            <div uk-dropdown="boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
                         <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
                 </ul>
