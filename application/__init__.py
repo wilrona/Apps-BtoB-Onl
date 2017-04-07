@@ -56,7 +56,7 @@ app.config['MONGODB_SETTINGS'] = {
 CURRENT_FILE = os.path.abspath(__file__)
 CURRENT_DIR = os.path.dirname(CURRENT_FILE)
 
-app.config['UPLOAD_FOLDER'] = CURRENT_DIR+'/static/uploads/'
+app.config['UPLOAD_FOLDER'] = APP_ROOT
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 

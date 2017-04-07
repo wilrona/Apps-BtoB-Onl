@@ -17,7 +17,7 @@ def index():
 
     title_page = 'Clients'
 
-    datas = Client.objects()
+    datas = Compagnie.objects()
 
     return render_template('client/index.html', **locals())
 

@@ -63,14 +63,19 @@
                                     </div>
                                  </div>
                                 {% if form.opportunite_id.data or data.opportunite_id %}
-                                <div class="uk-width-1-1@s">
-                                    <div class="uk-margin">
-                                        {{ form.opportunite_text.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.opportunite_text(class_='uk-input uk-form-blank uk-width-1-1') }}
+                                    <div class="uk-width-1-1@s">
+                                        <div class="uk-margin">
+                                            {{ form.opportunite_text.label(class_='uk-form-label uk-text-bold') }}
+                                            <div class="uk-form-controls ">
+                                                <div class="uk-inline  uk-width-1-1">
+                                                    {{ form.opportunite_text(class_='uk-input uk-form-blank') }}
+                                                    {% if data.opportunite_id %}
+                                                        <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id) }}" uk-icon="icon: link"></a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                 </div>
                                 {% endif %}
 
 

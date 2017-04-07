@@ -178,7 +178,7 @@ def generate():
             module.sigle = mod['sigle']
             module.save()
 
-    return redirect(url_for('etape.index'))
+    return redirect(url_for('activite.index'))
 
 
 

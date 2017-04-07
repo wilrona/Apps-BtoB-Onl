@@ -14,15 +14,17 @@ class Compagnie(db.Document):
 
     latitude = db.StringField()
     longitude = db.StringField()
-    logo = db.StringField()
 
     email = db.StringField()
+    phone = db.StringField()
     description = db.StringField()
     urlsite = db.StringField()
 
     postal_code = db.StringField()
     activated = db.BooleanField()
+
     imagedir = db.StringField()
+    logo = db.StringField()
 
     facebook = db.StringField()
     twitter = db.StringField()
@@ -32,6 +34,7 @@ class Compagnie(db.Document):
     mainuser = db.ReferenceField('Users')
     parent_idcompagnie = db.ReferenceField('self')
     maincategorie = db.ReferenceField('Categorie')
+    idcategorie = db.ListField(db.ReferenceField('Categorie'))
 
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
@@ -64,5 +67,6 @@ class Categorie(db.Document):
     slug = db.StringField()
     url_image = db.StringField()
     icone = db.StringField()
-    idcomapagnie = db.ReferenceField('Compagnie')
+    idcomapagnie = db.ListField(db.ReferenceField('Compagnie'))
     parent_idcategorie = db.ReferenceField('self')
+    activated = db.BooleanField(default=True)
