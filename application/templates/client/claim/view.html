@@ -46,6 +46,22 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
+                                        <label class="uk-form-label uk-text-bold">Date Creation : </label>
+                                        <div class="uk-form-controls">
+                                            {{ claim.dateclaim|format_date('%d/%m/%Y - %H:%M') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        <label class="uk-form-label uk-text-bold">Date decision : </label>
+                                        <div class="uk-form-controls">
+                                            {{ claim.updateDate|format_date('%d/%m/%Y - %H:%M') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
                                         {{ form.raison.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
                                             <ul class="uk-subnav uk-margin-small-top">

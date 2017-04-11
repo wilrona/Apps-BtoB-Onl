@@ -362,6 +362,12 @@
             window.location.reload();
         });
 
+        $('.uk-target-blank').on('click', function (e) {
+            e.preventDefault();
+            url = $(this).attr('href');
+            window.open(url);
+        });
+
         $('.uk-actives').on('mouseover', function () {
             if($(this).hasClass('uk-button-success-active')){
                 $(this).removeClass('uk-button-success-active').addClass('uk-button-danger-active');

@@ -71,7 +71,7 @@ def accepte(claim_id=None):
         data.save()
 
         flash('Demande Accepte avec success', 'success')
-        return redirect(url_for('claim.edit', claim_id=claim_id))
+        return redirect(url_for('claim.view', claim_id=claim_id))
     else:
         data = []
         element = []
@@ -131,7 +131,7 @@ def refuse(claim_id=None):
         msg = Message()
         msg.recipients = [data.iduser.email]
         msg.subject = 'Reponse a votre reclamation'
-        msg.sender = ('ICI.CM service reclamation d\'entreprise', 'no_reply@ici.cm')
+        msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
 
         msg.html = html
         mail.send(msg)
@@ -139,7 +139,7 @@ def refuse(claim_id=None):
         data.save()
 
         flash('Demande Refuse avec success', 'success')
-        return redirect(url_for('claim.edit', claim_id=claim_id))
+        return redirect(url_for('claim.view', claim_id=claim_id))
     else:
         data = []
         element = []
@@ -156,7 +156,7 @@ def refuse(claim_id=None):
             msg = Message()
             msg.recipients = [item_found.iduser.email]
             msg.subject = 'Reponse a votre reclamation'
-            msg.sender = ('ICI.CM service reclamation d\'entreprise', 'no_reply@ici.cm')
+            msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)

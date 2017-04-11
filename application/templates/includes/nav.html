@@ -31,6 +31,12 @@
             {% if current_user.has_roles([('super_admin', 'claim')]) %}
                 <li><a href="{{ url_for('claim.index') }}" class="waves-effect">Reclamation</a></li>
             {% endif %}
+            {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+                <li><a href="{{ url_for('client.new') }}" class="waves-effect">Nouvel Entreprise</a></li>
+            {% endif %}
+            {% if current_user.has_roles([('super_admin', 'relation')]) %}
+                <li><a href="{{ url_for('relation.index') }}" class="waves-effect">Demande Relation</a></li>
+            {% endif %}
         </ul>
     </li>
     {% endif %}

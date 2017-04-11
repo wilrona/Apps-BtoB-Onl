@@ -13,7 +13,18 @@ prefix = Blueprint('client', __name__)
 def index():
     title_page = 'Clients'
 
-    datas = Compagnie.objects()
+    datas = Compagnie.objects(activated=True)
+
+    return render_template('client/index.html', **locals())
+
+
+@prefix.route('/new')
+@login_required
+def new():
+    title_page = 'Nouveaux Clients'
+
+    news = '1'
+    datas = Compagnie.objects(activated=False)
 
     return render_template('client/index.html', **locals())
 
@@ -21,7 +32,11 @@ def index():
 @prefix.route('/view/<objectid:client_id>')
 @login_required
 def view(client_id):
-    title_page = 'Clients'
+
+    if request.args.get('news'):
+        title_page = 'Nouveaux Client'
+    else:
+        title_page = 'Clients'
 
     data = Compagnie.objects.get(id=client_id)
     form = FormClient(obj=data)
@@ -35,7 +50,11 @@ def view(client_id):
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def edit(client_id=None):
-    title_page = 'Clients'
+
+    if request.args.get('news'):
+        title_page = 'Nouveaux Client'
+    else:
+        title_page = 'Clients'
 
     if client_id:
         data = Compagnie.objects.get(id=client_id)
@@ -122,7 +141,7 @@ def edit(client_id=None):
                 old_c.update_one(pull__idcomapagnie=data)
 
         flash('Enregistement effectue avec succes', 'success')
-        return redirect(url_for('client.view', client_id=data.id))
+        return redirect(url_for('client.view', client_id=data.id, news=request.args.get('news')))
 
     return render_template('client/edit.html', **locals())
 
@@ -283,7 +302,7 @@ def etat(client_id):
     client.save()
 
     flash('Les modifications de l\'etat du client ont ete effectue', 'success')
-    return redirect(url_for('client.edit', client_id=client_id))
+    return redirect(url_for('client.view', client_id=client_id, news=request.args.get('news')))
 
 
 # @prefix.route('/find/customer/<objectid:customer_id>', methods=['GET','POST'])

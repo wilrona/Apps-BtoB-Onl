@@ -78,8 +78,23 @@ class Claim(db.Document):
     iduser = db.ReferenceField('Users')
     statut = db.IntField()
     dateclaim = db.DateTimeField()
-    updateclaim = db.DateTimeField()
+    updateDate = db.DateTimeField()
 
     def save(self, *args, **kwargs):
-        self.updateclaim = datetime.datetime.now()
+        self.updateDate = datetime.datetime.now()
         return super(Claim, self).save(*args, **kwargs)
+
+
+class Relation(db.Document):
+    idagence = db.ReferenceField('Compagnie')
+    idparent = db.ReferenceField('Compagnie')
+    iduser = db.ReferenceField('Users')
+    statut = db.IntField()
+    createDate = db.DateTimeField()
+    updateDate = db.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.createDate:
+            self.createDate = datetime.datetime.now()
+        self.updateDate = datetime.datetime.now()
+        return super(Relation, self).save(*args, **kwargs)
