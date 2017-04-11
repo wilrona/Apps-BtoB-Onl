@@ -12,6 +12,7 @@ class Paiement(db.Document):
     idvendeur = db.ReferenceField('Users')
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
+    auto = db.BooleanField()
 
     def save(self, *args, **kwargs):
         if not self.createDate:

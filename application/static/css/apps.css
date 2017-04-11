@@ -79,17 +79,17 @@ html, div *{
     padding-right: 0;
 }
 
-.uk-input:focus, .uk-select:focus, .uk-textarea:focus, .uk-search-input:focus, .select2-search__field.uk-input:focus, .select2-selection--single.uk-input:focus{
+.uk-input:focus, .uk-select:focus, .uk-textarea:focus, .uk-search-input:focus, .select2-search__field.uk-input:focus, .select2-selection--single.uk-input:focus, .select2-selection--multiple.uk-input:focus{
     border-bottom: 2px solid #3a3b3d;
     transition: all 0.3s;
 }
 
-.uk-input.required:focus, .uk-select.required:focus, .uk-textarea.required:focus, .uk-search-input.required:focus, .select2-search__field.uk-input.required:focus, .select2-selection--single.uk-input.required:focus{
+.uk-input.required:focus, .uk-select.required:focus, .uk-textarea.required:focus, .uk-search-input.required:focus, .select2-search__field.uk-input.required:focus, .select2-selection--single.uk-input.required:focus, .select2-selection--multiple.uk-input.required:focus{
     border-bottom: 2px solid #fb483a;
     transition: all 0.3s;
 }
 
-.select2-search__field.uk-input, .select2-selection--single.uk-input{
+.select2-search__field.uk-input, .select2-selection--single.uk-input, .select2-selection--multiple.uk-input{
     border: none !important;
     border-bottom: 2px solid rgba(0, 0, 0, 0.08) !important;
 }
@@ -99,7 +99,7 @@ html, div *{
     transition: all 0.3s;
 }
 
-.select2-search__field.uk-input.required, .select2-selection--single.uk-input.required{
+.select2-search__field.uk-input.required, .select2-selection--single.uk-input.required, .select2-selection--multiple.uk-input.required{
     border-bottom: 2px solid rgba(251, 72, 52, 0.3) !important;
 }
 
@@ -110,7 +110,7 @@ html, div *{
     margin-top: -40px;
 }
 
-.select2-container--default .select2-selection--single{
+.select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple{
     background-color: #fafafa;
 }
 
@@ -136,6 +136,12 @@ html, div *{
     transition: all 0.5s;
     font-size: 14px;
     line-height: 25px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+    line-height: 2em;
+    border: none !important;
+    border-radius: 0px !important;
 }
 
 

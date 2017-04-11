@@ -7,7 +7,7 @@ from ..company.models_company import Config_reference
 class Document(db.Document):
 
     ref = db.StringField()
-    client_id = db.ReferenceField('Client')
+    client_id = db.ReferenceField('Compagnie')
     contact_id = db.ReferenceField('Users')
 
     createDate = db.DateTimeField()

@@ -32,7 +32,7 @@ class Opportunite(db.Document):
     etape = db.StringField()
     vendeur_id = db.ReferenceField('Users')
     contact_id = db.ReferenceField('Users')
-    client_id = db.ReferenceField('Client')
+    client_id = db.ReferenceField('Compagnie')
     note = db.StringField()
 
     updateDate = db.DateTimeField()

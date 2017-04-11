@@ -16,6 +16,7 @@ class Package(db.Document):
     proposal = db.BooleanField()
     status = db.BooleanField()
     attribut = db.ListField(db.StringField())
+    sale = db.IntField()
 
 
 class LigneService(db.Document):

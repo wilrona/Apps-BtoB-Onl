@@ -41,6 +41,7 @@ class Compagnie(db.Document):
 
     etat_souscription = db.IntField()
     uploaded = db.BooleanField()
+    partenaire = db.BooleanField()
 
     iduser = db.ListField(db.ReferenceField('Users'))
 

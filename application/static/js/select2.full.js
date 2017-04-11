@@ -1580,7 +1580,7 @@ S2.define('select2/selection/multiple',[
   MultipleSelection.prototype.render = function () {
     var $selection = MultipleSelection.__super__.render.call(this);
 
-    $selection.addClass('select2-selection--multiple');
+    $selection.addClass('select2-selection--multiple uk-input');
 
     $selection.html(
       '<ul class="select2-selection__rendered"></ul>'

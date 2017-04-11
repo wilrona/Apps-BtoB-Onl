@@ -3,6 +3,16 @@ __author__ = 'User'
 
 from flaskext import wtf
 from flaskext.wtf import validators
+from models_compagnie import Compagnie, Q
+
+
+def unique_email_validator(form, field):
+    """ email must be unique"""
+    user_manager = Compagnie.objects(
+        Q(email=field.data)
+    ).count()
+    if user_manager >= 1 and not form.id:
+        raise wtf.ValidationError('Email deja utilise par un autre utilisateur')
 
 
 class FormClient(wtf.Form):
@@ -17,9 +27,9 @@ class FormClient(wtf.Form):
     postal_code = wtf.StringField(label='Code postal :')
     repere = wtf.StringField(label='Reperage :')
 
-    email = wtf.StringField(label='Adresse Email :', validators=[validators.Required(message='Champ obligatoire')])
+    email = wtf.StringField(label='Adresse Email :', validators=[validators.Required(message='Champ obligatoire'), validators.Email('Invalid Email'), unique_email_validator])
     phone = wtf.StringField(label='Numero de telephone :')
-    description = wtf.StringField(label='Description :')
+    description = wtf.TextAreaField(label='Description :')
     urlsite = wtf.StringField(label='Site web :')
 
     latitude = wtf.StringField(label='Latitude :')
@@ -30,6 +40,7 @@ class FormClient(wtf.Form):
     linkedin = wtf.StringField(label='Lien linkedin :')
     youtube = wtf.StringField(label='Lien youtube :')
 
+    idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
     maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
 
 
@@ -50,7 +61,7 @@ class FormCategorie(wtf.Form):
 
     name = wtf.StringField(label='Nom de la categorie :', validators=[validators.Required(message='Champ obligatoire')])
     description = wtf.TextAreaField(label='Description de la categorie :')
-    url_image = wtf.StringField(label='Image de la categorie :', validators=[check_enfant_media])
-    icone = wtf.StringField(label='Icone de la categorie', validators=[check_enfant_media])
+    url_image = wtf.StringField(label='Image de la categorie :')
+    icone = wtf.StringField(label='Icone de la categorie :')
     parent_idcategorie = wtf.SelectField(label='Categorie Parente :', coerce=str, validators=[check_enfant])
 

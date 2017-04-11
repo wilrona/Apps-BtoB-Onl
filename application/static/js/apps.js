@@ -103,7 +103,7 @@
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
             "info": false,
             //"searching": false,
-            "iDisplayLength": 10,
+            "iDisplayLength": 25,
             //dom: 'f',
             "bLengthChange" : true
         });

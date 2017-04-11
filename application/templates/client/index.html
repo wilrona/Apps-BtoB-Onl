@@ -18,16 +18,18 @@
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
             <div uk-dropdown="boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
-                        <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.deleted') }}" id="deleted" {% endif %}>Désactivé</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
+                    <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.etat_activated') }}" id="activated" {% endif %}>Activer</a></li>
+                    <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.etat_unactivated') }}" id="unactivated" {% endif %}>Désactiver</a></li>
                 </ul>
             </div>
         </div>
 {% endblock %}
 
 {% block  button %}
-{#    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}#}
-{#        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>#}
-{#    {% endif %}#}
+    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% endif %}
 {% endblock %}
 
 {% block layout_content %}
@@ -42,8 +44,8 @@
                         <tr>
                             <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
                             <th width="35%">Nom</th>
-                            <th width="35%">Telephone</th>
                             <th width="25%">Courriel</th>
+                            <th width="35%">Telephone</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -51,8 +53,8 @@
                           <tr data-link="{{ url_for('client.view', client_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ data.name }}</td>
-                            <td>{{ data.phone }}</td>
                             <td>{{ data.email }}</td>
+                            <td>{{ data.phone }}</td>
                           </tr>
                         {% endfor %}
 
@@ -74,5 +76,64 @@
                 table.page({{ request.args.get('paged')|int }}).draw( 'page' );
             </script>
         {% endif %}
+        <script>
+        // function de suppression des elements selectionnes sur le tableau
+        $('body').on('click', '#activated, #unactivated', function(e){
+            e.preventDefault();
+            var url =  $(this).attr('href');
+            $.ajax({
+                method: "POST",
+                data: table.$('input.uk-checkbox-item').serialize(),
+                url: url
+            }).done(function( msg ) {
+
+                msg = $.parseJSON(msg);
+                var document = $("<p/>").addClass('uk-modal-body');
+                $.each(msg, function(i, item){
+                    if(item['statut'] == 'OK'){
+
+{#                        for(var x=0; x<item['element'].length; x++){#}
+{#                            $input = $('input[value='+item['element'][x]+']');#}
+{#                            $parent = $input.parent().parent();#}
+{#                            table.row($parent).remove().draw( false );#}
+{#                        };#}
+
+                        document.append(
+                            $('<br/>')
+                        ).append(
+                            $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
+                                $('<p/>').html(item['message'])
+                            )
+                        );
+                        // activer la reactualisation de la page en cours
+                        if(item['reload'] == 1){
+                            reload = true;
+                            reloading();
+                        }
+
+                    }
+                    if(item['statut'] == 'NOK'){
+                        document.append(
+                            $('<br/>')
+                        ).append(
+                            $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(
+                                $('<p/>').html(item['message'])
+                            )
+                        )
+                    }
+                });
+
+                var rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input.uk-checkbox-item', rows).prop('checked', false).parent().parent().removeClass('uk-background-primary').attr({'style':''});
+
+                UIkit.modal.dialog('<div class="uk-body-custom"></div>');
+                document.appendTo('.uk-body-custom');
+                $('.uk-div').addClass('uk-hidden');
+                $('.uk-checkbox-all').prop('checked', false);
+
+            });
+
+        });
+    </script>
 
 {% endblock %}
