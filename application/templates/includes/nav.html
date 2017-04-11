@@ -6,6 +6,7 @@
 {#        <ul class="uk-nav-sub">#}
 {#            <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>#}
 {#            <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>#}
+{##}
 {#        </ul>#}
 {#    </li>#}
 {#    <li class="uk-nav-divider"></li>#}
@@ -22,6 +23,17 @@
 {#            {% endif %}#}
         </ul>
     </li>
+    {% if current_user.has_roles([('super_admin', 'claim')]) %}
+    <li class="uk-nav-divider"></li>
+    <li class="uk-parent">
+        <a href="#" class="waves-effect">Demandes Utilisateurs</a>
+        <ul class="uk-nav-sub">
+            {% if current_user.has_roles([('super_admin', 'claim')]) %}
+                <li><a href="{{ url_for('claim.index') }}" class="waves-effect">Reclamation</a></li>
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
     <li class="uk-nav-divider"></li>
 {#    <li class="uk-parent"><a href="#">Facturation</a></li>#}
 

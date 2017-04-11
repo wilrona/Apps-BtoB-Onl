@@ -71,3 +71,15 @@ class Categorie(db.Document):
     idcomapagnie = db.ListField(db.ReferenceField('Compagnie'))
     parent_idcategorie = db.ReferenceField('self')
     activated = db.BooleanField(default=True)
+
+
+class Claim(db.Document):
+    idcompagnie = db.ReferenceField('Compagnie')
+    iduser = db.ReferenceField('Users')
+    statut = db.IntField()
+    dateclaim = db.DateTimeField()
+    updateclaim = db.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        self.updateclaim = datetime.datetime.now()
+        return super(Claim, self).save(*args, **kwargs)

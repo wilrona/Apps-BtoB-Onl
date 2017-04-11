@@ -17,21 +17,11 @@
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
             <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
-                        <li><a {% if not current_user.has_roles([('super_admin', 'categorie')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('categorie.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'categorie')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('categorie.etat_activated') }}" id="activated" {% endif %}>Activer</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'categorie')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('categorie.etat_unactivated') }}" id="unactivated" {% endif %}>Désactiver</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'claim')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('claim.accepte') }}" id="accept" {% endif %}>Accepter</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'claim')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('claim.refuse') }}" id="refuse" {% endif %}>Refuser</a></li>
                 </ul>
             </div>
         </div>
-{% endblock %}
-
-
-
-{% block  button %}
-    {% if current_user.has_roles([('super_admin', 'categorie')], ['edit']) %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('categorie.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Categorie Principale</a>
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('categorie.edit', categorie='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Categorie</a>
-    {% endif %}
 {% endblock %}
 
 {% block layout_content %}
@@ -45,22 +35,20 @@
                         <thead>
                         <tr>
                             <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                            <th width="48%">Nom de la catégorie</th>
-                            <th width="48%">Categorie parente</th>
+                            <th width="30%">Entreprise</th>
+                            <th width="30%">Utilisateur</th>
+                            <th width="25%">Date demande</th>
+                            <th width="15%">Etat</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for data in datas %}
-                          <tr data-link="{{ url_for('categorie.view', categorie_id=data.id) }}">
+                          <tr data-link="{{ url_for('claim.view', claim_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
-                            <td>{{ data.name }}</td>
-                            <td>
-                                {% if data.parent_idcategorie %}
-                                    {{ data.parent_idcategorie.name }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
+                            <td>{{ data.idcompagnie.name }}</td>
+                            <td> {{ data.iduser.full_name() }}</td>
+                            <td> {{ data.dateclaim|format_date('%d/%m/%Y') }}</td>
+                            <td> {% if data.statut == 0 %} Accepté {% endif %} {% if data.statut == 1 %} En cours {% endif %}</td>
                           </tr>
                         {% endfor %}
 
@@ -84,7 +72,7 @@
         {% endif %}
     <script>
         // function de suppression des elements selectionnes sur le tableau
-        $('body').on('click', '#activated, #unactivated', function(e){
+        $('body').on('click', '#accept, #refuse', function(e){
             e.preventDefault();
             var url =  $(this).attr('href');
             $.ajax({
@@ -98,11 +86,11 @@
                 $.each(msg, function(i, item){
                     if(item['statut'] == 'OK'){
 
-{#                        for(var x=0; x<item['element'].length; x++){#}
-{#                            $input = $('input[value='+item['element'][x]+']');#}
-{#                            $parent = $input.parent().parent();#}
-{#                            table.row($parent).remove().draw( false );#}
-{#                        };#}
+                        for(var x=0; x<item['element'].length; x++){
+                            $input = $('input[value='+item['element'][x]+']');
+                            $parent = $input.parent().parent();
+                            table.row($parent).remove().draw( false );
+                        };
 
                         document.append(
                             $('<br/>')

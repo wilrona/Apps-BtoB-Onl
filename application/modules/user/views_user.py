@@ -158,7 +158,7 @@ def edit_password(user_id):
     password = id_generator(size=7)
     user.password = hashlib.sha256(password).hexdigest()
 
-    html = render_template('user/password_mail_reset.html', **locals())
+    html = render_template('template_mail/user/password_mail_reset.html', **locals())
 
     msg = Message()
     msg.recipients = [user.email]
@@ -295,7 +295,7 @@ def edit(user_id=None):
 
             token = generate_confirmation_token(data.email)
             confirm_url = url_for('user_param.confirm_email', user_id=data.id, token=token, _external=True)
-            html = render_template('user/activate.html', **locals())
+            html = render_template('template_mail/user/activate.html', **locals())
 
             msg = Message()
             msg.recipients = [data.email]
@@ -559,7 +559,7 @@ def confirm_email(user_id, token):
                 password = id_generator(size=7)
                 user.password = hashlib.sha256(password).hexdigest()
 
-                html = render_template('user/password_mail.html', **locals())
+                html = render_template('template_mail/user/password_mail.html', **locals())
 
                 msg = Message()
                 msg.recipients = [user.email]
@@ -596,7 +596,7 @@ def resend_confirmation():
     token = generate_confirmation_token(current_user.email)
     reset = True
     confirm_url = url_for('user_param.confirm_email', user_id=current_user.id, token=token, _external=True)
-    html = render_template('user/activate.html', **locals())
+    html = render_template('template_mail/user/activate.html', **locals())
 
     msg = Message()
     msg.recipients = [current_user.email]

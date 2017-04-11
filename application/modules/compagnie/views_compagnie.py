@@ -27,21 +27,6 @@ def view(client_id):
     form = FormClient(obj=data)
     form.id.data = client_id
 
-    form.idcategorie.data = [str(cat.id) for cat in data.idcategorie]
-
-    form.maincategorie.data = str(data.maincategorie.id)
-
-    form.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
-
-    for choice in data.idcategorie:
-        form.maincategorie.choices.append((str(choice.id), choice.name))
-
-    all = Categorie.objects(Q(activated=True) & Q(parent_idcategorie__ne=None))
-
-    form.idcategorie.choices = [('', '')]
-    for choice in all:
-        form.idcategorie.choices.append((str(choice.id), choice.name))
-
     return render_template('client/view.html', **locals())
 
 
