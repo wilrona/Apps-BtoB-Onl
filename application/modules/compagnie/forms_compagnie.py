@@ -26,6 +26,7 @@ class FormClient(wtf.Form):
     adresse = wtf.StringField(label='Adresse :')
     postal_code = wtf.StringField(label='Code postal :')
     repere = wtf.StringField(label='Reperage :')
+    region = wtf.StringField(label='Region :')
 
     email = wtf.StringField(label='Adresse Email :', validators=[validators.Required(message='Champ obligatoire'), validators.Email('Invalid Email'), unique_email_validator])
     phone = wtf.StringField(label='Numero de telephone :')

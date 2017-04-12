@@ -137,6 +137,7 @@ def refuse(relation_id=None):
 
         flash('Demande Refuse avec success', 'success')
         return redirect(url_for('claim.view', relation_id=relation_id))
+
     else:
         data = []
         element = []

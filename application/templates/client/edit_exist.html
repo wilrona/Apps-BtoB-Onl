@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block  button %}
+    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href="#"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> Enreg.</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('client.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% endif %}
+{% endblock %}
+
+
+{% block layout_content %}
+
+<div class="uk-container uk-margin">
+    {% include 'includes/flash_message.html' %}
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-1">
+            <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                <div class="uk-flex-center" uk-grid uk-margin>
+                    <div class="uk-inline">
+                        <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+                        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche une entreprise existante " id="searchbox_2">
+                    </div>
+                </div>
+                <div class="uk-overflow-auto">
+
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                        <thead>
+                        <tr>
+                            <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="100%">Nom de l'entreprise</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in datas %}
+                            <tr>
+                                <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                <td>{{ data.name() }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+    <script>
+        $('body').on('click', '#submit', function(e){
+            e.preventDefault();
+            var url = '{{ url_for('client.edit_special', partenaire=request.args.get('partenaire')) }}';
+            $.ajax({
+                method: "POST",
+                data: table_display.$('input.uk-checkbox-item').serialize(),
+                url: url
+            }).done(function( msg ) {
+
+                msg = $.parseJSON(msg);
+                if(msg['statut'] == 'OK'){
+                    window.location.replace(window.location.origin+"{{ url_for('client.index') }}").delay()
+                }else{
+                    UIkit.modal.alert('Aucune entreprise n\'a été selectionnée.').then(function() {
+
+                    });
+                }
+
+
+            })
+        });
+    </script>
+
+{% endblock %}

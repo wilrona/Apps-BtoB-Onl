@@ -26,7 +26,4 @@ class Company(db.Document):
 class Config_reference(db.Document):
     ref_fact = db.StringField()
     ref_devis = db.StringField()
-    ref_site = db.StringField()
-    taux_tva = db.FloatField()
     email_service = db.StringField()
-    min_pass_by_ecran = db.IntField()

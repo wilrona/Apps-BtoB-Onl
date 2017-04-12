@@ -5,7 +5,7 @@
 {% block title_header %} {{ title_page }} {% endblock %}
 
 {% block  button %}
-    <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy"></i></span>Enreg.</a>
+    <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</a>
     {% if package_id %}
         <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('package.view', package_id=package_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
     {% else %}

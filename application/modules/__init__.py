@@ -144,11 +144,14 @@ global_role = [
     {"module": "Configuration Generale", "valeur": "module_parametre",
      'role': [
          {'titre': 'Information de l\'entreprise ', 'valeur': 'entreprise', 'action': 1},
-         {'titre': 'Reference Generale ', 'valeur': 'general', 'action': 1},
+         {'titre': 'Parametre General ', 'valeur': 'general', 'action': 1},
          {'titre': 'Libelle des opportunites ', 'valeur': 'libelle_opportunite', 'action': 2},
          {'titre': 'Gestion des etapes ', 'valeur': 'etape', 'action': 2},
          {'titre': 'Gestion des activites ', 'valeur': 'activite', 'action': 2},
-         {'titre': 'Gestion des categories ', 'valeur': 'categorie', 'action': 2}
+         {'titre': 'Gestion des categories ', 'valeur': 'categorie', 'action': 2},
+         {'titre': 'Gestion des utilisateurs ', 'valeur': 'user', 'action': 2},
+         {'titre': 'Gestion des lignes de service ', 'valeur': 'service', 'action': 2},
+         {'titre': 'Gestion des packages ', 'valeur': 'package', 'action': 2},
      ]
     },
     {'module': 'Gestion des demandes', 'valeur': 'module_demande',
@@ -157,21 +160,14 @@ global_role = [
          {'titre': 'Traitement des demandes de relation ', 'valeur': 'relation', 'action': 1}
      ]
      },
-    {'module': 'Gestion des utilisateurs', 'valeur': 'module_user',
-     'role': [
-         {'titre': 'Traitement des utilisateurs ', 'valeur': 'user', 'action': 2},
-         # {'titre':'Definition des mot passe des utilisateurs', 'valeur':'user_pass', 'action': 1}
-     ]
-    },
     {'module': 'Gestion des ventes', 'valeur': 'module_vente',
      'role': [
          {'titre': 'Traitement des clients ', 'valeur': 'client', 'action': 2},
-         {'titre': 'Attribution partenaire ', 'valeur': 'client_partenaire', 'action': 0},
+         {'titre': 'Definir des clients partenaires ', 'valeur': 'client_partenaire', 'action': 0},
+         {'titre': 'Definir des clients institutions ', 'valeur': 'client_institution', 'action': 0},
          {'titre': 'Traitement des devis ', 'valeur': 'devis', 'action': 2},
          {'titre': 'Traitement des commande ', 'valeur': 'commande', 'action': 1},
-         {'titre': 'Traitement des packages ', 'valeur': 'package', 'action': 2},
          {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2}
-
      ]
     },
 ]

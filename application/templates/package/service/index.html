@@ -8,15 +8,13 @@
 {% block search %}
     <div class="uk-inline">
         <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
-        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche">
+        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox">
     </div>
 {% endblock %}
 
-
-
 {% block  button %}
-    {% if current_user.has_roles([('super_admin', 'tranche')], ['edit']) %}
-    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('tranche.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% if current_user.has_roles([('super_admin', 'service')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('service.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Services</a>
     {% endif %}
 {% endblock %}
 
@@ -27,25 +25,31 @@
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1">
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped"><table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
                         <thead>
                         <tr>
                             <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                            <th width="98%">Libelle de la tranche horaire</th>
+                            <th width="33%">Nom du service</th>
+                            <th width="33%">Fournit des packages</th>
+                            <th width="33%">Sigle</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for data in datas %}
-                          <tr data-link="{{ url_for('tranche.view', tranche_id=data.id) }}">
+                          <tr data-link="{{ url_for('service.view', service_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ data.name }}</td>
+                            <td>
+                                {% if data.package %}
+                                    Oui
+                                {% else %}
+                                    Non
+                                {% endif %}
+                            </td>
+                           <td>
+                               {{ data.sigle }}
+                           </td>
                           </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="2">
-                                    <h3 class="uk-text-center">Aucune information</h3>
-                                </td>
-                            </tr>
                         {% endfor %}
 
                         </tbody>

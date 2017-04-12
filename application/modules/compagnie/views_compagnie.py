@@ -381,6 +381,49 @@ def find_single_contact():
     return data
 
 
+@prefix.route('/edit/special', methods=['GET', 'POST'])
+@login_required
+@roles_required([('super_admin', 'client')], ['edit'])
+def edit_special():
+
+    title_page = 'Clients'
+
+    if request.args.get('partenaire'):
+        datas = Compagnie.objects(Q(partenaire=0) & Q(partenaire=2) & Q(activated=True))
+        title_page += '- Partenaires'
+    else:
+        datas = Compagnie.objects(Q(partenaire=0) & Q(activated=True))
+        title_page += '- Institutions'
+
+    if request.method == 'POST':
+
+        if request.form.getlist('item_id'):
+
+            for id_compagnie in request.form.getlist('item_id'):
+                current = Compagnie.objects.get(id=id_compagnie)
+                if request.args.get('partenaire'):
+                    current.partenaire = 1
+                    flash('Ajout des partenaires reussis avec success', 'success')
+                else:
+                    current.partenaire = 2
+                    flash('Ajout des partenaires reussis avec success', 'success')
+                current.save()
+
+            datas = json.dumps({
+                'statut': 'OK'
+            })
+
+        else:
+
+            datas = json.dumps({
+                'statut': 'NOK'
+            })
+
+        return datas
+
+    return render_template('client/edit_exist.html', **locals())
+
+
 
 
 

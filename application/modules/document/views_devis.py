@@ -6,8 +6,6 @@ from forms_doc import FormDevis
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie
 from ..opportunite.models_opportunite import Opportunite
-from ..site.models_site import Support, Horaire, Site, Secteur
-from ..site.models_site import Localisation, Ecran, Package
 from ..company.models_company import Config_reference, Company
 from ..workflow import *
 
@@ -941,7 +939,7 @@ def print_devis(devis_id):
     PROJECT_DIR = os.path.dirname(CURRENT_DIR)
     PROJECT_DIR = os.path.dirname(PROJECT_DIR)
 
-    image = PROJECT_DIR+'/static/images/logo.jpg'
+    image = PROJECT_DIR+'/static/images/logo.jpeg'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
@@ -992,7 +990,7 @@ def print2_devis(devis_id):
     PROJECT_DIR = os.path.dirname(CURRENT_DIR)
     PROJECT_DIR = os.path.dirname(PROJECT_DIR)
 
-    image = PROJECT_DIR+'/static/images/logo.jpg'
+    image = PROJECT_DIR+'/static/images/logo.jpeg'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'

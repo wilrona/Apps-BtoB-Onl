@@ -11,6 +11,7 @@ class Compagnie(db.Document):
     ville = db.StringField()
     quartier = db.StringField()
     repere = db.StringField()
+    region = db.StringField()
 
     latitude = db.StringField()
     longitude = db.StringField()
@@ -41,11 +42,9 @@ class Compagnie(db.Document):
 
     etat_souscription = db.IntField()
     uploaded = db.BooleanField()
-    partenaire = db.BooleanField()
+    partenaire = db.IntField(default=0) # 1 partenaire et institution; 2 institution
 
     iduser = db.ListField(db.ReferenceField('Users'))
-
-    owner = db.BooleanField(default=False)
     idagent = db.ReferenceField('Users')
 
     def save(self, *args, **kwargs):

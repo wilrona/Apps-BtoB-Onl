@@ -41,7 +41,7 @@ def login():
                 flash('Votre compte est desactive. Contactez l\'administrateur', 'danger')
                 return redirect(url_for('home.index'))
 
-            if user_login.user < 2:
+            if user_login.user == 2 or user_login.user == 0:
                 flash('Vous ne pouvez pas vous connecter sur cette interface', 'warning')
                 return redirect(url_for('user.logout'))
 

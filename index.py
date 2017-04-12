@@ -7,7 +7,7 @@ import os
 
 # Appending our Flask project files
 # sys.path.append('/home/marcelj35/webapps/gesacom/gesacom')
-sys.path.insert(1, os.path.join('/home/accentmedia/webapps/crm/crm', 'lib'))
+sys.path.insert(1, os.path.join('/home/yoomeeonl/webapps/crm/crm', 'lib'))
 # sys.path.insert(0, '/home/marcelj35/webapps/gesacom/gesacom')
 
 CURRENT_FILE = os.path.abspath(__file__)

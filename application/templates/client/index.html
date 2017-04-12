@@ -29,9 +29,10 @@
 {% endblock %}
 
 {% block  button %}
-{#    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}#}
-{#        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>#}
-{#    {% endif %}#}
+    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir un partenaire</a>
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir une institution</a>
+    {% endif %}
 {% endblock %}
 
 {% block layout_content %}

@@ -7,8 +7,6 @@ from forms_doc import FormDevis
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie
 from ..opportunite.models_opportunite import Opportunite
-from ..site.models_site import Support, Horaire, Site
-from ..site.models_site import Localisation, Ecran, Package
 from ..company.models_company import Config_reference
 
 prefix = Blueprint('commande', __name__)

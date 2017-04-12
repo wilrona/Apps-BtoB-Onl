@@ -75,21 +75,9 @@ def view():
         if request.form['ref_devis']:
             data.ref_devis = ref_devis
 
-        ref_site = request.form['ref_site']
-        if request.form['ref_site']:
-            data.ref_site = ref_site
-
-        tva = float(request.form['taux_tva'])
-        if request.form['taux_tva']:
-            data.taux_tva = tva
-
         email = request.form['email_service']
         if request.form['email_service']:
             data.email_service = email
-
-        min = request.form['min_pass_by_ecran']
-        if request.form['min_pass_by_ecran']:
-            data.min_pass_by_ecran = min
 
         data.save()
 

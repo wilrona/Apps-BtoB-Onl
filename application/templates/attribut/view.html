@@ -1,0 +1,42 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Attribut du service</h2>
+</div>
+
+    {{ form.hidden_tag() }}
+    <div class="uk-modal-body" uk-overflow-auto>
+        <div class="uk-margin">
+            {{ form.libelle.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+                {{ form.libelle(class_='uk-input uk-form-blank') }}
+                {% for message in form.libelle.errors %}
+                    <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="uk-margin">
+            {{ form.name.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+                {{ form.name(class_='uk-input  uk-form-blank') }}
+                {% for message in form.name.errors %}
+                    <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="uk-margin">
+            {{ form.desc.label(class_='uk-form-label uk-text-bold') }}
+            <div class="uk-form-controls">
+                {{ form.desc(class_='uk-textarea  uk-form-blank') }}
+                {% for message in form.desc.errors %}
+                    <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button waves-effect uk-button-danger uk-modal-close uk-button-small" type="button"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Fermer</button>
+    </div>

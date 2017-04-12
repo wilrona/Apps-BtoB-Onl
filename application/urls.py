@@ -9,7 +9,7 @@ from flask import render_template
 from application import app
 
 # from application.modules import home, dashboard
-from application.modules import home, dashboard, compagnie, user, role, company, opportunite, document
+from application.modules import home, dashboard, compagnie, user, role, company, opportunite, document, package, paiement
 
 
 ## Error handlers
