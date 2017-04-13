@@ -102,6 +102,17 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
+                                        {{ form.region.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.region(class_='uk-input uk-form-blank') }}
+                                            {% for message in form.region.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
                                         {{ form.ville.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
                                             {{ form.ville(class_='uk-input uk-form-blank') }}

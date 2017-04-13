@@ -97,6 +97,7 @@ def edit(client_id=None):
         data.adresse = form.adresse.data
         data.postal_code = form.postal_code.data
         data.repere = form.repere.data
+        data.region = form.region.data
 
         data.email = form.email.data
         data.phone = form.phone.data
