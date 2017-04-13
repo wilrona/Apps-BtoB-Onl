@@ -33,5 +33,5 @@ class Testing(Config):
 
 
 class Production(Config):
-    DEBUG = False
+    DEBUG = True
     CSRF_ENABLED = True

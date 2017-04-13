@@ -67,7 +67,7 @@ class Categorie(db.Document):
     slug = db.StringField()
     url_image = db.StringField()
     icone = db.StringField()
-    idcomapagnie = db.ListField(db.ReferenceField('Compagnie'))
+    compagnie = db.ListField(db.ReferenceField('Compagnie'))
     parent_idcategorie = db.ReferenceField('self')
     activated = db.BooleanField(default=True)
 

@@ -29,9 +29,13 @@
 {% endblock %}
 
 {% block  button %}
-    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir un partenaire</a>
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir une institution</a>
+    {% if news != '1' %}
+        {% if current_user.has_roles([('super_admin', 'client_partenaire')]) %}
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir un partenaire</a>
+        {% endif %}
+        {% if current_user.has_roles([('super_admin', 'client_institution')]) %}
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir une institution</a>
+        {% endif %}
     {% endif %}
 {% endblock %}
 

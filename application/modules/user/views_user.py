@@ -41,7 +41,7 @@ def login():
                 flash('Votre compte est desactive. Contactez l\'administrateur', 'danger')
                 return redirect(url_for('home.index'))
 
-            if user_login.user == 2 or user_login.user == 0:
+            if user_login.user == 1 or user_login.user == 0:
                 flash('Vous ne pouvez pas vous connecter sur cette interface', 'warning')
                 return redirect(url_for('user.logout'))
 
@@ -267,9 +267,11 @@ def edit(user_id=None):
         data = Users()
         form = FormUser()
         if request.args.get('field_soldier'):
-            form.user.data = request.args.get('field_soldier')
+            form.user.data = 1
+        else:
+            form.user.data = 2
 
-    if form.validate_on_submit() and request.method == 'POST' and current_user.has_roles([('super_admin', 'user')], ['edit']) and current_user.id != data:
+    if form.validate_on_submit() and request.method == 'POST' and current_user.has_roles([('super_admin', 'user')], ['edit']) and current_user.id != data.id:
 
         data.first_name = form.first_name.data
         data.last_name = form.last_name.data
@@ -280,14 +282,15 @@ def edit(user_id=None):
         if not user_id:
             data.email = form.email.data
             data.user = int(form.user.data)
-            count_user = Users.objects(user=True).count()
+            count_user = Users.objects(user__gte=1).count()
             data.ref = function.reference(count=count_user+1, caractere=4, user=True, refuser=None)
 
         data.fonction = form.fonction.data
         data.phone = form.phone.data
         data.note = form.note.data
 
-        data.activated = False
+        if not user_id:
+            data.activated = False
 
         data = data.save()
 
@@ -304,6 +307,8 @@ def edit(user_id=None):
 
             msg.html = html
             mail.send(msg)
+
+            flash('Un mail de confirmation a ete envoye dans l\'adresse email fournit lors de la creation.', 'success')
 
         if user_id:
             form_attrib = request.form.getlist('attrib')
@@ -353,7 +358,7 @@ def edit(user_id=None):
         if request.form['nouveau'] == '1':
             return redirect(url_for('user_param.edit'))
         else:
-            flash('Un mail de confirmation a ete envoye dans l\'adresse email fournit lors de la creation.', 'success')
+
             return redirect(url_for('user_param.view', user_id=data.id))
 
     return render_template('user/edit.html', **locals())

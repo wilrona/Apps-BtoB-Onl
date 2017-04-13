@@ -28,7 +28,7 @@ class Users(db.Document):
 
     logged = db.BooleanField()
     lastLogin = db.DateTimeField()
-    user = db.IntField()
+    user = db.IntField() # 0 simple user; 1 field soldier; 2 administrateur/cam
     note = db.StringField()
 
     roles = db.ListField(db.EmbeddedDocumentField(UserRole))

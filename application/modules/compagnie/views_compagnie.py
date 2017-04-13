@@ -130,15 +130,15 @@ def edit(client_id=None):
 
             the_cat = Categorie.objects.get(id=cat_id)
 
-            if data not in the_cat.idcomapagnie:
-                the_cat.idcomapagnie.append(data)
+            if data not in the_cat.compagnie:
+                the_cat.compagnie.append(data)
                 the_cat.save()
 
         ## Enlever les informations de l'entreprise dans les anciennes categories qui ne l'appartienne
         for old_cat in old_categorie:
             if old_cat not in data.idcategorie:
                 old_c = Categorie.objects(id=old_cat.id)
-                old_c.update_one(pull__idcomapagnie=data)
+                old_c.update_one(pull__compagnie=data)
 
         flash('Enregistement effectue avec succes', 'success')
         return redirect(url_for('client.view', client_id=data.id, news=request.args.get('news')))
@@ -389,10 +389,10 @@ def edit_special():
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
-        datas = Compagnie.objects(Q(partenaire=0) & Q(partenaire=2) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire=None) | Q(partenaire=2) & Q(activated=True))
         title_page += '- Partenaires'
     else:
-        datas = Compagnie.objects(Q(partenaire=0) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire=None) & Q(activated=True))
         title_page += '- Institutions'
 
     if request.method == 'POST':
@@ -422,6 +422,21 @@ def edit_special():
         return datas
 
     return render_template('client/edit_exist.html', **locals())
+
+
+@prefix.route('/all_activated')
+def all_activated():
+
+    compagnie = Compagnie.objects(uploaded=True)
+
+    count = 0
+    for com in compagnie:
+        if not com.partenaire:
+            com.partenaire = int(0)
+            com.save()
+            count += 1
+
+    return str(count)
 
 
 

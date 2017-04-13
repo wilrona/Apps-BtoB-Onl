@@ -258,3 +258,12 @@ def etat_unactivated():
     data = json.dumps(data)
 
     return data
+
+
+@prefix_categorie.route('/all_activated')
+def all_activated():
+
+    for cat in Categorie.objects():
+        cat.save()
+
+    return 'True'

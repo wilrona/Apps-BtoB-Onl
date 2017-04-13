@@ -45,10 +45,10 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_
 APP_STATIC = os.path.join(APP_ROOT, 'static')
 
 app.config['MONGODB_SETTINGS'] = {
-    # 'db': 'crm_yoomee'
-    'db': 'icicmtest',
-    'host': 'localhost',
-    'port': 28569
+    'db': 'crm_yoomee'
+    # 'db': 'icicmtest',
+    # 'host': 'localhost',
+    # 'port': 28569
 }
 
 # This is the path to the upload directory
