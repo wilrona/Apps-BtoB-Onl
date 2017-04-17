@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+{% block  button %}
+    <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</a>
+    {% if moyen_paiement_id %}
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('moyen_paiement.view', moyen_paiement_id=moyen_paiement_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
+    {% else %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et Nouveau</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('moyen_paiement.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
+    {% endif %}
+{% endblock %}
+
+{% block  layout_content %}
+<div class="uk-container uk-margin">
+            {% include 'includes/flash_message.html' %}
+            <div class="uk-grid-small" uk-grid>
+                <div class="uk-width-1-1">
+                    <form method="post" id="formulaire" enctype="multipart/form-data">
+                        <div class="uk-card uk-card-default uk-card-small uk-card-body" >
+
+                            {{ form.hidden_tag() }}
+                            <input type="hidden" name="nouveau" value="0" id="nouveau"/>
+                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.name.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.name(class_='uk-input required') }}
+                                            {% for message in form.name.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
+                                        {{ form.sigle.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form.sigle(class_='uk-input required') }}
+                                            {% for message in form.sigle.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="uk-width-1-2@s">
+
+                                    {{ form.logo.label(class_='uk-form-label uk-text-bold') }}
+
+                                    <div class="test-upload uk-placeholder uk-text-center">
+                                        <div uk-form-custom class="uk-margin-bottom">
+                                            <span uk-icon="icon: cloud-upload"></span>
+                                            <input type="file" name="file" id="file_upload">
+                                            <span class="uk-link">Cliquez pour selectionnez l'image</span>
+                                        </div>
+                                        <br/>
+                                        <img src="{% if form.logo.data %}{{ form.logo.data }}{% endif %}" id="image_upload" alt="" class="{% if not form.logo.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+     <script>
+        $('#submit').on('click', function(e){
+            e.preventDefault();
+            $('#formulaire').submit();
+        });
+        $('#submit_nouveau').on('click', function(e){
+            e.preventDefault();
+            $('#nouveau').val(1);
+            $('#formulaire').submit();
+        });
+
+        $("#file_upload").on('change', function(){
+            readURL(this);
+        });
+
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image_upload').attr('src', e.target.result).removeClass('uk-hidden');
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
+{% endblock %}

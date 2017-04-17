@@ -145,7 +145,7 @@ def up(package_id):
     current_etape = Package.objects.get(id=package_id)
 
     prev = current_etape.level - 1
-    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).first()
+    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
     if precedent:
         precedent.level = current_etape.level
         precedent.save()
@@ -163,7 +163,7 @@ def down(package_id):
     current_etape = Package.objects.get(id=package_id)
 
     prev = current_etape.level + 1
-    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).first()
+    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
     if precedent:
         precedent.level = current_etape.level
         precedent.save()

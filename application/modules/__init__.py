@@ -152,6 +152,7 @@ global_role = [
          {'titre': 'Gestion des utilisateurs ', 'valeur': 'user', 'action': 2},
          {'titre': 'Gestion des lignes de service ', 'valeur': 'service', 'action': 2},
          {'titre': 'Gestion des packages ', 'valeur': 'package', 'action': 2},
+         {'titre': 'Gestion des paiements ', 'valeur': 'paiement', 'action': 2},
      ]
     },
     {'module': 'Gestion des demandes', 'valeur': 'module_demande',
