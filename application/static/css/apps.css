@@ -571,3 +571,7 @@ html, div *{
 
 .uk-actives.uk-button-danger-active:hover span{ display: none;}
 .uk-actives.uk-button-danger-active:hover:before{content:'Désactivé'}
+
+.uk-textarea {
+    height: 200px !important;
+}

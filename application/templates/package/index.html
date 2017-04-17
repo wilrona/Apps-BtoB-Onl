@@ -42,11 +42,12 @@
                         <thead>
                         <tr>
                             <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                            <th width="25%">Nom</th>
+                            <th width="30%">Nom</th>
                             <th width="10%">Durée/Qte</th>
                             <th width="25%">Prix appliquée</th>
-                            <th width="20%">Type</th>
-                            <th width="20%">Ligne service</th>
+                            <th width="25%">Type</th>
+                            <th width="5%">Level</th>
+                            <th width="5%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,10 +55,23 @@
                           <tr data-link="{{ url_for('package.view', package_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ data.name }}</td>
-                            <td>{{ data.passage }}</td>
-                            <td>{% if data.prix_outdoor %}{{ data.prix_outdoor|format_price() }} {% else %} 0 {% endif %}</td>
-                            <td>{% if data.prix_indoor %}{{ data.prix_indoor|format_price() }} {% else %} 0 {% endif %}</td>
-                            <td>{% if data.prix_indoor %}{{ data.prix_indoor|format_price() }} {% else %} 0 {% endif %}</td>
+                            <td>{{ data.duree }}</td>
+                            <td>{% if data.promo %}{{ data.prix_promo|format_price() }} {% else %} {{ data.prix|format_price() }} {% endif %}</td>
+                            <td>{% if data.is_package %}
+                                    Package
+                                {% else %}
+                                    Service
+                                {% endif %}
+                                <br>
+                                {{ data.idligneService }}
+                            </td>
+                            <td>{{ data.level }}</td>
+                            <td class="uk-flex uk-flex-column">
+                                  {% if current_user.has_roles([('super_admin', 'package')], ['edit']) %}
+                                      <div><a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a></div>
+                                      <div><a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a></div>
+                                  {% endif %}
+                            </td>
 
                           </tr>
                         {% endfor %}

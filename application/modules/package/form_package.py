@@ -13,13 +13,15 @@ def valid_promo(form, field):
 
 
 class FormPackage(wtf.Form):
+    id = wtf.HiddenField()
     name = wtf.StringField(label='Nom du package :', validators=[validators.Required(message='Champ obligatoire')])
     description = wtf.TextAreaField(label='Description :')
-    duree = wtf.StringField(label='Duree/Periode :', widget=NumberInput, validators=[validators.Required(message='Champ obligatoire')])
-    prix = wtf.FloatField(label='Prix :', validators=[validators.Required(message='Champ obligatoire')])
-    prix_promo = wtf.FloatField(label='Prix promotionnel', validators=[valid_promo])
+    duree = wtf.StringField(label='Duree/Periode :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
+    prix = wtf.StringField(label='Prix :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
+    prix_promo = wtf.StringField(label='Prix promotionnel :', widget=NumberInput(), validators=[valid_promo])
     promo = wtf.BooleanField()
     sale = wtf.BooleanField()
+    idligneService = wtf.SelectField(label='Ligne de service :', coerce=str, validators=[validators.Required('Information Obligatoire')])
 
 
 def unique_code_validator(form, field):

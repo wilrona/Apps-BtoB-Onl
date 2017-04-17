@@ -74,7 +74,7 @@
                     <li><a href="{{ url_for('service.index') }}" class="waves-effect">Ligne de service</a></li>
                 {% endif %}
                 {% if current_user.has_roles([('super_admin', 'package')]) %}
-                    <li><a href="{{ url_for('package.index') }}" class="waves-effect">Packages/Services</a></li>
+                    <li><a href="{{ url_for('package.index') }}" class="waves-effect">Packages/Offres</a></li>
                 {% endif %}
             {% endif %}
             {% if current_user.has_roles([('super_admin', 'etape', 'activite', 'libelle_opportunite')]) %}
