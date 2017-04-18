@@ -1,15 +1,15 @@
 <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
     <li><a href="{{ url_for('dashboard.index') }}" class="waves-effect">Tableau de bord</a></li>
     <li class="uk-nav-divider"></li>
-{#    <li class="uk-parent">#}
-{#        <a href="#" class="waves-effect">Relance</a>#}
-{#        <ul class="uk-nav-sub">#}
-{#            <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>#}
-{#            <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>#}
-{##}
-{#        </ul>#}
-{#    </li>#}
-{#    <li class="uk-nav-divider"></li>#}
+    <li class="uk-parent">
+        <a href="#" class="waves-effect">Relance</a>
+        <ul class="uk-nav-sub">
+            <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>
+            <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>
+
+        </ul>
+    </li>
+    <li class="uk-nav-divider"></li>
 {#    <li><a href="#">Calendrier</a></li>#}
 {#    <li class="uk-nav-divider"></li>#}
     <li class="uk-parent">
@@ -18,9 +18,6 @@
 {#            <li><a href="{{ url_for('devis.index') }}" class="waves-effect">Devis</a></li>#}
 {#            <li><a href="{{ url_for('commande.index') }}" class="waves-effect">Bon de commande</a></li>#}
             <li><a href="{{ url_for('client.index') }}" class="waves-effect">Clients</a></li>
-{#            {% if current_user.has_roles([('super_admin', 'package')]) %}#}
-{#            <li><a href="{{ url_for('package.index') }}" class="waves-effect">Packages</a></li>#}
-{#            {% endif %}#}
         </ul>
     </li>
     {% if current_user.has_roles([('super_admin', 'claim', 'relation')]) or current_user.has_roles([('super_admin', 'client')], ['edit']) %}

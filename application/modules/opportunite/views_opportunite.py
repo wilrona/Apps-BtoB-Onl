@@ -6,7 +6,8 @@ from models_opportunite import Opportunite, Etape, Suivie, Activite, Libelle_Opp
 from ..compagnie.forms_compagnie import FormClient
 from ..company.models_company import Config_reference
 from ..document.models_doc import Document
-from ..site.models_site import Secteur
+from ..compagnie.models_compagnie import Compagnie, Categorie
+from ..user.models_user import Users
 from ..user.forms_user import FormUser
 from ...modules import *
 from ..workflow import ckeck_etape
@@ -41,41 +42,39 @@ def view(opportunite_id):
 
     form = FormOpportunite(obj=data)
 
-    customer = Client.objects.get(id=data.client_id.id)
-    form_client = FormClient(prefix="client", obj=customer)
-    if customer.secteur_id:
-        form_client.secteur_id.data = str(customer.secteur_id.id)
+    customer = Compagnie.objects.get(id=data.client_id.id)
+    form_client = FormClient(obj=customer)
+
+    form_client.idcategorie.data = [str(cat.id) for cat in customer.idcategorie]
+    form_client.maincategorie.data = str(customer.maincategorie.id)
 
     contact = Users.objects.get(id=data.contact_id.id)
     form_contact = FormUser(obj=contact)
 
-    if contact.civilite:
-        form_contact.civilite.data = str(contact.civilite.id)
     form.vendeur_id.data = str(data.vendeur_id.id)
 
     form_client.id.data = str(customer.id)
     form.id.data = str(opportunite_id)
 
-    all = Users.objects(Q(user=True) & Q(is_enabled=True))
+    devis_count = Document.objects(Q(opportunite_id=data) & Q(devisDoc=True)).count()
+
+    from ..user.models_user import Roles
+    admin_role = Roles.objects(valeur='super_admin').first()
+
+    if current_user.has_roles(['super_admin']):
+        all_vendeur = Users.objects(Q(user__gt=0) & Q(activated=True))
+    else:
+        all_vendeur = Users.objects(Q(user__gt=0) & Q(activated=True) & Q(roles__role_id__ne=admin_role))
+
     form.vendeur_id.choices = [('', ' ')]
-    for choice in all:
+    for choice in all_vendeur:
         form.vendeur_id.choices.append((str(choice.id), choice.first_name+' '+choice.last_name))
-
-    all = Civilite.objects(actif=True)
-    form_contact.civilite.choices = [('', ' ')]
-    for choice in all:
-        form_contact.civilite.choices.append((str(choice.id), choice.name))
-
-    all = Secteur.objects(actif=True)
-    form_client.secteur_id.choices = [('', ' ')]
-    for choice in all:
-        form_client.secteur_id.choices.append((str(choice.id), choice.name))
 
     etape_list = Etape.objects(actif=True).order_by('order')
 
     last_etape = Etape.objects(actif=True).order_by('-order').first()
 
-    client_list = Client.objects(Q(client=True) & Q(actif=True))
+    client_list = Compagnie.objects(activated=True)
 
     devis_count = Document.objects(Q(opportunite_id=data) & Q(devisDoc=True)).count()
 
@@ -92,7 +91,7 @@ def edit(opportunite_id=None):
     if opportunite_id:
         data = Opportunite.objects.get(id=opportunite_id)
 
-        if data.status == global_etape[3]:
+        if data.etape == global_etape[3]:
             return redirect(url_for('opportunite.view', opportunite_id=opportunite_id))
 
         if not current_user.has_roles([('super_admin', 'opportunite')], ['edit']) and data.vendeur_id.id != current_user.id:
@@ -100,27 +99,33 @@ def edit(opportunite_id=None):
 
         form = FormOpportunite(obj=data)
 
-        customer = Client.objects.get(id=data.client_id.id)
+        customer = Compagnie.objects.get(id=data.client_id.id)
         form_client = FormClient(prefix="client", obj=customer)
-        if customer.secteur_id:
-            form_client.secteur_id.data = str(customer.secteur_id.id)
+
+        form_client.idcategorie.data = [str(cat.id) for cat in customer.idcategorie]
+        form_client.maincategorie.data = str(customer.maincategorie.id)
+
+        if request.method == 'GET':
+            form_client.maincategorie.choices = [('', 'Faite le choi de la categorie principale')]
+            for choice in customer.idcategorie:
+                form_client.maincategorie.choices.append((str(choice.id), choice.name))
 
         contact = Users.objects.get(id=data.contact_id.id)
         form_contact = FormUser(obj=contact)
 
-        if contact.civilite:
-            form_contact.civilite.data = str(contact.civilite.id)
         form.vendeur_id.data = str(data.vendeur_id.id)
 
         form_client.id.data = str(customer.id)
         form.id.data = str(opportunite_id)
 
         devis_count = Document.objects(Q(opportunite_id=data) & Q(devisDoc=True)).count()
+
+        flash('Vous ne pouvez plus modifier les informations du client et de contact du client. ', 'warning')
     else:
         data = Opportunite()
         form = FormOpportunite()
 
-        customer = Client()
+        customer = Compagnie()
         form_client = FormClient(prefix="client")
 
         contact = Users()
@@ -132,80 +137,75 @@ def edit(opportunite_id=None):
         if 'client_exist' in request.form and request.form['client_exist']:
             form_client.id.data = request.form['client_exist']
 
+    from ..user.models_user import Roles
+    admin_role = Roles.objects(valeur='super_admin').first()
+
+    if current_user.has_roles(['super_admin']):
+        all_vendeur = Users.objects(Q(user__gt=0) & Q(activated=True))
+    else:
+        all_vendeur = Users.objects(Q(user__gt=0) & Q(activated=True) & Q(roles__role_id__ne=admin_role))
+
+    form.vendeur_id.choices = [('', ' ')]
+    for choice in all_vendeur:
+        form.vendeur_id.choices.append((str(choice.id), choice.first_name+' '+choice.last_name))
+
+    all = Categorie.objects(Q(activated=True) & Q(parent_idcategorie__ne=None))
+
+    form_client.idcategorie.choices = [('', '')]
+    for choice in all:
+        form_client.idcategorie.choices.append((str(choice.id), choice.name))
+
+    if not opportunite_id:
+        form_client.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
+
+        for idchoice in request.form.getlist('client-idcategorie'):
+            choice = Categorie.objects.get(id=idchoice)
+            form_client.maincategorie.choices.append((str(choice.id), choice.name))
+
+    etape_list = Etape.objects(actif=True).order_by('order')
+    client_list = Compagnie.objects(activated=True)
+
+    libelle = []
+    if not opportunite_id:
+        libelle = Libelle_Opportunite.objects(actif=True)
+
     current_client = None
-    contact_list = []
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
 
-        current_client = Client.objects.get(id=request.form['client_exist'])
+        current_client = Compagnie.objects.get(id=request.form['client_exist'])
 
         form_client.name.data = current_client.name
         form_client.email.data = current_client.email
-        form_client.adress.data = current_client.adress
-        form_client.bp.data = current_client.bp
-        form_client.numcontr.data = current_client.numcontr
         form_client.raison.data = current_client.raison
         form_client.phone.data = current_client.phone
-        form_client.rue.data = current_client.rue
-        form_client.registcom.data = current_client.registcom
         form_client.ville.data = current_client.ville
         form_client.quartier.data = current_client.quartier
-        form_client.urlsite.data = current_client.urlsite
-        form_client.secteur_id.data = str(current_client.secteur_id.id)
 
-        contact_list = [contact.user_id for contact in current_client.contact]
+        form_client.idcategorie.data = [str(cat.id) for cat in current_client.idcategorie]
+        form_client.maincategorie.data = str(current_client.maincategorie.id)
 
     current_contact = None
     if request.method == 'POST' and 'contact_exist' in request.form and request.form['contact_exist']:
 
         current_contact = Users.objects.get(id=request.form['contact_exist'])
 
-        if current_contact.civilite:
-            form_contact.civilite.data = str(current_contact.civilite.id)
         form_contact.id.data = current_contact.id
         form_contact.email.data = current_contact.email
         form_contact.first_name.data = current_contact.first_name
         form_contact.last_name.data = current_contact.last_name
         form_contact.fonction.data = current_contact.fonction
-        form_contact.mobile.data = current_contact.mobile
-        form_contact.telephone.data = current_contact.telephone
-
-    from ..user.models_user import Roles
-    admin_role = Roles.objects(valeur='super_admin').first()
-
-    all = Users.objects(Q(user=True) & Q(is_enabled=True) & Q(roles__role_id__ne=admin_role))
-    form.vendeur_id.choices = [('', ' ')]
-    for choice in all:
-        form.vendeur_id.choices.append((str(choice.id), choice.first_name+' '+choice.last_name))
-
-    all = Civilite.objects(actif=True)
-    form_contact.civilite.choices = [('', ' ')]
-    for choice in all:
-        form_contact.civilite.choices.append((str(choice.id), choice.name))
-
-    all = Secteur.objects(actif=True)
-    form_client.secteur_id.choices = [('', ' ')]
-    for choice in all:
-        form_client.secteur_id.choices.append((str(choice.id), choice.name))
-
-    etape_list = Etape.objects(actif=True).order_by('order')
-    client_list = Client.objects(Q(client=True) & Q(actif=True))
-
-    libelle = []
-    if not opportunite_id:
-        libelle = Libelle_Opportunite.objects(actif=True)
+        form_contact.phone.data = current_contact.phone
 
     if form.validate_on_submit() and form_client.validate_on_submit() and form_contact.validate_on_submit():
 
         if not opportunite_id:
             data.name = form.name.data
 
-
-
         if data.vendeur_id and data.vendeur_id.id != current_user.id:
-            vendeur = Users.objects(Q(id=form.vendeur_id.data) & Q(roles__role_id__ne=admin_role)).get()
+            vendeur = Users.objects.get(id=form.vendeur_id.data)
             data.vendeur_id = vendeur
         else:
-            vendeur = Users.objects.get(Q(id=current_user.id) & Q(roles__role_id__ne=admin_role)).get()
+            vendeur = Users.objects.get(id=current_user.id)
             data.vendeur_id = vendeur
 
         data.note = form.note.data
@@ -214,31 +214,34 @@ def edit(opportunite_id=None):
             data.client_id = current_client
         else:
             if not opportunite_id:
-                customer.name = form_client.name.data
-                customer.email = form_client.email.data
-                customer.adress = form_client.adress.data
-                customer.bp = form_client.bp.data
-                customer.client = True
-                customer.numcontr = form_client.numcontr.data
-                customer.actif = True
                 customer.raison = form_client.raison.data
-                customer.phone = form_client.phone.data
-                customer.rue = form_client.rue.data
-                customer.registcom = form_client.registcom.data
+                customer.name = form_client.name.data
                 customer.ville = form_client.ville.data
                 customer.quartier = form_client.quartier.data
-                customer.urlsite = form_client.urlsite.data
 
-                secteur = Secteur.objects().get(id=form_client.secteur_id.data)
-                customer.secteur_id = secteur
+                customer.email = form_client.email.data
+                customer.phone = form_client.phone.data
+                customer.activated = False
 
-                the_contact = CompagniUser()
-                the_contact.user_id = contact
+                customer.idcategorie = []
 
-                customer.contact.append(the_contact)
+                for cat_id in request.form.getlist('client-idcategorie'):
+                    the_cat = Categorie.objects.get(id=cat_id)
+                    customer.idcategorie.append(the_cat)
+
+                principale = Categorie.objects.get(id=form_client.maincategorie.data)
+                customer.maincategorie = principale
+
                 customer = customer.save()
 
                 data.client_id = customer
+
+                ## verifier que les nouvelles categories ont les informations de l'entreprise cours
+                for cat_id in request.form.getlist('client-idcategorie'):
+                    the_cat = Categorie.objects.get(id=cat_id)
+                    if customer not in the_cat.compagnie:
+                        the_cat.compagnie.append(customer)
+                        the_cat.save()
 
         if 'contact_exist' in request.form and request.form['contact_exist']:
             data.contact_id = current_contact
@@ -246,30 +249,25 @@ def edit(opportunite_id=None):
         else:
             if not opportunite_id:
 
-                if form_contact.civilite.data:
-                    civil = Civilite.objects.get(id=form_contact.civilite.data)
-                    contact.civilite = civil
                 contact.email = form_contact.email.data
                 contact.first_name = form_contact.first_name.data
                 contact.last_name = form_contact.last_name.data
                 if form_contact.fonction.data:
                     contact.fonction = form_contact.fonction.data
-                contact.mobile = form_contact.mobile.data
-                contact.telephone = form_contact.telephone.data
+                contact.phone = form_contact.phone.data
+                contact.activated = False
+                contact.user = 0
                 contact = contact.save()
 
                 data.contact_id = contact
                 data.etape = global_etape[0]
 
-                if contact not in contact_list:
-
-                    saved_client = Client.objects().get(id=data.client_id.id)
-
-                    the_contact = CompagniUser()
-                    the_contact.user_id = contact
-
-                    saved_client.contact.append(the_contact)
-                    saved_client.save()
+                # Sauvegarde du contact dans l'entreprise en cours.
+                contact_compagnie = data.client_id.idcontact
+                if contact not in contact_compagnie:
+                    cli = Compagnie.objects.get(id=data.client_id.id)
+                    cli.idcontact.append(contact)
+                    cli.save()
 
         data = data.save()
 

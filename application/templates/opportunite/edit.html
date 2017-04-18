@@ -142,12 +142,34 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="uk-width-1-2@s to-hide">
+                                    <div class="uk-margin">
+                                        {{ form_client.idcategorie.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form_client.idcategorie(class_='uk-select selected required') }}
+                                            {% for message in form_client.idcategorie.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s to-hide">
+                                    <div class="uk-margin">
+                                        {{ form_client.maincategorie.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form_client.maincategorie(class_='uk-select selected required') }}
+                                            {% for message in form_client.maincategorie.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
-                                        {{ form_client.secteur_id.label(class_='uk-form-label uk-text-bold') }}
+                                        {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_client.secteur_id(class_='uk-select selected required') }}
-                                            {% for message in form_client.secteur_id.errors %}
+                                            {{ form_client.email(class_='uk-input required') }}
+                                            {% for message in form_client.email.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
                                         </div>
@@ -155,27 +177,16 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
-                                                {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.email(class_='uk-input required') }}
-                                                    {% for message in form_client.email.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                            <div class="uk-margin">
                                                 {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.phone(class_='uk-input required') }}
+                                                    {{ form_client.phone(class_='uk-input') }}
                                                     {% for message in form_client.phone.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                 </div>
-                                <div class="uk-width-1-2@s to-hide">
+                                <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
                                                 {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
@@ -186,18 +197,7 @@
                                                 </div>
                                             </div>
                                 </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.urlsite.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.urlsite(class_='uk-input') }}
-                                                    {% for message in form_client.urlsite.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
+                                <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
                                                 {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
@@ -207,62 +207,6 @@
                                                     {% endfor %}
                                                 </div>
                                             </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.bp.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.bp(class_='uk-input') }}
-                                                    {% for message in form_client.bp.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.rue.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.rue(class_='uk-input') }}
-                                                    {% for message in form_client.rue.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.adress.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.adress(class_='uk-input') }}
-                                                    {% for message in form_client.adress.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.numcontr.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.numcontr(class_='uk-input') }}
-                                                    {% for message in form_client.numcontr.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.registcom.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.registcom(class_='uk-input') }}
-                                                    {% for message in form_client.registcom.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-
                                 </div>
 
                                 <div class="uk-width-1-1@s uk-margin uk-margin-bottom uk-margin-top">
@@ -283,20 +227,7 @@
                                     </div>
                                 </div>
                             {% endif %}
-                                <div class="uk-width-1-3@s">
-
-
-                                    <div class="uk-margin">
-                                        {{ form_contact.civilite.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_contact.civilite(class_='uk-select selected') }}
-                                            {% for message in form_contact.civilite.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
@@ -307,7 +238,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form_contact.first_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
@@ -331,32 +262,21 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
+                                        {{ form_contact.phone.label(class_='uk-form-label uk-text-bold') }}
+                                        <div class="uk-form-controls">
+                                            {{ form_contact.phone(class_='uk-input') }}
+                                            {% for message in form_contact.phone.errors %}
+                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <div class="uk-margin">
                                         {{ form_contact.fonction.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
                                             {{ form_contact.fonction(class_='uk-input') }}
                                             {% for message in form_contact.fonction.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form_contact.telephone.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_contact.telephone(class_='uk-input required') }}
-                                            {% for message in form_contact.telephone.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form_contact.mobile.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_contact.mobile(class_='uk-input') }}
-                                            {% for message in form_contact.mobile.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
                                         </div>
@@ -421,7 +341,36 @@
             $('#formulaire').submit();
         });
 
-     $('#client_exist').on('change', function(e){
+        $('#client-idcategorie').on('change', function(e) {
+            e.preventDefault();
+
+            var idcategorie = $(this).val();
+            var datas = {};
+            datas['data'] = idcategorie;
+
+            var url = '{{ url_for('client.reload_categorie') }}';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(datas),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: "json",
+                success: function (data) {
+                    if(data['statut'] == 'OK'){
+                        var count = 0;
+                        $('#client-maincategorie option:gt(0)').remove();
+
+                        $.each(data['data'], function(index, value) {
+                            count++;
+                            $("#client-maincategorie").append('<option value="'+ value['id'] +'">'+ value['name']+'</option>');
+                        });
+                    }
+                }
+            });
+
+        });
+
+        $('#client_exist').on('change', function(e){
             e.preventDefault();
 
             var client_exist = $('#client_exist').val();
@@ -438,12 +387,13 @@
                     success: function(data) {
                         if(data['statut'] === 'OK'){
                             $('#client-id').val(data['id']);
-                            $('#client-name').val(data['name']).addClass('uk-form-blank');
-                            $('#client-email').val(data['email']).addClass('uk-form-blank');
+                            $('#client-name').val(data['name']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-email').val(data['email']).addClass('uk-form-blank').removeClass('required');
                             $('#client-phone').val(data['phone']).addClass('uk-form-blank');
+                            $('#client-ville').val(data['ville']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-quartier').val(data['quartier']).addClass('uk-form-blank').removeClass('required');
                             $('#client-raison').val(data['raison']).addClass('uk-form-blank').change();
-                            $('#client-secteur_id').val(data['secteur_id']).addClass('uk-form-blank').change();
-                            $('.to-hide').hide();
+                            $('.to-hide').hide()
 
                         }
                     }
@@ -458,26 +408,25 @@
                     dataType: "json",
                     success: function(data) {
                         var count = 0;
+                        $('#contact_exist option:gt(0)').remove();
                         $.each(data['data'], function(index, value) {
                             count++;
-                            $("#contact_exist").append('<option value="'+ value['id'] +'">'+ value['first_name'] +' '+value['last_name']+' ('+value['fonction']+')</option>');
+                            $("#contact_exist").append('<option value="'+ value['id'] +'">'+ value['first_name'] +' '+value['last_name']+' '+value['fonction']+'</option>');
                         });
-
-                        if(count == 0){
-                            $("#contact_exist").html("<option value='' selected>Selectionnez un contact existant</option>");
-                        }
                     }
                 });
 
 
             }else{
-                 $('#client-id').val('');
-                $('#client-name').val('').removeClass('uk-form-blank');
-                $('#client-email').val('').removeClass('uk-form-blank');
+                $('#client-id').val('');
+                $('#client-name').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-email').val('').removeClass('uk-form-blank').addClass('required');
                 $('#client-phone').val('').removeClass('uk-form-blank');
+                $('#client-ville').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-quartier').val('').removeClass('uk-form-blank').addClass('required');
                 $('#client-raison').val('').removeClass('uk-form-blank');
                 $('.to-hide').show();
-                $("#contact_exist").html("<option value='' selected>Selectionnez un contact existant</option>");
+                $('#contact_exist option:gt(0)').remove();
             }
         });
 

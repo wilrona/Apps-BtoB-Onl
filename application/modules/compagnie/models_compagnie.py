@@ -46,6 +46,7 @@ class Compagnie(db.Document):
 
     iduser = db.ListField(db.ReferenceField('Users'))
     idagent = db.ReferenceField('Users')
+    idcontact = db.ListField(db.ReferenceField('Users'))
 
     def save(self, *args, **kwargs):
         if not self.createDate:

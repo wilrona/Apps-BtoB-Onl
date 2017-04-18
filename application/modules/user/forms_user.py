@@ -53,10 +53,10 @@ class FormLogin(wtf.Form):
     email = wtf.StringField(label='Adresse Email :', validators=[validators.Email('Email non valid'), validators.Required('Information obligatoire')])
     password = wtf.PasswordField(label='Mot de passe :', validators=[validators.Required('Information obligatoire'), password_validator])
 
-
-def error_phone(form, field):
-    if not form.mobile.data and not field.data:
-        raise wtf.ValidationError('Le telephone ou le mobile, l\'un deux doit etre renseigne')
+#
+# def error_phone(form, field):
+#     if not form.mobile.data and not field.data:
+#         raise wtf.ValidationError('Le telephone ou le mobile, l\'un deux doit etre renseigne')
 
 
 class FormUser(wtf.Form):

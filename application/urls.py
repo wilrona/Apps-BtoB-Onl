@@ -8,9 +8,7 @@ from flask import render_template
 
 from application import app
 
-# from application.modules import home, dashboard
 from application.modules import home, dashboard, compagnie, user, role, company, opportunite, document, package, paiement
-
 
 ## Error handlers
 # Handle 404 errors
@@ -22,6 +20,7 @@ def page_not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('500.html'), 500
+
 
 @app.route('/unauthorized')
 def server_Unauthorized():

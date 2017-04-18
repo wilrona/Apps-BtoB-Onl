@@ -59,8 +59,6 @@
                                     <a href="{{ url_for('opportunite.relance', opportunite_id=opportunite_id, relance=request.args.get('relance')) }}" class="uk-button waves-effect uk-button-default uk-button-small"><span class="uk-margin-small-right">{{ data.suivie|length }}</span> Activité(s)</a>
                                 </div>
                             {% endif %}
-
-                            {{ form.hidden_tag() }}
                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
                                 <div class="uk-width-1-1@s">
                                     <div class="uk-margin uk-margin-bottom">
@@ -81,7 +79,7 @@
                                     <div class="uk-margin">
                                         <label for="" class="uk-form-label"></label>
                                         <div class="uk-form-controls">
-                                            <select  name="client_exist" id="client_exist" class="uk-select selected">
+                                            <select  name="client_exist" id="client_exist" class="uk-select">
                                                  <option value="0">Selectionnez un client existant</option>
                                                     {% for client in client_list %}
                                                   <option value="{{ client.id }}" {% if form_client.id.data == client.id %} selected {% endif %}>{{ client.name }}</option>
@@ -91,174 +89,99 @@
                                     </div>
                                 </div>
                             {% endif %}
-                                <div class="uk-width-1-2@s">
-                                     <div class="uk-margin">
-                                        {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            <select name="raison" id="raison" class="uk-select uk-form-blank">
-                                                <option value="">Selectionnez</option>
-                                                <option value="LT" {% if form_client.raison.data == 'LT' %} selected {% endif %}>Etablissement</option>
-                                                <option value="SARL" {% if form_client.raison.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
-                                                <option value="SA" {% if form_client.raison.data == 'SA' %} selected {% endif %}>SA (Société Anonyme)</option>
-                                            </select>
-                                            {% for message in form_client.raison.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                     </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_client.name(class_='uk-input uk-form-blank') }}
-                                            {% for message in form_client.name.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
                                <div class="uk-width-1-2@s">
                                    <div class="uk-margin">
-                                       {{ form_client.secteur_id.label(class_='uk-form-label uk-text-bold') }}
+                                       {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
                                        <div class="uk-form-controls">
-                                           {{ form_client.secteur_id(class_='uk-select uk-form-blank') }}
-                                           {% for message in form_client.secteur_id.errors %}
+                                           <ul class="uk-subnav uk-margin-small-top">
+                                               <li class="uk-active">
+                                                   {% if form_client.raison.data == 'LT' %} Etablissement {% endif %}
+                                                   {% if form_client.raison.data == 'SARL' %} SARL (Société à responsabilité limitée) {% endif %}
+                                                   {% if form_client.raison.data == 'SA' %} SA (Société Anonyme) {% endif %}
+                                               </li>
+                                           </ul>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s">
+                                   <div class="uk-margin">
+                                       {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           {{ form_client.name(class_='uk-input uk-form-blank') }}
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s to-hide">
+                                   <div class="uk-margin">
+                                       {{ form_client.idcategorie.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           <ul class="uk-subnav uk-margin-small-top uk-subnav-divider">
+                                               {% for item in customer.idcategorie %}
+                                                   <li class="uk-active">{{ item.name }}</li>
+                                               {% endfor %}
+                                           </ul>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s to-hide">
+                                   <div class="uk-margin">
+                                       {{ form_client.maincategorie.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           <ul class="uk-subnav uk-margin-small-top">
+                                               <li class="uk-active">{{ customer.maincategorie.name }}</li>
+                                           </ul>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s">
+                                   <div class="uk-margin">
+                                       {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           {{ form_client.email(class_='uk-input uk-form-blank') }}
+                                           {% for message in form_client.email.errors %}
+                                               <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                           {% endfor %}
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s">
+                                   <div class="uk-margin">
+                                       {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           {{ form_client.phone(class_='uk-input uk-form-blank') }}
+                                           {% for message in form_client.phone.errors %}
+                                               <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                           {% endfor %}
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s">
+                                   <div class="uk-margin">
+                                       {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           {{ form_client.ville(class_='uk-input uk-form-blank') }}
+                                           {% for message in form_client.ville.errors %}
+                                               <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                           {% endfor %}
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="uk-width-1-2@s">
+                                   <div class="uk-margin">
+                                       {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
+                                       <div class="uk-form-controls">
+                                           {{ form_client.quartier(class_='uk-input uk-form-blank') }}
+                                           {% for message in form_client.quartier.errors %}
                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                            {% endfor %}
                                        </div>
                                    </div>
                                </div>
 
-                                <div class="uk-width-1-2@s">
-                                            <div class="uk-margin">
-                                                {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.email(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.email.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                            <div class="uk-margin">
-                                                {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.phone(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.phone.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.ville(class_='uk-input  uk-form-blank') }}
-                                                    {% for message in form_client.ville.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.urlsite.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.urlsite(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.urlsite.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.quartier(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.quartier.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.bp.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.bp(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.bp.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.rue.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.rue(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.rue.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.adress.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.adress(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.adress.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.numcontr.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.numcontr(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.numcontr.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                            <div class="uk-margin">
-                                                {{ form_client.registcom.label(class_='uk-form-label uk-text-bold') }}
-                                                <div class="uk-form-controls">
-                                                    {{ form_client.registcom(class_='uk-input uk-form-blank') }}
-                                                    {% for message in form_client.registcom.errors %}
-                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-
-                                </div>
-
                                 <div class="uk-width-1-1@s uk-margin uk-margin-bottom uk-margin-top">
                                     <h2 class="uk-heading-line uk-text-center"><span>Information contact</span></h2>
                                 </div>
-                                <div class="uk-width-1-3@s">
-
-
-                                    <div class="uk-margin">
-                                        {{ form_contact.civilite.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_contact.civilite(class_='uk-select uk-form-blank', id="enter") }}
-                                            {% for message in form_contact.civilite.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
@@ -269,7 +192,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="uk-width-1-3@s">
+                                <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form_contact.first_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
@@ -304,21 +227,10 @@
                                 </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
-                                        {{ form_contact.telephone.label(class_='uk-form-label uk-text-bold') }}
+                                        {{ form_contact.phone.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.telephone(class_='uk-input uk-form-blank', id="enter") }}
-                                            {% for message in form_contact.telephone.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form_contact.mobile.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_contact.mobile(class_='uk-input uk-form-blank', id="enter") }}
-                                            {% for message in form_contact.mobile.errors %}
+                                            {{ form_contact.phone(class_='uk-input uk-form-blank', id="enter") }}
+                                            {% for message in form_contact.phone.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
                                         </div>
