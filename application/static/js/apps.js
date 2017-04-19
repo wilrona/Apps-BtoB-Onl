@@ -1,8 +1,8 @@
-        $(".selected").select2({width:'100%'});
+        $("body .selected").select2({width:'100%'});
 
 
-        if($(".selected").hasClass('required')){
-            $(".selected.required").next().children().children().addClass('required');
+        if($("body .selected").hasClass('required')){
+            $("body .selected.required").next().children().children().addClass('required');
         }
 
         $('.modal').on('click', function(e){
@@ -15,8 +15,8 @@
             })
             .done(function( msg ) {
                 $('#modal-id .uk-body-custom').html(msg);
-                if($(".selected").hasClass('required')){
-                    $(".selected.required").next().children().children().addClass('required');
+                if($("body .selected").hasClass('required')){
+                    $("body .selected.required").next().children().children().addClass('required');
                 }
             });
 

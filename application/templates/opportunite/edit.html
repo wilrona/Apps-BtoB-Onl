@@ -142,28 +142,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                    <div class="uk-margin">
-                                        {{ form_client.idcategorie.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_client.idcategorie(class_='uk-select selected required') }}
-                                            {% for message in form_client.idcategorie.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s to-hide">
-                                    <div class="uk-margin">
-                                        {{ form_client.maincategorie.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form_client.maincategorie(class_='uk-select selected required') }}
-                                            {% for message in form_client.maincategorie.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="uk-width-1-2@s">
                                     <div class="uk-margin">
                                         {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
@@ -341,35 +319,6 @@
             $('#formulaire').submit();
         });
 
-        $('#client-idcategorie').on('change', function(e) {
-            e.preventDefault();
-
-            var idcategorie = $(this).val();
-            var datas = {};
-            datas['data'] = idcategorie;
-
-            var url = '{{ url_for('client.reload_categorie') }}';
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: JSON.stringify(datas),
-                contentType: 'application/json;charset=UTF-8',
-                dataType: "json",
-                success: function (data) {
-                    if(data['statut'] == 'OK'){
-                        var count = 0;
-                        $('#client-maincategorie option:gt(0)').remove();
-
-                        $.each(data['data'], function(index, value) {
-                            count++;
-                            $("#client-maincategorie").append('<option value="'+ value['id'] +'">'+ value['name']+'</option>');
-                        });
-                    }
-                }
-            });
-
-        });
-
         $('#client_exist').on('change', function(e){
             e.preventDefault();
 
@@ -449,11 +398,9 @@
                             $('#id').val(data['id']);
                             $('#first_name').val(data['first_name']).addClass('uk-form-blank');
                             $('#last_name').val(data['last_name']).addClass('uk-form-blank');
-                            $('#civilite').val(data['name']).addClass('uk-form-blank');
                             $('#email').val(data['email']).addClass('uk-form-blank');
-                            $('#mobile').val(data['mobile']).addClass('uk-form-blank');
+                            $('#phone').val(data['mobile']).addClass('uk-form-blank');
                             $('#fonction').val(data['fonction']).addClass('uk-form-blank');
-                            $('#telephone').val(data['telephone']).addClass('uk-form-blank');
 
                         }
                     }
@@ -462,13 +409,32 @@
                 $('#id').val('');
                 $('#first_name').val('').removeClass('uk-form-blank');
                 $('#last_name').val('').removeClass('uk-form-blank');
-                $('#civilite').val('').removeClass('uk-form-blank');
                 $('#email').val('').removeClass('uk-form-blank');
-                $('#mobile').val('').removeClass('uk-form-blank');
+                $('#phone').val('').removeClass('uk-form-blank');
                 $('#fonction').val('').removeClass('uk-form-blank');
-                $('#telephone').val('').removeClass('uk-form-blank');
             }
         });
+
+        {% if ('contact_exist' in request.form and request.form['contact_exist']) or form_contact.id.data %}
+
+            $('#first_name').addClass('uk-form-blank').removeClass('required');
+            $('#last_name').addClass('uk-form-blank').removeClass('required');
+            $('#email').addClass('uk-form-blank').removeClass('required');
+            $('#phone').addClass('uk-form-blank');
+            $('#fonction').addClass('uk-form-blank');
+
+        {% endif %}
+
+        {% if ('client_exist' in request.form and request.form['client_exist']) or form_client.id.data %}
+
+            $('#client-name').addClass('uk-form-blank').removeClass('required');
+            $('#client-email').addClass('uk-form-blank').removeClass('required');
+            $('#client-phone').addClass('uk-form-blank');
+            $('#client-ville').addClass('uk-form-blank').removeClass('required');
+            $('#client-quartier').addClass('uk-form-blank').removeClass('required');
+            $('#client-raison').addClass('uk-form-blank');
+
+        {% endif %}
 
 
 

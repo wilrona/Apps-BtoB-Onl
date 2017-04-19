@@ -15,9 +15,15 @@ def unique_email_validator(form, field):
         raise wtf.ValidationError('Email deja utilise par un autre utilisateur')
 
 
+def check_not_cat(form, field):
+    if not form.notCat.data and not field.data:
+        raise wtf.ValidationError('Champ obligatoire')
+
+
 class FormClient(wtf.Form):
 
     id = wtf.HiddenField()
+    notCat = wtf.HiddenField()
 
     raison = wtf.StringField(label='Forme juridique :')
     name = wtf.StringField(label='Nom de l\'entreprise :', validators=[validators.Required(message='Champ obligatoire')])
@@ -41,8 +47,8 @@ class FormClient(wtf.Form):
     linkedin = wtf.StringField(label='Lien linkedin :')
     youtube = wtf.StringField(label='Lien youtube :')
 
-    idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
-    maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
+    idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[check_not_cat])
+    maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[check_not_cat])
 
 
 def check_enfant(form, field):

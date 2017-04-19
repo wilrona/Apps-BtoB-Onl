@@ -333,17 +333,28 @@ def find_contact():
     customer_id = str(request.json['client'])
 
     customer = Compagnie.objects.get(id=customer_id)
-    customer = customer.iduser
+    users = customer.iduser
+    contact = customer.idcontact
 
     list = []
 
-    for data in customer:
+    for data in users:
         current = {}
         current['id'] = str(data.id)
         current['first_name'] = data.first_name
         current['last_name'] = data.last_name
-        current['fonction'] = None
-        if data.user_id.fonction:
+        current['fonction'] = ''
+        if data.fonction:
+            current['fonction'] = '(' + data.fonction + ')'
+        list.append(current)
+
+    for data in contact:
+        current = {}
+        current['id'] = str(data.id)
+        current['first_name'] = data.first_name
+        current['last_name'] = data.last_name
+        current['fonction'] = ''
+        if data.fonction:
             current['fonction'] = '(' + data.fonction + ')'
         list.append(current)
 
@@ -361,19 +372,13 @@ def find_single_contact():
 
     customer = Users.objects.get(id=customer_id)
 
-    civilite = ''
-    if customer.civilite:
-        civilite = customer.civilite.id
-
     data = json.dumps({
         'id': str(customer.id),
-        'civilite': str(civilite),
         'first_name': customer.first_name,
         'last_name': customer.last_name,
         'fonction': customer.fonction,
         'email': customer.email,
-        'mobile': customer.mobile,
-        'telephone': customer.telephone,
+        'phone': customer.phone,
         'statut': 'OK'
     })
 

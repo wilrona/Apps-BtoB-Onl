@@ -72,6 +72,8 @@
                 <div class="uk-width-1-1">
                     <form method="post" id="formulaire">
                         {{ form.hidden_tag() }}
+                        {{ form_client.hidden_tag() }}
+                        {{ form_contact.hidden_tag() }}
                         <input type="hidden" name="nouveau" value="0" id="nouveau"/>
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
                             {% if devis_id %}
@@ -79,7 +81,7 @@
                                     <a href="" class="uk-button waves-effect uk-button-default">0 Factures</a>
                                 </div>
                             {% endif %}
-                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
+                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small uk-grid-divider" uk-grid>
                                  <div class="uk-width-1-1@s">
                                     <div class="uk-margin">
                                         <label class="uk-form-label uk-text-bold">Reference : </label>
@@ -95,9 +97,7 @@
                                             <div class="uk-form-controls ">
                                                 <div class="uk-inline  uk-width-1-1">
                                                     {{ form.opportunite_text(class_='uk-input uk-form-blank') }}
-                                                    {% if data.opportunite_id %}
-                                                        <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id) }}" uk-icon="icon: link"></a>
-                                                    {% endif %}
+                                                    <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('opportunite.view', opportunite_id=current_opportunite.id) }}" uk-icon="icon: link"></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -106,64 +106,233 @@
 
 
                                 <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.client_id.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.client_id(class_='uk-select selected required') }}
-                                            {% for message in form.client_id.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
+                                    <div class="uk-grid-small" uk-grid>
+                                        <div class="uk-width-1-1@s">
+                                            <h3 class="uk-heading-line uk-text-center"><span>Information du client</span></h3>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.contact_id.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-
-                                            <select name="contact_id" id="contact_id" class="uk-select selected required">
-                                                {% if not devis_id %}
-                                                    <option value="">Selectionnez le client pour avoir une liste de contact</option>
-
-                                                {% else %}
-                                                    <option value="">Choix du contact</option>
-                                                    {% for contact in data.client_id.contact %}
-                                                        <option value="{{ contact.user_id.id }}" {% if contact.user_id.id|string == form.contact_id.data %} selected {% endif %}>{{ contact.user_id.first_name }} {{ contact.user_id.last_name }} {% if contact.user_id.fonction %} ({{ contact.user_id.fonction }}) {% endif %}</option>
+                                    {% if form.opportunite_id.data or data.opportunite_id %}
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    <ul class="uk-subnav uk-margin-small-top">
+                                                        <li class="uk-active">
+                                                            {% if form_client.raison.data == 'LT' %} Etablissement {% endif %}
+                                                            {% if form_client.raison.data == 'SARL' %} SARL (Société à responsabilité limitée) {% endif %}
+                                                            {% if form_client.raison.data == 'SA' %} SA (Société Anonyme) {% endif %}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.name(class_='uk-input uk-form-blank') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.email(class_='uk-input uk-form-blank') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.phone(class_='uk-input uk-form-blank') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.ville(class_='uk-input uk-form-blank') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.quartier(class_='uk-input uk-form-blank') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        {% if not devis_id %}
+                                            <div class="uk-width-1-1@s">
+                                                <div class="uk-margin">
+                                                    <label for="" class="uk-form-label"></label>
+                                                    <div class="uk-form-controls">
+                                                        <select  name="client_exist" id="client_exist" class="uk-select selected">
+                                                            <option value="">Selectionnez un client existant</option>
+                                                            {% for client in client_list %}
+                                                                <option value="{{ client.id }}" {% if form_client.id.data|string == client.id|string %} selected {% endif %}>{{ client.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    <select name="client-raison" id="client-raison" class="uk-select selected">
+                                                        <option value="">Selectionnez votre forme juridique</option>
+                                                        <option value="LT" {% if form_client.raison.data == 'LT' %} selected {% endif %}>Etablissement</option>
+                                                        <option value="SARL" {% if form_client.raison.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
+                                                        <option value="SA" {% if form_client.raison.data == 'SA' %} selected {% endif %}>SA (Société Anonyme)</option>
+                                                    </select>
+                                                    {% for message in form_client.raison.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
-                                                {% endif %}
-                                            </select>
-
-                                            {% for message in form.contact_id.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.support_id.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.support_id(class_='uk-select selected required') }}
-                                            {% for message in form.support_id.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.name(class_='uk-input required') }}
+                                                    {% for message in form_client.name.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.email(class_='uk-input required') }}
+                                                    {% for message in form_client.email.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.phone(class_='uk-input') }}
+                                                    {% for message in form_client.phone.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.ville(class_='uk-input required') }}
+                                                    {% for message in form_client.ville.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_client.quartier(class_='uk-input required') }}
+                                                    {% for message in form_client.quartier.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    {% endif %}
+
                                     </div>
+
                                 </div>
                                 <div class="uk-width-1-2@s">
-
-                                    <div class="uk-margin">
-                                        <br/>
-                                        <label class="uk-form-label uk-text-bold"> Le client a t-il un support ? (coccher si oui) {{ form.have_support(class_='uk-checkbox uk-margin-left') }}</label>
-
-                                    </div>
-                                </div>
-                                <div class="uk-width-1-2@s">
-
-                                    <div class="uk-margin">
-                                        <br/>
-                                        <label class="uk-form-label uk-text-bold"> La facturation avec TVA ? (cocher si oui) {{ form.apply_tva(class_='uk-checkbox uk-margin-left') }}</label>
-
+                                    <div class="uk-grid-small" uk-grid>
+                                        <div class="uk-width-1-1@s">
+                                            <h3 class="uk-heading-line uk-text-center"><span>Information contact</span></h3>
+                                        </div>
+                                        {% if not devis_id %}
+                                            <div class="uk-width-1-1@s">
+                                                <div class="uk-margin">
+                                                    <label for="" class="uk-form-label"></label>
+                                                    <div class="uk-form-controls">
+                                                        <select  name="contact_exist" id="contact_exist" class="uk-select selected">
+                                                            <option value="">Selectionnez un contact existant</option>
+                                                            {% for contact in contact_list %}
+                                                                <option value="{{ contact.id }}" {% if form_contact.id.data|string == contact.id|string %} selected {% endif %}>{{ contact.full_name() }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_contact.last_name(class_='uk-input required') }}
+                                                    {% for message in form_contact.last_name.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_contact.first_name.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_contact.first_name(class_='uk-input required') }}
+                                                    {% for message in form_contact.first_name.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_contact.email.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_contact.email(class_='uk-input required') }}
+                                                    {% for message in form_contact.email.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_contact.phone.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_contact.phone(class_='uk-input') }}
+                                                    {% for message in form_contact.phone.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-2@s">
+                                            <div class="uk-margin">
+                                                {{ form_contact.fonction.label(class_='uk-form-label uk-text-bold') }}
+                                                <div class="uk-form-controls">
+                                                    {{ form_contact.fonction(class_='uk-input') }}
+                                                    {% for message in form_contact.fonction.errors %}
+                                                        <div class="uk-alert uk-alert-danger">{{ message }}</div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -179,8 +348,7 @@
                                 <ul class="uk-switcher uk-margin">
                                     <li>
                                     {% if not devis_id %}
-                                        <a  class="uk-button waves-effect uk-button-success uk-button-small uk-margin modal" id="open-modal" href="{{ url_for('devis.add_package') }}" uk-toggle="target:#modal-id; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> sites</a>
-                                        <a  class="uk-hidden modal-full" id="full" href="{{ url_for('devis.add_site') }}" uk-toggle="target:#modal-full; bg-close:false; stack:true;">suite</a>
+                                        <a  class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="open-modal" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
                                     {% endif %}
                                         <div class="uk-alert uk-alert-warning uk-hidden" id="alert_site_valid">
 
@@ -189,74 +357,21 @@
                                             <table class="uk-table uk-table-small uk-table-middle" id="reload_site">
                                                  <thead>
                                                 <tr>
-                                                    <th width="32%">Sites</th>
-                                                    <th width="20%">Nbre passage</th>
-                                                    <th width="20%">Prix unitaire</th>
-                                                    <th width="17%">Sous total</th>
+                                                    <th width="20%">Service</th>
+                                                    <th width="20%">Produit</th>
+                                                    <th width="16%">Quantite</th>
+                                                    <th width="16%">Prix unitaires</th>
+                                                    <th width="16%">Sous total</th>
                                                     <th width="7%"></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for item in list_pack %}
-                                                        {% set loop_pack = loop.index - 1 %}
-                                                        <tr class="uk-background-blue-grey">
-                                                            <td colspan="3">
-                                                                {{ item['name'] }} x {{ item['qte'] }} = <span id   ="passage_total" data-id="{{ item['id'] }}">{{ item['total'] }}</span> Passages
-                                                                {% if not devis_id %}
-                                                                <button type="button" class="uk-button uk-button-default uk-button-small uk-display-block uk-float-right add_pack" data-id="{{ item['id'] }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> sites</button>
-                                                                {% endif %}
 
-                                                            </td>
-                                                            <td>
-                                                                {% if not devis_id %}
-                                                                    <div class="uk-text-uppercase uk-hidden uk-text-center"><span id="reste-pack" class="uk-text-bold uk-margin-small-right" data-pack="{{ item['id'] }}">0</span> Passage(s)</div>
-                                                                {% endif %}
-                                                            </td>
-                                                            <td>
-                                                                {% if not devis_id %}
-                                                                 <a href="{{ url_for('devis.delete_item', pack=loop_pack) }}" class="uk-button uk-button-small delete_item uk-button-default"><span uk-icon="icon: trash"></span></a>
-                                                                {% endif %}
-                                                            </td>
-                                                        </tr>
-                                                        {% set nbreville = item['ville']|length %}
-                                                        {% for ville in item['ville'] %}
-                                                            {% set loop_ville = loop.index - 1 %}
-                                                            {% for site in ville['site'] %}
-                                                                <tr>
-                                                                    <td>{{ site['ref'] }} <br/> {{ site['name'] }}
-                                                                    <input type="hidden" value="{{ site['id'] }}" name="id"/>
-                                                                    </td>
-                                                                    <td>
-
-                                                                    <div class="uk-form-controls uk-form-qte">
-                                                                        {% if not devis_id %}
-                                                                            <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>
-                                                                        {% endif %}
-                                                                        <input type="text" value="{{ site['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto{% if not devis_id %} uk-text-center {% else  %} uk-form-blank {% endif %}" data-ville="{{ ville['id'] }}" data-nbre="{{ nbreville }}" data-position="{{ loop.index }}" data-pack="{{ item['id'] }}"/>
-                                                                        {% if not devis_id %}
-                                                                            <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>
-                                                                        {% endif %}
-
-                                                                    </div>
-                                                                    </td>
-                                                                    <td><input type="text" value="{{ site['prix'] }}" class="uk-input uk-form-blank prix" name="prix"/></td>
-                                                                    <td><div class="utotal change_total">{{ site['total'] }}</div></td>
-                                                                    <td>
-                                                                        {% if not devis_id %}
-                                                                         <a href="{{ url_for('devis.delete_item', pack=loop_pack, ville=loop_ville, item=(loop.index - 1)) }}" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                        {% endfor %}
-
-                                                    {% else %}
                                                         <tr>
                                                             <td colspan="5">
                                                                 <h3 class="uk-text-center">Ajouter des sites</h3>
                                                             </td>
                                                         </tr>
-                                                    {% endfor %}
                                                 </tbody>
 
                                             </table>
@@ -306,38 +421,159 @@
 
      <script>
 
+
+
         $('#submit').on('click', function(e){
             e.preventDefault();
-            count = 0
-            $('.change_qte').each(function(){
-                count++;
-            });
+            $('#formulaire').submit();
 
-            $reste = 0
-            $('#reste-pack').each(function(){
-                $reste = parseInt($(this).text()) + $reste;
-            })
+{#            count = 0#}
+{#            $('.change_qte').each(function(){#}
+{#                count++;#}
+{#            });#}
+{##}
+{#            $reste = 0#}
+{#            $('#reste-pack').each(function(){#}
+{#                $reste = parseInt($(this).text()) + $reste;#}
+{#            })#}
+{##}
+{#            console.log($reste);#}
+{#            if(count > 0 && $reste == 0){#}
+{#                $('#formulaire').submit();#}
+{#            }else{#}
+{#                $text = ''#}
+{#                if (count <= 0) {#}
+{#                    $text = $text + 'Il n\'a aucun element de site ajouté sur le devis';#}
+{#                    UIkit.modal.alert($text).then(function() {#}
+{#                        $('#open-modal').trigger('click');#}
+{#                    });#}
+{#                    return false;#}
+{#                }#}
+{##}
+{#                if($reste != 0){#}
+{#                    $text = $text + 'Il existe des packages incomplets dans ce devis. Veuillez les identifier';#}
+{#                    UIkit.modal.alert($text).then(function() {#}
+{#                    });#}
+{#                    return false;#}
+{#                }#}
+{##}
+{#            }#}
+        });
 
-            console.log($reste);
-            if(count > 0 && $reste == 0){
-                $('#formulaire').submit();
+        {% if ('contact_exist' in request.form and request.form['contact_exist']) or form_contact.id.data %}
+
+            $('#first_name').addClass('uk-form-blank').removeClass('required');
+            $('#last_name').addClass('uk-form-blank').removeClass('required');
+            $('#email').addClass('uk-form-blank').removeClass('required');
+            $('#phone').addClass('uk-form-blank');
+            $('#fonction').addClass('uk-form-blank');
+
+        {% endif %}
+
+        {% if ('client_exist' in request.form and request.form['client_exist']) or form_client.id.data %}
+
+            $('#client-name').addClass('uk-form-blank').removeClass('required');
+            $('#client-email').addClass('uk-form-blank').removeClass('required');
+            $('#client-phone').addClass('uk-form-blank');
+            $('#client-ville').addClass('uk-form-blank').removeClass('required');
+            $('#client-quartier').addClass('uk-form-blank').removeClass('required');
+            $('#client-raison').addClass('uk-form-blank');
+
+        {% endif %}
+
+        $('#client_exist').on('change', function(e){
+            e.preventDefault();
+
+            var client_exist = $('#client_exist').val();
+            if(client_exist != ''){
+                var datas = {};
+                datas['client'] = String(client_exist);
+                var url = '{{ url_for('client.find_customer') }}';
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: JSON.stringify(datas),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    success: function(data) {
+                        if(data['statut'] === 'OK'){
+                            $('#client-id').val(data['id']);
+                            $('#client-name').val(data['name']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-email').val(data['email']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-phone').val(data['phone']).addClass('uk-form-blank');
+                            $('#client-ville').val(data['ville']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-quartier').val(data['quartier']).addClass('uk-form-blank').removeClass('required');
+                            $('#client-raison').val(data['raison']).addClass('uk-form-blank').change();
+                            $('.to-hide').hide()
+
+                        }
+                    }
+                });
+
+                var url_2 = '{{ url_for('client.find_contact') }}';
+                $.ajax({
+                    url: url_2,
+                    type: 'POST',
+                    data: JSON.stringify(datas),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    success: function(data) {
+                        var count = 0;
+                        $('#contact_exist option:gt(0)').remove();
+                        $.each(data['data'], function(index, value) {
+                            count++;
+                            $("#contact_exist").append('<option value="'+ value['id'] +'">'+ value['first_name'] +' '+value['last_name']+' '+value['fonction']+'</option>');
+                        });
+                    }
+                });
+
+
             }else{
-                $text = ''
-                if (count <= 0) {
-                    $text = $text + 'Il n\'a aucun element de site ajouté sur le devis';
-                    UIkit.modal.alert($text).then(function() {
-                        $('#open-modal').trigger('click');
-                    });
-                    return false;
-                }
+                $('#client-id').val('');
+                $('#client-name').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-email').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-phone').val('').removeClass('uk-form-blank');
+                $('#client-ville').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-quartier').val('').removeClass('uk-form-blank').addClass('required');
+                $('#client-raison').val('').removeClass('uk-form-blank');
+                $('.to-hide').show();
+                $('#contact_exist option:gt(0)').remove();
+            }
+        });
 
-                if($reste != 0){
-                    $text = $text + 'Il existe des packages incomplets dans ce devis. Veuillez les identifier';
-                    UIkit.modal.alert($text).then(function() {
-                    });
-                    return false;
-                }
+        $('#contact_exist').on('change', function(e){
+            e.preventDefault();
 
+            var client_exist = $('#contact_exist').val();
+            if(client_exist != '') {
+                var datas = {};
+                datas['contact'] = String(client_exist);
+                var url = '{{ url_for('client.find_single_contact') }}';
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: JSON.stringify(datas),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    success: function (data) {
+                        if (data['statut'] === 'OK') {
+                            $('#id').val(data['id']);
+                            $('#first_name').val(data['first_name']).addClass('uk-form-blank').removeClass('required');
+                            $('#last_name').val(data['last_name']).addClass('uk-form-blank').removeClass('required');
+                            $('#email').val(data['email']).addClass('uk-form-blank').removeClass('required');
+                            $('#phone').val(data['mobile']).addClass('uk-form-blank');
+                            $('#fonction').val(data['fonction']).addClass('uk-form-blank');
+
+                        }
+                    }
+                });
+            }else{
+                $('#id').val('');
+                $('#first_name').val('').removeClass('uk-form-blank').addClass('required');
+                $('#last_name').val('').removeClass('uk-form-blank').addClass('required');
+                $('#email').val('').removeClass('uk-form-blank').addClass('required');
+                $('#phone').val('').removeClass('uk-form-blank');
+                $('#fonction').val('').removeClass('uk-form-blank');
             }
         });
 
@@ -466,44 +702,6 @@
             change_total();
         });
 
-        $('#client_id').on('change', function(e) {
-            e.preventDefault();
-            var $contact = $('#contact_id');
-
-            var client_exist = $('#client_id').val();
-            if(client_exist != ''){
-                var datas = {};
-                datas['client'] = client_exist;
-                var url_2 = '{{ url_for('client.find_contact') }}';
-                $.ajax({
-                    url: url_2,
-                    type: 'POST',
-                    data: JSON.stringify(datas),
-                    contentType: 'application/json;charset=UTF-8',
-                    dataType: "json",
-                    success: function(data) {
-                        var count = 0;
-
-
-                        console.log($contact);
-                        $.each(data['data'], function(index, value) {
-                            if(count == 0){
-                                $("#contact_id").empty().append("<option value='' selected>Choix du contact</option>");
-                            }
-                            count++;
-                            $contact.append('<option value="'+ value['id'] +'">'+ value['first_name'] +' '+value['last_name']+' '+value['fonction']+'</option>');
-                        });
-
-                        if(count == 0){
-                            $contact.html("<option value='' selected>Selectionnez le client pour avoir une liste de contact</option>");
-                        }
-                    }
-                });
-
-            }else{
-                $contact.html("<option value='' selected>Selectionnez le client pour avoir une liste de contact</option>");
-            }
-        });
 
         function concat($value){
             $int = $value.split(" ");
@@ -516,7 +714,7 @@
             return $values;
         }
 
-     function change_total(){
+        function change_total(){
 
          $('.uk-form-qte').each(function(){
             $prix = $(this).parent().next().find('.prix').val();
@@ -560,82 +758,82 @@
 
      }
 
-     $('body').on('click', '.delete_item', function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        $.ajax({
-            url: url,
-            dataType: "json",
-            success: function(data) {
-                if(data['statut'] === 'OK') {
-                    if( data['data'].length != 0){
-
-                        $("#reload_site tbody").empty();
-
-                        var url = "{{ url_for('devis.delete_item') }}";
-                        var url_pack = "{{ url_for('devis.add_site') }}";
-
-                        $.each(data['data'], function(index, value) {
-                            url_pack = url_pack+'?package='+value['id'];
-                            $pack = $('<tr/>').addClass('uk-background-blue-grey').append(
-                                $('<td/>').attr('colspan', 3).append(
-                                    value['name']+' x '+value['qte']+' = <span id="passage_total" data-id="'+value['id']+'">'+value['total']+'</span> Passages ',
-                                    '<button type="button" class="uk-button uk-button-default uk-button-small uk-display-block uk-float-right add_pack" data-id="'+value['id']+'"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> sites</button>'
-                                ),
-                                $('<td/>').html('<div class="uk-text-uppercase uk-hidden uk-text-center"><span id="reste-pack" class="uk-text-bold uk-margin-small-right" data-pack="'+value['id']+'">0</span> Passage(s)</div>'),
-                                $('<td/>').html('<a href="'+url+''+index+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')
-                            );
-                            $("body #reload_site tbody").append($pack);
-                            var $nbr_ville = value['ville'].length;
-                            $.each(value['ville'], function(index_ville, value_ville) {
-
-                                $.each(value_ville['site'], function(index_site, value_site) {
-
-                                    $select = $('<input/>').addClass('uk-input change_qte uk-width-auto uk-text-center').attr(
-                                        {
-                                            name:'qte',
-                                            value:value_site['qte'],
-                                            "data-nbre":$nbr_ville,
-                                            "data-ville":value_ville['id'],
-                                            "data-position": index_site,
-                                            "data-pack":value['id']
-
-                                        }
-                                    );
-
-                                    $ligne = $('<tr/>').append(
-                                        $('<td/>').html(value_site['ref']+' <br/>'+value_site['name']+'<input type="hidden" value="'+ value_site['id'] +'" name="id"/>'),
-                                        $('<td/>').append(
-                                            $('<div/>').addClass('uk-form-controls uk-form-qte').append(
-                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>',
-                                                $select,
-                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>'
-                                            )
-                                        ),
-                                        $('<td/>').html(
-                                            '<input type="text" value="'+value_site['prix']+'" class="uk-input uk-form-blank prix" name="prix"/>'
-                                        ),
-                                        $('<td/>').html('<div class="utotal change_total">'+value_site['total']+'</div>'),
-                                        $('<td/>').html('<a href="'+url+''+index+'/'+index_ville+'/'+index_site+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')
-
-                                    );
-                                    $("body #reload_site tbody").append($ligne);
-
-
-
-                                });
-
-                            });
-                        });
-
-                    }else{
-                        $("#reload_site tbody").empty().append('<tr><td colspan="6"> <h3 class="uk-text-center">Ajouter des sites</h3> </td></tr>');
-                    }
-                    change_total();
-                }
-            }
-        });
-    });
+{#        $('body').on('click', '.delete_item', function(e){#}
+{#        e.preventDefault();#}
+{#        var url = $(this).attr('href');#}
+{#        $.ajax({#}
+{#            url: url,#}
+{#            dataType: "json",#}
+{#            success: function(data) {#}
+{#                if(data['statut'] === 'OK') {#}
+{#                    if( data['data'].length != 0){#}
+{##}
+{#                        $("#reload_site tbody").empty();#}
+{##}
+{#                        var url = "{{ url_for('devis.delete_item') }}";#}
+{#                        var url_pack = "{{ url_for('devis.add_site') }}";#}
+{##}
+{#                        $.each(data['data'], function(index, value) {#}
+{#                            url_pack = url_pack+'?package='+value['id'];#}
+{#                            $pack = $('<tr/>').addClass('uk-background-blue-grey').append(#}
+{#                                $('<td/>').attr('colspan', 3).append(#}
+{#                                    value['name']+' x '+value['qte']+' = <span id="passage_total" data-id="'+value['id']+'">'+value['total']+'</span> Passages ',#}
+{#                                    '<button type="button" class="uk-button uk-button-default uk-button-small uk-display-block uk-float-right add_pack" data-id="'+value['id']+'"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> sites</button>'#}
+{#                                ),#}
+{#                                $('<td/>').html('<div class="uk-text-uppercase uk-hidden uk-text-center"><span id="reste-pack" class="uk-text-bold uk-margin-small-right" data-pack="'+value['id']+'">0</span> Passage(s)</div>'),#}
+{#                                $('<td/>').html('<a href="'+url+''+index+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')#}
+{#                            );#}
+{#                            $("body #reload_site tbody").append($pack);#}
+{#                            var $nbr_ville = value['ville'].length;#}
+{#                            $.each(value['ville'], function(index_ville, value_ville) {#}
+{##}
+{#                                $.each(value_ville['site'], function(index_site, value_site) {#}
+{##}
+{#                                    $select = $('<input/>').addClass('uk-input change_qte uk-width-auto uk-text-center').attr(#}
+{#                                        {#}
+{#                                            name:'qte',#}
+{#                                            value:value_site['qte'],#}
+{#                                            "data-nbre":$nbr_ville,#}
+{#                                            "data-ville":value_ville['id'],#}
+{#                                            "data-position": index_site,#}
+{#                                            "data-pack":value['id']#}
+{##}
+{#                                        }#}
+{#                                    );#}
+{##}
+{#                                    $ligne = $('<tr/>').append(#}
+{#                                        $('<td/>').html(value_site['ref']+' <br/>'+value_site['name']+'<input type="hidden" value="'+ value_site['id'] +'" name="id"/>'),#}
+{#                                        $('<td/>').append(#}
+{#                                            $('<div/>').addClass('uk-form-controls uk-form-qte').append(#}
+{#                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>',#}
+{#                                                $select,#}
+{#                                                '<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>'#}
+{#                                            )#}
+{#                                        ),#}
+{#                                        $('<td/>').html(#}
+{#                                            '<input type="text" value="'+value_site['prix']+'" class="uk-input uk-form-blank prix" name="prix"/>'#}
+{#                                        ),#}
+{#                                        $('<td/>').html('<div class="utotal change_total">'+value_site['total']+'</div>'),#}
+{#                                        $('<td/>').html('<a href="'+url+''+index+'/'+index_ville+'/'+index_site+'" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>')#}
+{##}
+{#                                    );#}
+{#                                    $("body #reload_site tbody").append($ligne);#}
+{##}
+{##}
+{##}
+{#                                });#}
+{##}
+{#                            });#}
+{#                        });#}
+{##}
+{#                    }else{#}
+{#                        $("#reload_site tbody").empty().append('<tr><td colspan="6"> <h3 class="uk-text-center">Ajouter des sites</h3> </td></tr>');#}
+{#                    }#}
+{#                    change_total();#}
+{#                }#}
+{#            }#}
+{#        });#}
+{#    });#}
 
     </script>
 

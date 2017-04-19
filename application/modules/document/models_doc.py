@@ -19,6 +19,7 @@ class Document(db.Document):
 
     vendeur_id = db.ReferenceField('Users')
     opportunite_id = db.ReferenceField('Opportunite')
+    note = db.StringField()
 
     def save(self, *args, **kwargs):
         if not self.createDate:

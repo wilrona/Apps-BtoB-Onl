@@ -137,6 +137,8 @@ def edit(opportunite_id=None):
         if 'client_exist' in request.form and request.form['client_exist']:
             form_client.id.data = request.form['client_exist']
 
+    form_client.notCat.data = '1'
+
     from ..user.models_user import Roles
     admin_role = Roles.objects(valeur='super_admin').first()
 
@@ -149,18 +151,10 @@ def edit(opportunite_id=None):
     for choice in all_vendeur:
         form.vendeur_id.choices.append((str(choice.id), choice.first_name+' '+choice.last_name))
 
-    all = Categorie.objects(Q(activated=True) & Q(parent_idcategorie__ne=None))
-
+    form_client.idcategorie.data = ''
     form_client.idcategorie.choices = [('', '')]
-    for choice in all:
-        form_client.idcategorie.choices.append((str(choice.id), choice.name))
-
-    if not opportunite_id:
-        form_client.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
-
-        for idchoice in request.form.getlist('client-idcategorie'):
-            choice = Categorie.objects.get(id=idchoice)
-            form_client.maincategorie.choices.append((str(choice.id), choice.name))
+    form_client.maincategorie.data = ''
+    form_client.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
 
     etape_list = Etape.objects(actif=True).order_by('order')
     client_list = Compagnie.objects(activated=True)
@@ -180,9 +174,6 @@ def edit(opportunite_id=None):
         form_client.phone.data = current_client.phone
         form_client.ville.data = current_client.ville
         form_client.quartier.data = current_client.quartier
-
-        form_client.idcategorie.data = [str(cat.id) for cat in current_client.idcategorie]
-        form_client.maincategorie.data = str(current_client.maincategorie.id)
 
     current_contact = None
     if request.method == 'POST' and 'contact_exist' in request.form and request.form['contact_exist']:
@@ -223,25 +214,9 @@ def edit(opportunite_id=None):
                 customer.phone = form_client.phone.data
                 customer.activated = False
 
-                customer.idcategorie = []
-
-                for cat_id in request.form.getlist('client-idcategorie'):
-                    the_cat = Categorie.objects.get(id=cat_id)
-                    customer.idcategorie.append(the_cat)
-
-                principale = Categorie.objects.get(id=form_client.maincategorie.data)
-                customer.maincategorie = principale
-
                 customer = customer.save()
 
                 data.client_id = customer
-
-                ## verifier que les nouvelles categories ont les informations de l'entreprise cours
-                for cat_id in request.form.getlist('client-idcategorie'):
-                    the_cat = Categorie.objects.get(id=cat_id)
-                    if customer not in the_cat.compagnie:
-                        the_cat.compagnie.append(customer)
-                        the_cat.save()
 
         if 'contact_exist' in request.form and request.form['contact_exist']:
             data.contact_id = current_contact
