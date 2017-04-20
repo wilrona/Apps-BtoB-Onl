@@ -348,31 +348,20 @@
                                 <ul class="uk-switcher uk-margin">
                                     <li>
                                     {% if not devis_id %}
-                                        <a  class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="open-modal" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
+                                        <button  class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</button>
                                     {% endif %}
-                                        <div class="uk-alert uk-alert-warning uk-hidden" id="alert_site_valid">
-
-                                        </div>
                                         <div class="uk-overflow-auto" >
-                                            <table class="uk-table uk-table-small uk-table-middle" id="reload_site">
-                                                 <thead>
-                                                <tr>
-                                                    <th width="20%">Service</th>
-                                                    <th width="20%">Produit</th>
-                                                    <th width="16%">Quantite</th>
-                                                    <th width="16%">Prix unitaires</th>
-                                                    <th width="16%">Sous total</th>
-                                                    <th width="7%"></th>
-                                                </tr>
+                                            <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="20%">Service</th>
+                                                        <th width="20%">Produit</th>
+                                                        <th width="16%">Quantite</th>
+                                                        <th width="16%">Prix unitaires</th>
+                                                        <th width="16%">Sous total</th>
+                                                        <th width="7%" class="no-sort"></th>
+                                                    </tr>
                                                 </thead>
-                                                <tbody>
-
-                                                        <tr>
-                                                            <td colspan="5">
-                                                                <h3 class="uk-text-center">Ajouter des sites</h3>
-                                                            </td>
-                                                        </tr>
-                                                </tbody>
 
                                             </table>
                                             <hr/>
@@ -406,14 +395,6 @@
                 </div>
 
             </div>
-    </div>
-
-    <div id="modal-full" class="uk-modal-full" uk-modal>
-        <div class="uk-modal-dialog">
-            <div class="uk-body-custom">
-
-            </div>
-        </div>
     </div>
 {% endblock %}
 
@@ -459,6 +440,21 @@
 {##}
 {#            }#}
         });
+
+        $('#add_line').on('click', function(e){
+
+            e.preventDefault();
+
+            var url = '{{ url_for('devis.ligne_commande') }}';
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data) {
+                    console.log(data)
+                }
+            });
+
+        })
 
         {% if ('contact_exist' in request.form and request.form['contact_exist']) or form_contact.id.data %}
 
@@ -540,6 +536,112 @@
                 $('#contact_exist option:gt(0)').remove();
             }
         });
+
+        var table_produit = $('#dataTable_produit').DataTable({
+            'language':{
+                "sProcessing":     "Traitement en cours...",
+                "sSearch":         "Rechercher&nbsp;:",
+                "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+                "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+                "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+                "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                "sInfoPostFix":    "",
+                "sLoadingRecords": "Chargement en cours...",
+                "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                "sEmptyTable":     "Aucune donn&eacute;e disponible",
+                "oPaginate": {
+                    "sFirst":      "Premier",
+                    "sPrevious":   "Pr&eacute;c&eacute;dent",
+                    "sNext":       "Suivant",
+                    "sLast":       "Dernier"
+                },
+                "oAria": {
+                    "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                    "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+                }
+            },
+            "info": false,
+            "searching": false,
+            "iDisplayLength": -1,
+            "paging": false,
+            "scrollY":        "500px",
+            "scrollCollapse": true,
+            //dom: 'f',
+            "bLengthChange" : false
+        });
+
+        var counter = 0;
+
+        $('#addRow').on( 'click', function (e) {
+            e.preventDefault();
+
+            $select = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-service').append(
+                    $('<select/>').addClass('uk-select selected').attr({
+                        id: 'services',
+                        name: 'services'
+                    }).append(
+                        $('<option value="">Choisir un service</option>'),
+                        {% for service in services %}
+                        $('<option value="{{ service.id }}">{{ service.name }}</option>'),
+                        {% endfor %}
+                    )
+                )
+            );
+
+            $select_pack = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                    $('<select/>').addClass('uk-select selected').attr({
+                        id: 'package',
+                        name: 'package'
+                    }).append(
+                        $('<option value="">Choisir un produit</option>')
+                    )
+                )
+            );
+
+            $input_qte = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-qte').append(
+                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>'),
+                    $('<input type="text" value="1" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>'),
+                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>')
+                )
+            );
+
+            $unit_price = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-prix').append(
+                    $('<div class="uk-width-auto uk-text-center">0</div>')
+                )
+            );
+
+            $input_st = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-qte').append(
+                    $('<input type="text" value="0" name="st" class="uk-input change_st uk-width-auto uk-text-center"/>')
+                )
+            );
+
+            table_produit.row.add( [
+                $select.html(),
+                $select_pack.html(),
+                $input_qte.html(),
+                $unit_price.html(),
+                $input_st.html(),
+                '<button class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></button>'
+            ] ).draw( false );
+
+            $(".selected").select2({width:'100%'});
+
+            counter++;
+        } );
+
+        $('body').on( 'click', '.delete_item', function (e) {
+            e.preventDefault();
+            $tr = $(this).parent().parent();
+            table_produit.row($tr).remove().draw( false );
+
+            counter--;
+        } );
+
 
         $('#contact_exist').on('change', function(e){
             e.preventDefault();

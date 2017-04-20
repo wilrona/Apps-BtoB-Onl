@@ -575,3 +575,7 @@ html, div *{
 .uk-textarea {
     height: 200px !important;
 }
+
+.dataTables_scrollBody .uk-table thead{
+    display: none;
+}

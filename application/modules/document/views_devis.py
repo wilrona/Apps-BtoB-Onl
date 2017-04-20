@@ -5,6 +5,7 @@ from models_doc import Document, LigneDoc
 from forms_doc import FormDevis
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie, Categorie
+from ..package.models_package import LigneService
 from ..opportunite.models_opportunite import Opportunite
 from ..company.models_company import Config_reference, Company
 from ..compagnie.forms_compagnie import FormClient
@@ -222,6 +223,8 @@ def edit(devis_id=None):
 
     form_client.notCat.data = '1'
 
+    services = LigneService.objects()
+
     current_client = None
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
 
@@ -395,6 +398,14 @@ def edit(devis_id=None):
     #         return redirect(url_for('devis.view', devis_id=data.id))
 
     return render_template('devis/edit.html', **locals())
+
+
+@prefix.route('/ligne/commande')
+def ligne_commande():
+
+    services = LigneService.objects()
+
+    return render_template('devis/ligne_commande.html', **locals())
 
 
 @prefix.route('/change/<objectid:devis_id>/<int:status>', methods=['GET'])
