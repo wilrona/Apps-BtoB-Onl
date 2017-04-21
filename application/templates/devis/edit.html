@@ -344,13 +344,13 @@
                                     <li><a href="#">Ligne de commandes</a></li>
                                 </ul>
 
-
                                 <ul class="uk-switcher uk-margin">
                                     <li>
                                     {% if not devis_id %}
-                                        <button  class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</button>
+                                        <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
                                     {% endif %}
-                                        <div class="uk-overflow-auto" >
+                                        <div class="uk-overflow-auto">
+                                            <input type="hidden" name="ici_cm" id="ici_cm" value="{{ session.get('package')['exist_ici']|string }}">
                                             <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
                                                 <thead>
                                                     <tr>
@@ -362,6 +362,63 @@
                                                         <th width="7%" class="no-sort"></th>
                                                     </tr>
                                                 </thead>
+                                                <tbody>
+                                                {% for pack in session.get('package')['data'] %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="uk-form-controls uk-form-service">
+
+                                                                <select name="services" id="services" class="uk-select selected">
+                                                                    <option value="">Choisir un service</option>
+                                                                    {% for service in services %}
+                                                                        <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+
+                                                            </div>
+                                                        </td>
+                                                        <td>
+
+                                                            <div class="uk-form-controls uk-form-package">
+
+                                                                <select name="package" id="package" class="uk-select selected">
+                                                                    <option value="">Choisir un produit</option>
+                                                                    {% for package in pack['similaire'] %}
+                                                                        <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+
+                                                            </div>
+
+                                                        </td>
+                                                        <td>
+                                                            <div class="uk-form-controls uk-form-qte">
+
+                                                                <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>
+
+                                                                <input type="text" value="{{ pack['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>
+
+                                                                <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>
+
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="uk-form-controls uk-form-prix">
+                                                                <div class="uk-width-auto uk-text-center" data-old="{{ pack['prix'] }}">{{ pack['prix'] }}</div>
+                                                                <input type="hidden" value="{{ pack['prix'] }}" name="prix" class="change_prix"/>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="uk-form-controls uk-form-st">
+                                                                <input type="text" value="{{ pack['st'] }}" name="st" class="uk-input change_st uk-width-auto uk-text-center" data-old="{{ pack['st'] }}">
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
 
                                             </table>
                                             <hr/>
@@ -402,11 +459,13 @@
 
      <script>
 
-
+        $ici_cm = $('input#ici_cm').val();
 
         $('#submit').on('click', function(e){
             e.preventDefault();
-            $('#formulaire').submit();
+            if(counter > 1){
+                $('#formulaire').submit();
+            }
 
 {#            count = 0#}
 {#            $('.change_qte').each(function(){#}
@@ -441,20 +500,6 @@
 {#            }#}
         });
 
-        $('#add_line').on('click', function(e){
-
-            e.preventDefault();
-
-            var url = '{{ url_for('devis.ligne_commande') }}';
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(data) {
-                    console.log(data)
-                }
-            });
-
-        })
 
         {% if ('contact_exist' in request.form and request.form['contact_exist']) or form_contact.id.data %}
 
@@ -476,6 +521,7 @@
             $('#client-raison').addClass('uk-form-blank');
 
         {% endif %}
+
 
         $('#client_exist').on('change', function(e){
             e.preventDefault();
@@ -514,10 +560,8 @@
                     contentType: 'application/json;charset=UTF-8',
                     dataType: "json",
                     success: function(data) {
-                        var count = 0;
                         $('#contact_exist option:gt(0)').remove();
                         $.each(data['data'], function(index, value) {
-                            count++;
                             $("#contact_exist").append('<option value="'+ value['id'] +'">'+ value['first_name'] +' '+value['last_name']+' '+value['fonction']+'</option>');
                         });
                     }
@@ -537,110 +581,7 @@
             }
         });
 
-        var table_produit = $('#dataTable_produit').DataTable({
-            'language':{
-                "sProcessing":     "Traitement en cours...",
-                "sSearch":         "Rechercher&nbsp;:",
-                "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
-                "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
-                "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
-                "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                "sInfoPostFix":    "",
-                "sLoadingRecords": "Chargement en cours...",
-                "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                "sEmptyTable":     "Aucune donn&eacute;e disponible",
-                "oPaginate": {
-                    "sFirst":      "Premier",
-                    "sPrevious":   "Pr&eacute;c&eacute;dent",
-                    "sNext":       "Suivant",
-                    "sLast":       "Dernier"
-                },
-                "oAria": {
-                    "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
-                    "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-                }
-            },
-            "info": false,
-            "searching": false,
-            "iDisplayLength": -1,
-            "paging": false,
-            "scrollY":        "500px",
-            "scrollCollapse": true,
-            //dom: 'f',
-            "bLengthChange" : false
-        });
 
-        var counter = 0;
-
-        $('#addRow').on( 'click', function (e) {
-            e.preventDefault();
-
-            $select = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-service').append(
-                    $('<select/>').addClass('uk-select selected').attr({
-                        id: 'services',
-                        name: 'services'
-                    }).append(
-                        $('<option value="">Choisir un service</option>'),
-                        {% for service in services %}
-                        $('<option value="{{ service.id }}">{{ service.name }}</option>'),
-                        {% endfor %}
-                    )
-                )
-            );
-
-            $select_pack = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-package').append(
-                    $('<select/>').addClass('uk-select selected').attr({
-                        id: 'package',
-                        name: 'package'
-                    }).append(
-                        $('<option value="">Choisir un produit</option>')
-                    )
-                )
-            );
-
-            $input_qte = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-qte').append(
-                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>'),
-                    $('<input type="text" value="1" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>'),
-                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>')
-                )
-            );
-
-            $unit_price = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-prix').append(
-                    $('<div class="uk-width-auto uk-text-center">0</div>')
-                )
-            );
-
-            $input_st = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-qte').append(
-                    $('<input type="text" value="0" name="st" class="uk-input change_st uk-width-auto uk-text-center"/>')
-                )
-            );
-
-            table_produit.row.add( [
-                $select.html(),
-                $select_pack.html(),
-                $input_qte.html(),
-                $unit_price.html(),
-                $input_st.html(),
-                '<button class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></button>'
-            ] ).draw( false );
-
-            $(".selected").select2({width:'100%'});
-
-            counter++;
-        } );
-
-        $('body').on( 'click', '.delete_item', function (e) {
-            e.preventDefault();
-            $tr = $(this).parent().parent();
-            table_produit.row($tr).remove().draw( false );
-
-            counter--;
-        } );
 
 
         $('#contact_exist').on('change', function(e){
@@ -679,17 +620,227 @@
             }
         });
 
-        $('body').on('click', '.add_pack', function(e){
-            e.preventDefault();
-            $save = $('#full').attr('href');
-            $new_url = $save +'?package='+$(this).data('id');
 
-            $('#full').attr('href', $new_url)
-            $('#full').trigger('click');
-            $('#full').attr('href', $save);
-        })
+        var table_produit = $('#dataTable_produit').DataTable({
+            'language':{
+                "sProcessing":     "Traitement en cours...",
+                "sSearch":         "Rechercher&nbsp;:",
+                "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+                "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+                "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+                "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                "sInfoPostFix":    "",
+                "sLoadingRecords": "Chargement en cours...",
+                "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                "sEmptyTable":     "Aucune donn&eacute;e disponible",
+                "oPaginate": {
+                    "sFirst":      "Premier",
+                    "sPrevious":   "Pr&eacute;c&eacute;dent",
+                    "sNext":       "Suivant",
+                    "sLast":       "Dernier"
+                },
+                "oAria": {
+                    "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                    "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+                }
+            },
+            "info": false,
+            "searching": false,
+            "iDisplayLength": -1,
+            "paging": false,
+            "scrollY": "500px",
+            "scrollCollapse": true,
+            //dom: 'f',
+            "bLengthChange" : false
+        });
+
+        var counter = 0;
+
+        $('#addRow').on( 'click', function (e) {
+            e.preventDefault();
+
+            $select = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-service').append(
+                    $('<select/>').addClass('uk-select selected services').attr({
+                        name: 'services'
+                    }).append(
+                        $('<option value="">Choisir un service</option>'),
+                        {% for service in services %}
+                            $('<option value="{{ service.sigle }}">{{ service.name }}</option>'),
+                        {% endfor %}
+                    )
+                )
+            );
+
+            $select_pack = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                    $('<select/>').addClass('uk-select selected package').attr({
+                        name: 'package'
+                    }).append(
+                        $('<option value="">Choisir un produit</option>')
+                    )
+                )
+            );
+
+            $input_qte = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-qte').append(
+                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>'),
+                    $('<input type="text" value="1" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>'),
+                    $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>')
+                )
+            );
+
+            $unit_price = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-prix').append(
+                    $('<div class="uk-width-auto uk-text-center">0</div>').attr(
+                        {
+                            "data-old": 0
+                        }
+                    ),
+                    $('<input type="hidden" value="0" name="prix" class="change_prix"/>')
+
+                )
+            );
+
+            $input_st = $('<div/>').append(
+                $('<div/>').addClass('uk-form-controls uk-form-st').append(
+                    $('<input type="text" value="0" name="st" class="uk-input change_st uk-width-auto uk-text-center"/>').attr(
+                        {
+                            "data-old": 0
+                        }
+                    )
+
+                )
+            );
+
+            table_produit.row.add( [
+                $select.html(),
+                $select_pack.html(),
+                $input_qte.html(),
+                $unit_price.html(),
+                $input_st.html(),
+                '<a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>'
+            ] ).draw( false );
+
+            $(".selected").select2({width:'100%'});
+
+
+
+            verif_ici_cm();
+            counter++;
+        } );
+
+        $('body').on( 'click', '.delete_item', function (e) {
+            e.preventDefault();
+
+            verif_ici_cm();
+
+            $tr = $(this).parent().parent();
+            table_produit.row($tr).remove().draw( false );
+            change_total();
+            save_ligne_doc();
+            counter--;
+        } );
+
+
+        $('body').on('change', '.services', function(e){
+            e.preventDefault();
+            var $this = $(this);
+            var datas = {};
+            $package = $this.parent().parent().next().find('.package');
+            datas['service'] = $this.val();
+{#            console.log($ici_cm);#}
+
+            if($this.val() != '') {
+
+                if($this.val() == 'ici_cm' && $ici_cm){
+                    $package.find('option:gt(0)').remove();
+                    $text = 'Cette ligne de service n\'est utilisable qu\'une seule fois.';
+                    UIkit.modal.alert($text).then(function() {
+                    });
+                }else{
+                    var url = '{{ url_for('package.find_package') }}';
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: JSON.stringify(datas),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: "json",
+                        success: function (data) {
+                            if (data['statut'] === 'OK') {
+
+                                $package.find('option:gt(0)').remove();
+                                $.each(data['data'], function (index, value) {
+                                    $package.append('<option value="' + value['id'] + '">' + value['name'] + '</option>');
+                                });
+
+                            }
+                        }
+                    });
+                }
+
+
+            }else{
+                $package.find('option:gt(0)').remove();
+                $package.change();
+            }
+
+            verif_ici_cm();
+
+        });
+
+        $('body').on('change', '.package', function(e) {
+            e.preventDefault();
+            var $this = $(this);
+            $qte = $this.parent().parent().next().find('.change_qte');
+            $prix = $this.parent().parent().next().next().find('.uk-form-prix > div');
+            $prix_hidden = $this.parent().parent().next().next().find('.uk-form-prix > .change_prix');
+            $sous_total = $this.parent().parent().next().next().next().find('.change_st');
+
+            var datas = {};
+            datas['package'] = $this.val();
+
+            if($this.val() != '') {
+                var url = '{{ url_for('package.find_single_package') }}';
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: JSON.stringify(datas),
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    success: function (data) {
+                        if (data['statut'] === 'OK') {
+
+                            $qte.val(data['qte']);
+
+                            prix = parseFloat(data['prix']) / parseFloat(data['qte']);
+
+                            $prix.html(prix.toFixed(2)).data("old", prix);
+                            $prix_hidden.val(prix);
+
+
+                            $sous_total.val(parseFloat(data['prix']).toFixed(2)).data("old", parseFloat(data['prix']));
+
+                            change_total();
+                            save_ligne_doc();
+
+                        }
+                    }
+                });
+
+            }else{
+                $qte.val(1);
+                $prix.html(0).data("old", 0);
+                $prix_hidden.val(0);
+                $sous_total.val(0).data("old", 0);
+            }
+
+
+
+        });
 
         change_total();
+{#        verif_ici_cm();#}
 
         $("body").on("click", ".ddd", function (e) {
             e.preventDefault();
@@ -697,8 +848,9 @@
             var $button = $(this);
             var $inline = $button.closest('.uk-form-qte');
             var $input = $button.closest('.uk-form-qte').find("input.change_qte");
-            var id_pack = $input.data('pack');
-            var $val_pack = parseInt($("#passage_total[data-id="+id_pack+"]").text())
+
+            $sous_total = $inline.parent().next().next().find('.change_st');
+            $prix = $inline.parent().next().find('.uk-form-prix > div');
 
             $input.val(function(i, value) {
                 return +value + (1 * +$button.data('multi'));
@@ -707,84 +859,57 @@
             if(parseInt($input.val()) < 1){
                 $input.val(1);
             }
+            new_sous_total = parseFloat($prix.data('old')) * parseFloat($input.val());
+            $sous_total.val(new_sous_total.toFixed(2)).data("old", new_sous_total);
 
-            var exist = 0;
-            $(".change_qte[data-pack="+id_pack+"]").each(function(){
-
-                exist = exist + 1;
-
-            });
-
-            if(parseInt($input.val()) > ($val_pack - (exist - 1))){
-                $input.val($val_pack - (exist - 1));
-            }
-
-
-            var count = 0;
-            $(".change_qte[data-pack="+id_pack+"]").each(function(){
-
-                    count = count + parseInt($(this).val());
-
-            });
-
-            var $reste = $val_pack - count
-
-            $("#reste-pack[data-pack="+id_pack+"]").text($reste)
-            if($reste == 0){
-                $("#reste-pack[data-pack="+id_pack+"]").parent().addClass('uk-hidden');
-
-                $("#reste-pack[data-pack="+id_pack+"]").parent().parent().removeClass('uk-background-danger');
-            }else{
-                $("#reste-pack[data-pack="+id_pack+"]").parent().removeClass('uk-hidden');
-                $("#reste-pack[data-pack="+id_pack+"]").parent().parent().addClass('uk-background-danger');
-            }
 
             change_total();
+            save_ligne_doc();
         });
 
 
-        $('body').on('change', '#reload_site tbody .change_qte', function(){
+        $('body').on('change', '#dataTable_produit tbody .change_qte', function(e){
 
-            var id_pack = $(this).data('pack');
-            var $val_pack = parseInt($("#passage_total[data-id="+id_pack+"]").text())
+            e.preventDefault();
 
+            $sous_total = $(this).parent().parent().next().next().find('.change_st');
+
+            $prix = $(this).parent().parent().next().find('.uk-form-prix > div');
 
             if(parseInt($(this).val()) < 1){
                 $(this).val(1)
             }
 
-            var exist = 0;
-            $(".change_qte[data-pack="+id_pack+"]").each(function(){
-
-                exist = exist + 1;
-
-            });
-
-            if(parseInt($(this).val()) > ($val_pack - (exist - 1))){
-                $(this).val($val_pack - (exist - 1));
-            }
-
-
-            var count = 0;
-            $(".change_qte[data-pack="+id_pack+"]").each(function(){
-
-                count = count + parseInt($(this).val());
-
-            });
-
-            var $reste = $val_pack - count
-
-            $("#reste-pack[data-pack="+id_pack+"]").text($reste)
-            if($reste == 0){
-                $("#reste-pack[data-pack="+id_pack+"]").parent().addClass('uk-hidden');
-
-                $("#reste-pack[data-pack="+id_pack+"]").parent().parent().removeClass('uk-background-danger');
-            }else{
-                $("#reste-pack[data-pack="+id_pack+"]").parent().removeClass('uk-hidden');
-                $("#reste-pack[data-pack="+id_pack+"]").parent().parent().addClass('uk-background-danger');
-            }
+            new_sous_total = parseFloat($prix.data('old')) * parseFloat($(this).val());
+            $sous_total.val(new_sous_total.toFixed(2)).data("old", new_sous_total);
 
             change_total();
+            save_ligne_doc();
+
+        });
+
+        $('body').on('change', '#dataTable_produit tbody .change_st', function(e){
+
+            e.preventDefault();
+
+            $qte = $(this).parent().parent().prev().prev().find('.change_qte');
+
+
+
+            $prix = $(this).parent().parent().prev().find('.uk-form-prix > div');
+            $prix_hidden = $(this).parent().parent().prev().find('.uk-form-prix > .change_prix');
+
+            if(parseInt($(this).val()) < 1){
+                $(this).val($(this).data('old'))
+            }
+
+            new_prix = parseFloat($(this).val()) / parseFloat($qte.val());
+            $prix.html(new_prix.toFixed(2)).data("old", new_prix);
+            $prix_hidden.val(new_prix);
+
+
+            change_total();
+            save_ligne_doc();
 
         });
 
@@ -794,15 +919,15 @@
             });
         }
 
-        $('#apply_tva:checkbox').change(function() {
-            $tva_value = '{{ current_ref.taux_tva }}';
-            if($('#apply_tva').prop('checked')){
-                $('#taxe_tva').text($tva_value);
-            }else{
-                $('#taxe_tva').text('0');
-            }
-            change_total();
-        });
+{#        $('#apply_tva:checkbox').change(function() {#}
+{#            $tva_value = '{{ current_ref.taux_tva }}';#}
+{#            if($('#apply_tva').prop('checked')){#}
+{#                $('#taxe_tva').text($tva_value);#}
+{#            }else{#}
+{#                $('#taxe_tva').text('0');#}
+{#            }#}
+{#            change_total();#}
+{#        });#}
 
 
         function concat($value){
@@ -818,47 +943,85 @@
 
         function change_total(){
 
-         $('.uk-form-qte').each(function(){
-            $prix = $(this).parent().next().find('.prix').val();
-            $input = $(this).find(".change_qte");
-            $total = parseInt($input.val()) * parseFloat($prix);
-            $all = $(this).parent().next().next().find('.change_total').text($total);
-         })
+{#         $('.uk-form-qte').each(function(){#}
+{#            $prix = $(this).parent().next().find('.prix').val();#}
+{#            $input = $(this).find(".change_qte");#}
+{#            $total = parseInt($input.val()) * parseFloat($prix);#}
+{#            $all = $(this).parent().next().next().find('.change_total').text($total);#}
+{#         })#}
 
 
-         $tva_value = '{{ current_ref.taux_tva }}';
-         if($('#apply_tva').prop('checked')){
-            $('#taxe_tva').text($tva_value);
-         }else{
-            $('#taxe_tva').text('0');
-         }
+{#         $tva_value = '{{ current_ref.taux_tva }}';#}
+{#         if($('#apply_tva').prop('checked')){#}
+{#            $('#taxe_tva').text($tva_value);#}
+{#         }else{#}
+{#            $('#taxe_tva').text('0');#}
+{#         }#}
 
-         total = 0;
+             total = 0;
 
-         $('#reload_site tbody .change_total').each(function(){
-             total = total + parseInt(concat($(this).text()));
-         });
+             $('#dataTable_produit tbody .change_st').each(function(){
+                 total = total + parseFloat($(this).val());
+             });
 
-         $('#global_total').text(total);
+             $('#global_total').text(total);
 
-         $tva = parseFloat($('#taxe_tva').text());
-         $tva_result = ($tva * total) / 100;
+             $tva = parseFloat($('#taxe_tva').text());
+             $tva_result = ($tva * total) / 100;
 
-         $('#tva_value').text($tva_result);
+             $('#tva_value').text($tva_result);
 
-         $ttc = $tva_result + total;
-         $('#total_ttc').text($ttc);
+             $ttc = $tva_result + total;
+             $('#total_ttc').text($ttc);
 
-         $('#global_total, .change_total, .prix, #tva_value, #total_ttc').formatCurrency({
-            symbol: '',
-            positiveFormat: '%s%n',
-            negativeFormat: '(%s%n)',
-            decimalSymbol: ',',
-            digitGroupSymbol: ' ',
-            groupDigits: true
-         });
+             $('#global_total, #tva_value, #total_ttc').formatCurrency({
+                symbol: '',
+                positiveFormat: '%s%n',
+                negativeFormat: '(%s%n)',
+                decimalSymbol: ',',
+                digitGroupSymbol: ' ',
+                groupDigits: true
+             });
 
-     }
+
+
+        }
+
+        function verif_ici_cm(){
+
+            counters = 0;
+            $('#dataTable_produit tbody .services').each(function(){
+                if($(this).val() == 'ici_cm'){
+                    counters++;
+                }
+            });
+
+            if(counters > 0){
+                $('#ici_cm').val(1)
+            }else{
+                $('#ici_cm').val('')
+            }
+
+        }
+
+        function save_ligne_doc(){
+            var datas = table_produit.$('input, select').serialize();
+
+            var url = '{{ url_for('devis.ligne_commande') }}';
+            $.ajax({
+                method: "POST",
+                data: datas,
+                url: url
+            })
+{#                .done(function( msg ) {#}
+{##}
+{#                msg = $.parseJSON(msg);#}
+{#                console.log(msg);#}
+{##}
+{##}
+{#            })#}
+
+        }
 
 {#        $('body').on('click', '.delete_item', function(e){#}
 {#        e.preventDefault();#}

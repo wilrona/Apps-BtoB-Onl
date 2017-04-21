@@ -33,7 +33,8 @@ class Document(db.Document):
 
 
 class LigneDoc(db.Document):
-    doc_id = db.ReferenceField('Document')
+    iddocument = db.ReferenceField('Document')
+    iddevis = db.ReferenceField('Document')
     prix = db.FloatField()
     qte = db.IntField()
     dateDebut = db.DateTimeField()

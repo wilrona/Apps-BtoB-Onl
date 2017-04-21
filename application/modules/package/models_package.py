@@ -17,11 +17,20 @@ class Package(db.Document):
     attribut = db.ListField(db.StringField())
     sale = db.IntField()
 
+    def similar(self):
+
+        pack = Package.objects(idligneService=self.idligneService)
+
+        return pack
 
 class LigneService(db.Document):
     name = db.StringField()
     package = db.BooleanField()
     sigle = db.StringField()
+
+    def packages(self):
+        pack = Package.objects(idligneService=self.sigle)
+        return pack
 
 
 class Attribut(db.Document):

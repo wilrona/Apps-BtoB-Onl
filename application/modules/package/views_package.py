@@ -172,3 +172,47 @@ def down(package_id):
         current_etape.save()
 
     return redirect(url_for('package.index'))
+
+
+@prefix.route('/find/package/', methods=['POST'])
+def find_package():
+
+    service_id = str(request.json['service'])
+
+    customer = Package.objects(idligneService=service_id)
+
+    list = []
+
+    for data in customer:
+        current = {}
+        current['id'] = str(data.id)
+        current['name'] = data.name
+        list.append(current)
+
+    datas = json.dumps({
+        'statut': 'OK',
+        'data': list
+    })
+
+    return datas
+
+
+@prefix.route('/find/single/package', methods=['POST'])
+def find_single_package():
+
+    package_id = str(request.json['package'])
+
+    pack = Package.objects.get(id=package_id)
+
+    prix = pack.prix
+    if pack.promo:
+        prix = pack.prix_promo
+
+    data = json.dumps({
+        'id': str(pack.id),
+        'qte': pack.duree,
+        'prix': prix,
+        'statut': 'OK'
+    })
+
+    return data

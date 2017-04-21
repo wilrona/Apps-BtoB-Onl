@@ -576,6 +576,13 @@ html, div *{
     height: 200px !important;
 }
 
-.dataTables_scrollBody .uk-table thead{
+/*.dataTables_scrollBody .uk-table thead{*/
+    /*display: none;*/
+/*}*/
+
+.dataTables_scrollBody table.dataTable thead>tr>th.sorting:after,
+.dataTables_scrollBody table.dataTable thead>tr>td.sorting:after,
+.dataTables_scrollBody table.dataTable thead>tr>th.sorting_asc:after,
+.dataTables_scrollBody table.dataTable thead>tr>td.sorting_asc:after{
     display: none;
 }

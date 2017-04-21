@@ -225,6 +225,9 @@ def edit(devis_id=None):
 
     services = LigneService.objects()
 
+    if 'package' not in session:
+        session['package'] = []
+
     current_client = None
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
 
@@ -400,12 +403,52 @@ def edit(devis_id=None):
     return render_template('devis/edit.html', **locals())
 
 
-@prefix.route('/ligne/commande')
+@prefix.route('/ligne/commande', methods=['POST'])
 def ligne_commande():
 
-    services = LigneService.objects()
+    from ..package.models_package import Package
 
-    return render_template('devis/ligne_commande.html', **locals())
+    session['package'] = []
+
+    data = []
+
+    services = request.form.getlist('services')
+    package = request.form.getlist('package')
+    qte = request.form.getlist('qte')
+    st = request.form.getlist('st')
+    prix = request.form.getlist('prix')
+    exist_ici = ''
+    size = len(services)
+    if size:
+        packs = Package.objects(idligneService=services[0])
+        similaire = []
+        for pack in packs:
+            ligsimilaire = {}
+            ligsimilaire['id'] = str(pack.id)
+            ligsimilaire['name'] = pack.name
+            similaire.append(ligsimilaire)
+
+        for x in range(0, size):
+            ligne = {}
+            if services[0] == 'ici_cm':
+                exist_ici = '1'
+            ligne['service'] = services[0]
+            ligne['package'] = str(package[0])
+            ligne['similaire'] = similaire
+            ligne['qte'] = qte[0]
+            ligne['prix'] = float(prix[0])
+            ligne['st'] = float(st[0])
+
+            data.append(ligne)
+
+    session['package'] = {
+        'exist_ici': exist_ici,
+        'data': data
+    }
+
+    data = json.dumps(data)
+
+    return data
 
 
 @prefix.route('/change/<objectid:devis_id>/<int:status>', methods=['GET'])
