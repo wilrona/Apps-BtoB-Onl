@@ -289,7 +289,7 @@
             .done(function( msg ) {
 
                 msg = $.parseJSON(msg);
-                var document = $("<p/>").addClass('uk-modal-body');
+                var $document = $("<p/>").addClass('uk-modal-body');
                 $.each(msg, function(i, item){
                     if(item['statut'] == 'OK'){
 
@@ -299,7 +299,7 @@
                             table.row($parent).remove().draw( false );
                         };
 
-                        document.append(
+                        $document.append(
                             $('<br/>')
                         ).append(
                             $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
@@ -314,7 +314,7 @@
 
                     }
                     if(item['statut'] == 'NOK'){
-                        document.append(
+                        $document.append(
                             $('<br/>')
                         ).append(
                             $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(

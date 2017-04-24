@@ -5,7 +5,7 @@ from models_doc import Document, LigneDoc
 from forms_doc import FormDevis
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie, Categorie
-from ..package.models_package import LigneService
+from ..package.models_package import LigneService, Package
 from ..opportunite.models_opportunite import Opportunite
 from ..company.models_company import Config_reference, Company
 from ..compagnie.forms_compagnie import FormClient
@@ -39,124 +39,26 @@ def view(devis_id):
 
     data = Document.objects.get(id=devis_id)
 
-    check_status(data)
-
-    if not current_user.has_roles([('super_admin', 'devis')]) and data.vendeur_id.id != current_user.id:
+    if not current_user.has_roles([('super_admin', 'devis')], ['edit']) and data.vendeur_id.id != current_user.id:
         return redirect(url_for('devis.index'))
 
     form = FormDevis(obj=data)
-
-    form.client_id.data = str(data.client_id.id)
-    form.support_id.data = str(data.support_id.id)
-
-    form.contact_id.data = str(data.contact_id.id)
 
     if data.opportunite_id:
         form.opportunite_id.data = str(data.opportunite_id.id)
         form.opportunite_text.data = data.opportunite_id.name
 
-    all = Client.objects(actif=True)
-    form.client_id.choices = [('', ' ')]
-    for choice in all:
-        form.client_id.choices.append((str(choice.id), choice.name))
+    check_status(data)
 
-    all = Support.objects(actif=True)
-    form.support_id.choices = [('', ' ')]
-    for choice in all:
-        form.support_id.choices.append((str(choice.id), choice.name))
+    ligne_doc = LigneDoc.objects(iddevis=data.id)
 
-    # list_site = []
-    lignes = LigneDoc.objects(doc_id=data.id)
+    customer = Compagnie.objects.get(id=data.client_id.id)
+    form_client = FormClient(prefix="client", obj=customer)
 
-    list_pack = {}
-    list_pack['current'] = None
-    list_pack['all'] = []
+    contact = Users.objects.get(id=data.contact_id.id)
+    form_contact = FormUser(obj=contact)
 
-    for ligne in lignes:
-
-        id_packs = []
-        if len(list_pack['all']):
-            id_packs = [str(data_p['id']) for data_p in list_pack['all']]
-
-        if str(ligne.package.id) not in id_packs:
-
-            pack = {}
-            pack['id'] = str(ligne.package.id)
-            pack['name'] = str(ligne.package.name)
-            pack['qte'] = 0
-            pack['total'] = 0
-            pack['ville'] = []
-
-            ligne_ville = str(ligne.site_id.local_id.parent.id)
-            ville = {}
-            ville['id'] = ligne_ville
-            ville['site'] = []
-
-            site = {}
-            site['id'] = str(ligne.site_id.id)
-            site['name'] = ligne.site_id.name
-            site['ref'] = str(current_ref.ref_site)+'/'+ligne.site_id.ref
-            site['qte'] = ligne.passage
-            site['prix'] = ligne.cout_passage
-            site['total'] = ligne.passage * ligne.cout_passage
-
-            ville['site'].append(site)
-
-            pack['ville'].append(ville)
-
-            pack['total'] += ligne.passage
-            pack['qte'] = pack['total'] / ligne.package.passage
-
-            list_pack['all'].append(pack)
-
-        else:
-
-            index_pack = id_packs.index(str(ligne.package.id))
-            pack = list_pack['all'][index_pack]
-
-            id_ville = [data_v['id'] for data_v in pack['ville']]
-            ligne_ville = str(ligne.site_id.local_id.parent.id)
-
-            if ligne_ville in id_ville:
-
-                index_ville = id_ville.index(ligne_ville)
-                packe_ville = pack['ville'][index_ville]
-
-                site = {}
-                site['id'] = str(ligne.site_id.id)
-                site['name'] = ligne.site_id.name
-                site['ref'] = str(current_ref.ref_site)+'/'+ligne.site_id.ref
-                site['qte'] = ligne.passage
-                site['prix'] = ligne.cout_passage
-                site['total'] = ligne.passage * ligne.cout_passage
-
-                packe_ville['site'].append(site)
-
-                pack['total'] += ligne.passage
-                pack['qte'] = pack['total'] / ligne.package.passage
-
-            else:
-
-                ville = {}
-                ville['id'] = ligne_ville
-                ville['site'] = []
-
-                site = {}
-                site['id'] = str(ligne.site_id.id)
-                site['name'] = ligne.site_id.name
-                site['ref'] = str(current_ref.ref_site)+'/'+ligne.site_id.ref
-                site['qte'] = ligne.passage
-                site['prix'] = ligne.cout_passage
-                site['total'] = ligne.passage * ligne.cout_passage
-
-                ville['site'].append(site)
-
-                pack['ville'].append(ville)
-
-                pack['total'] += ligne.passage
-                pack['qte'] = pack['total'] / ligne.package.passage
-
-    list_pack = list_pack['all']
+    services = LigneService.objects()
 
     return render_template('devis/view.html', **locals())
 
@@ -179,9 +81,6 @@ def edit(devis_id=None):
             return redirect(url_for('devis.view', devis_id=devis_id))
 
         form = FormDevis(obj=data)
-
-        form.client_id.data = str(data.client_id.id)
-        form.contact_id.data = str(data.contact_id.id)
 
         if data.opportunite_id:
             form.opportunite_id.data = str(data.opportunite_id.id)
@@ -220,8 +119,6 @@ def edit(devis_id=None):
             for cont in cur_client.iduser:
                 if cont not in contact_list:
                     contact_list.append(cont)
-
-    form_client.notCat.data = '1'
 
     services = LigneService.objects()
 
@@ -267,6 +164,8 @@ def edit(devis_id=None):
             if cont not in contact_list:
                 contact_list.append(cont)
 
+    form_client.notCat.data = '1'
+
     form_client.idcategorie.data = ''
     form_client.idcategorie.choices = [('', '')]
     form_client.maincategorie.data = ''
@@ -290,12 +189,12 @@ def edit(devis_id=None):
                     customer.phone = form_client.phone.data
                     customer.activated = False
 
-                    customer = customer.save()
+                    current_client = customer.save()
 
-                    data.client_id = customer
+                    data.client_id = current_client
                 else:
-                    customer_to_opportunity = current_opportunite.client_id
-                    data.client_id = customer_to_opportunity
+                    current_client = current_opportunite.client_id
+                    data.client_id = current_client
 
         if 'contact_exist' in request.form and request.form['contact_exist']:
             data.contact_id = current_contact
@@ -323,82 +222,51 @@ def edit(devis_id=None):
                     cli.idcontact.append(contact)
                     cli.save()
 
-    #
-    #     contact = Users.objects.get(id=form.contact_id.data)
-    #     data.contact_id = contact
-    #
-    #     data.apply_tva = False
-    #     data.tva_apply = 0
-    #     if 'apply_tva' in request.form:
-    #         data.apply_tva = True
-    #         data.tva_apply = current_ref.taux_tva
-    #
-    #     total = 0
-    #     posit = 0
-    #     for item in request.form.getlist('id'):
-    #         montant = float(request.form.getlist('prix')[posit].replace(',','.')) * int(request.form.getlist('qte')[posit])
-    #         total += montant
-    #         posit += 1
-    #
-    #     data.montant = total
-    #
-    #     data.have_support = False
-    #     if 'have_support' in request.form:
-    #        data.have_support = True
-    #
-    #     vendeur = Users.objects.get(id=current_user.id)
-    #     data.vendeur_id = vendeur
-    #
-    #     if form.opportunite_id.data:
-    #         opport = Opportunite.objects.get(id=form.opportunite_id.data)
-    #         data.opportunite_id = opport
-    #
-    #     if not devis_id:
-    #         count_exist = Document.objects(devisDoc=True).count()
-    #         data.ref = function.reference(count=count_exist+1, caractere=7, refuser=data.vendeur_id.ref)
-    #
-    #     data = data.save()
-    #
-    #     ## traitement de recuperation du package
-    #     list_site = []
-    #     for pack in list_pack:
-    #         the_pack = Package.objects.get(id=pack['id'])
-    #         for ville in pack['ville']:
-    #             for site in ville['site']:
-    #                 current_site = {}
-    #                 current_site['id'] = site['id']
-    #                 current_site['package'] = str(the_pack.id)
-    #                 list_site.append(current_site)
-    #
-    #     id_list_site = [str(site['id']) for site in list_site]
-    #
-    #     if not devis_id:
-    #         position = 0
-    #         for item in request.form.getlist('id'):
-    #             ligne = LigneDoc()
-    #             ligne.passage = int(request.form.getlist('qte')[position])
-    #             ligne.cout_passage = float(request.form.getlist('prix')[position].replace(',','.'))
-    #             ligne.doc_id = data
-    #
-    #             index_site = id_list_site.index(item)
-    #             packs = Package.objects.get(id=list_site[index_site]['package'])
-    #             ligne.package = packs
-    #
-    #             site = Site.objects.get(id=item)
-    #             ligne.site_id = site
-    #
-    #             ligne.save()
-    #             position += 1
-    #
-    #         session.pop('package')
-    #
-    #     flash('Enregistement effectue avec succes', 'success')
-    #
-    #     if request.form['nouveau'] == '1':
-    #         check_status(data)
-    #         return redirect(url_for('devis.edit'))
-    #     else:
-    #         return redirect(url_for('devis.view', devis_id=data.id))
+
+        total = 0
+        for item in session.get('package')['data']:
+            total += item['st']
+
+        data.montant = total
+
+        vendeur = Users.objects.get(id=current_user.id)
+        data.vendeur_id = vendeur
+
+        if form.opportunite_id.data:
+            opport = Opportunite.objects.get(id=form.opportunite_id.data)
+            data.opportunite_id = opport
+
+        if not devis_id:
+            count_exist = Document.objects(devisDoc=True).count()
+            data.ref = function.reference(count=count_exist+1, caractere=7, refuser=data.vendeur_id.ref)
+
+        data = data.save()
+
+        position = 0
+        if not devis_id:
+            for item in session.get('package')['data']:
+                ligne = LigneDoc()
+
+                ligne.iddevis = data
+                ligne.prix = float(item['st'])
+                ligne.qte = item['qte']
+
+                ligne.idcompagnie = current_client
+                package = Package.objects.get(id=item['package'])
+                ligne.idpackage = package
+
+                ligne.save()
+                position += 1
+
+            session.pop('package')
+
+        flash('Enregistement effectue avec succes', 'success')
+
+        if request.form['nouveau'] == '1':
+            check_status(data)
+            return redirect(url_for('devis.edit'))
+        else:
+            return redirect(url_for('devis.view', devis_id=data.id))
 
     return render_template('devis/edit.html', **locals())
 
@@ -429,17 +297,18 @@ def ligne_commande():
             similaire.append(ligsimilaire)
 
         for x in range(0, size):
-            ligne = {}
-            if services[0] == 'ici_cm':
-                exist_ici = '1'
-            ligne['service'] = services[0]
-            ligne['package'] = str(package[0])
-            ligne['similaire'] = similaire
-            ligne['qte'] = qte[0]
-            ligne['prix'] = float(prix[0])
-            ligne['st'] = float(st[0])
+            if services[0]:
+                ligne = {}
+                if services[0] == 'ici_cm':
+                    exist_ici = '1'
+                ligne['service'] = services[0]
+                ligne['package'] = str(package[0])
+                ligne['similaire'] = similaire
+                ligne['qte'] = int(qte[0])
+                ligne['prix'] = float(prix[0])
+                ligne['st'] = float(st[0])
 
-            data.append(ligne)
+                data.append(ligne)
 
     session['package'] = {
         'exist_ici': exist_ici,

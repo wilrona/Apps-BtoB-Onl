@@ -24,7 +24,6 @@
             <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et Nouveau</a>
             <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('opportunite.view', opportunite_id=current_opportunite.id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
 
-
         {% endif %}
     {% endif %}
 {% endblock %}
@@ -74,6 +73,7 @@
                         {{ form.hidden_tag() }}
                         {{ form_client.hidden_tag() }}
                         {{ form_contact.hidden_tag() }}
+
                         <input type="hidden" name="nouveau" value="0" id="nouveau"/>
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
                             {% if devis_id %}
@@ -368,7 +368,7 @@
                                                         <td>
                                                             <div class="uk-form-controls uk-form-service">
 
-                                                                <select name="services" id="services" class="uk-select selected">
+                                                                <select name="services"  class="uk-select selected services">
                                                                     <option value="">Choisir un service</option>
                                                                     {% for service in services %}
                                                                         <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
@@ -381,7 +381,7 @@
 
                                                             <div class="uk-form-controls uk-form-package">
 
-                                                                <select name="package" id="package" class="uk-select selected">
+                                                                <select name="package" class="uk-select selected package">
                                                                     <option value="">Choisir un produit</option>
                                                                     {% for package in pack['similaire'] %}
                                                                         <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
@@ -404,7 +404,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="uk-form-controls uk-form-prix">
-                                                                <div class="uk-width-auto uk-text-center" data-old="{{ pack['prix'] }}">{{ pack['prix'] }}</div>
+                                                                <div class="uk-width-auto uk-text-center" data-old="{{ pack['prix'] }}">{{ pack['prix']|round(2, 'floor') }}</div>
                                                                 <input type="hidden" value="{{ pack['prix'] }}" name="prix" class="change_prix"/>
                                                             </div>
                                                         </td>
@@ -459,45 +459,48 @@
 
      <script>
 
-        $ici_cm = $('input#ici_cm').val();
+        var $ici_cm = $('input#ici_cm').val();
+
+        var table_produit = $('#dataTable_produit').DataTable({
+            'language':{
+                "sProcessing":     "Traitement en cours...",
+                "sSearch":         "Rechercher&nbsp;:",
+                "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+                "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+                "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+                "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                "sInfoPostFix":    "",
+                "sLoadingRecords": "Chargement en cours...",
+                "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                "sEmptyTable":     "Aucune donn&eacute;e disponible",
+                "oPaginate": {
+                    "sFirst":      "Premier",
+                    "sPrevious":   "Pr&eacute;c&eacute;dent",
+                    "sNext":       "Suivant",
+                    "sLast":       "Dernier"
+                },
+                "oAria": {
+                    "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                    "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+                }
+            },
+            "info": false,
+            "searching": false,
+            "iDisplayLength": -1,
+            "paging": false,
+            "scrollY": "500px",
+            "scrollCollapse": true,
+            //dom: 'f',
+            "bLengthChange" : false
+        });
+
+        var counter = table_produit.rows().count() ;
 
         $('#submit').on('click', function(e){
             e.preventDefault();
-            if(counter > 1){
+            if(counter >= 1){
                 $('#formulaire').submit();
             }
-
-{#            count = 0#}
-{#            $('.change_qte').each(function(){#}
-{#                count++;#}
-{#            });#}
-{##}
-{#            $reste = 0#}
-{#            $('#reste-pack').each(function(){#}
-{#                $reste = parseInt($(this).text()) + $reste;#}
-{#            })#}
-{##}
-{#            console.log($reste);#}
-{#            if(count > 0 && $reste == 0){#}
-{#                $('#formulaire').submit();#}
-{#            }else{#}
-{#                $text = ''#}
-{#                if (count <= 0) {#}
-{#                    $text = $text + 'Il n\'a aucun element de site ajouté sur le devis';#}
-{#                    UIkit.modal.alert($text).then(function() {#}
-{#                        $('#open-modal').trigger('click');#}
-{#                    });#}
-{#                    return false;#}
-{#                }#}
-{##}
-{#                if($reste != 0){#}
-{#                    $text = $text + 'Il existe des packages incomplets dans ce devis. Veuillez les identifier';#}
-{#                    UIkit.modal.alert($text).then(function() {#}
-{#                    });#}
-{#                    return false;#}
-{#                }#}
-{##}
-{#            }#}
         });
 
 
@@ -620,42 +623,6 @@
             }
         });
 
-
-        var table_produit = $('#dataTable_produit').DataTable({
-            'language':{
-                "sProcessing":     "Traitement en cours...",
-                "sSearch":         "Rechercher&nbsp;:",
-                "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
-                "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
-                "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
-                "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                "sInfoPostFix":    "",
-                "sLoadingRecords": "Chargement en cours...",
-                "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                "sEmptyTable":     "Aucune donn&eacute;e disponible",
-                "oPaginate": {
-                    "sFirst":      "Premier",
-                    "sPrevious":   "Pr&eacute;c&eacute;dent",
-                    "sNext":       "Suivant",
-                    "sLast":       "Dernier"
-                },
-                "oAria": {
-                    "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
-                    "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-                }
-            },
-            "info": false,
-            "searching": false,
-            "iDisplayLength": -1,
-            "paging": false,
-            "scrollY": "500px",
-            "scrollCollapse": true,
-            //dom: 'f',
-            "bLengthChange" : false
-        });
-
-        var counter = 0;
-
         $('#addRow').on( 'click', function (e) {
             e.preventDefault();
 
@@ -727,7 +694,7 @@
 
 
             verif_ici_cm();
-            counter++;
+            counter = table_produit.rows().count();
         } );
 
         $('body').on( 'click', '.delete_item', function (e) {
@@ -739,7 +706,7 @@
             table_produit.row($tr).remove().draw( false );
             change_total();
             save_ligne_doc();
-            counter--;
+            counter = table_produit.rows().count();
         } );
 
 
@@ -747,9 +714,11 @@
             e.preventDefault();
             var $this = $(this);
             var datas = {};
+
+            $ici_cm = $('input#ici_cm').val();
+
             $package = $this.parent().parent().next().find('.package');
             datas['service'] = $this.val();
-{#            console.log($ici_cm);#}
 
             if($this.val() != '') {
 
@@ -791,6 +760,7 @@
 
         $('body').on('change', '.package', function(e) {
             e.preventDefault();
+
             var $this = $(this);
             $qte = $this.parent().parent().next().find('.change_qte');
             $prix = $this.parent().parent().next().next().find('.uk-form-prix > div');
@@ -822,6 +792,8 @@
                             $sous_total.val(parseFloat(data['prix']).toFixed(2)).data("old", parseFloat(data['prix']));
 
                             change_total();
+
+
                             save_ligne_doc();
 
                         }
@@ -833,6 +805,10 @@
                 $prix.html(0).data("old", 0);
                 $prix_hidden.val(0);
                 $sous_total.val(0).data("old", 0);
+
+
+                save_ligne_doc();
+
             }
 
 
@@ -1002,6 +978,8 @@
                 $('#ici_cm').val('')
             }
 
+{#            console.log($('#ici_cm').val());#}
+
         }
 
         function save_ligne_doc(){
@@ -1012,14 +990,13 @@
                 method: "POST",
                 data: datas,
                 url: url
+            }).done(function( msg ) {
+
+                msg = $.parseJSON(msg);
+                console.log(msg);
+
+
             })
-{#                .done(function( msg ) {#}
-{##}
-{#                msg = $.parseJSON(msg);#}
-{#                console.log(msg);#}
-{##}
-{##}
-{#            })#}
 
         }
 

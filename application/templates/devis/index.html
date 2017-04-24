@@ -43,7 +43,7 @@
                         <tr>
                             <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
                             <th width="15%">N° de devis</th>
-                            <th width="15%">Date de la commande</th>
+                            <th width="15%">Date du devis</th>
                             <th width="20%">Clients</th>
                             <th width="20%">Vendeur</th>
                             <th width="15%">Total</th>
@@ -56,7 +56,7 @@
                           <tr data-link="{{ url_for('devis.view', devis_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ current_ref.ref_devis }}/{{ data.ref }}</td>
-                            <td>{{ data.createDate|format_date('%d/%m/%Y') }}</td>
+                            <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
                             <td>{{ data.client_id.name }}</td>
                             <td>{{ data.vendeur_id.full_name() }}</td>
                             <td>{{ data.montant }}</td>

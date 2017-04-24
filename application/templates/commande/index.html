@@ -45,7 +45,7 @@
                           <tr data-link="{{ url_for('commande.view', devis_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ current_ref.ref_devis }}/{{ data.ref }}</td>
-                            <td>{{ data.createDateDevis|format_date('%d/%m/%Y') }}</td>
+                            <td>{{ data.updateDate|format_date('%d/%m/%Y - %H:%M') }}</td>
                             <td>{{ data.client_id.name }}</td>
                             <td>{{ data.vendeur_id.full_name() }}</td>
                             <td>{{ data.montant }}</td>
@@ -59,15 +59,6 @@
                         {% endfor %}
 
                         </tbody>
-{#                        <tfooter>#}
-{#                        <tr>#}
-{#                            <th><input type="checkbox" value="" class="uk-checkbox"/></th>#}
-{#                            <th colspan="3"></th>#}
-{#                            <th width="35%"><div class="uk-text-bold uk-text-right">Total</div></th>#}
-{#                            <th width="35%">{{ total }}</th>#}
-{#                            <th colspan="2"></th>#}
-{#                        </tr>#}
-{#                        </tfooter>#}
 
                     </table>
 

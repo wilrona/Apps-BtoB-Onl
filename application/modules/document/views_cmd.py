@@ -6,10 +6,13 @@ from models_doc import Document, LigneDoc
 from forms_doc import FormDevis
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie
-from ..opportunite.models_opportunite import Opportunite
 from ..company.models_company import Config_reference
+from ..compagnie.forms_compagnie import FormClient
+from ..user.forms_user import FormUser
+from ..package.models_package import LigneService
 
 prefix = Blueprint('commande', __name__)
+
 
 @prefix.route('/')
 @login_required
@@ -17,7 +20,6 @@ def index():
 
     current_ref = Config_reference.objects().first()
     title_page = 'Commande'
-
 
     if current_user.has_roles([('super_admin', 'commande')]):
         datas = Document.objects(Q(devisDoc=True) & Q(status=2))
@@ -36,36 +38,25 @@ def view(devis_id):
 
     data = Document.objects.get(id=devis_id)
 
-    if not current_user.has_roles([('super_admin', 'commande')]) and data.vendeur_id.id != current_user.id:
-        return redirect(url_for('commande.index'))
+    if not current_user.has_roles([('super_admin', 'commande')], ['edit']) and data.vendeur_id.id != current_user.id:
+        return redirect(url_for('devis.index'))
 
     form = FormDevis(obj=data)
 
-    form.client_id.data = str(data.client_id.id)
-    form.support_id.data = str(data.support_id.id)
+    if data.opportunite_id:
+        form.opportunite_id.data = str(data.opportunite_id.id)
+        form.opportunite_text.data = data.opportunite_id.name
 
-    all = Client.objects()
-    form.client_id.choices = [('', ' ')]
-    for choice in all:
-        form.client_id.choices.append((str(choice.id), choice.name))
+    ligne_doc = LigneDoc.objects(iddevis=data.id)
 
-    all = Support.objects()
-    form.support_id.choices = [('', ' ')]
-    for choice in all:
-        form.support_id.choices.append((str(choice.id), choice.name))
+    customer = Compagnie.objects.get(id=data.client_id.id)
+    form_client = FormClient(prefix="client", obj=customer)
 
-    list_site = []
-    lignes = LigneDoc.objects(doc_id=data.id)
-    for ligne in lignes:
-        site = {}
-        site['id'] = str(ligne.id)
-        site['name'] = ligne.site_id.name
-        site['ref'] = str(current_ref.ref_site)+'/'+ligne.site_id.ref
-        site['qte'] = ligne.passage
-        site['prix'] = ligne.cout_passage
-        site['total'] = ligne.passage * ligne.cout_passage
-        list_site.append(site)
+    contact = Users.objects.get(id=data.contact_id.id)
+    form_contact = FormUser(obj=contact)
 
-    return render_template('commande/view.html', **locals())
+    services = LigneService.objects()
+
+    return render_template('devis/view.html', **locals())
 
 
