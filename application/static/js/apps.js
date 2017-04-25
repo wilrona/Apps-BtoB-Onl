@@ -328,7 +328,7 @@
                 $('input.uk-checkbox-item', rows).prop('checked', false).parent().parent().removeClass('uk-background-primary').attr({'style':''});
 
                 UIkit.modal.dialog('<div class="uk-body-custom"></div>');
-                document.appendTo('.uk-body-custom');
+                $document.appendTo('.uk-body-custom');
                 $('.uk-div').addClass('uk-hidden');
                 $('.uk-checkbox-all').prop('checked', false);
 

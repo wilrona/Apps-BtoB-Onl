@@ -1,8 +1,9 @@
 __author__ = 'User'
 
+
 from ...modules import *
 from models_doc import Document, LigneDoc
-from forms_doc import FormDevis
+from forms_doc import FormFacture
 from ..user.models_user import Users
 from ..compagnie.models_compagnie import Compagnie
 from ..package.models_package import LigneService, Package
@@ -12,7 +13,8 @@ from ..compagnie.forms_compagnie import FormClient
 from ..user.forms_user import FormUser
 from ..workflow import *
 
-prefix = Blueprint('devis', __name__)
+
+prefix = Blueprint('facture', __name__)
 
 
 @prefix.route('/')
@@ -20,38 +22,37 @@ prefix = Blueprint('devis', __name__)
 def index():
 
     current_ref = Config_reference.objects().first()
-    title_page = 'Devis'
+    title_page = 'Facture'
 
-    if current_user.has_roles([('super_admin', 'devis')]):
-        datas = Document.objects(devisDoc=True)
+    if current_user.has_roles([('super_admin', 'facture')]):
+        datas = Document.objects(devisDoc=False)
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False))
 
-    return render_template('devis/index.html', **locals())
+    return render_template('facture/index.html', **locals())
 
 
-@prefix.route('/view/<objectid:devis_id>', methods=['GET'])
-def view(devis_id):
+@prefix.route('/view/<objectid:facture_id>', methods=['GET'])
+def view(facture_id):
 
     current_ref = Config_reference.objects().first()
 
-    title_page = 'Devis'
+    title_page = 'Facture'
 
-    data = Document.objects.get(id=devis_id)
+    data = Document.objects.get(id=facture_id)
 
     if not current_user.has_roles([('super_admin', 'devis')], ['edit']) and data.vendeur_id.id != current_user.id:
-        flash('Vous n\'avez pas les droits necessaires sur ce devis', 'warning')
         return redirect(url_for('devis.index'))
 
-    form = FormDevis(obj=data)
+    form = FormFacture(obj=data)
 
-    if data.opportunite_id:
-        form.opportunite_id.data = str(data.opportunite_id.id)
-        form.opportunite_text.data = data.opportunite_id.name
+    if data.parent:
+        form.devis_id.data = str(data.parent.id)
+        form.devis_text.data = data.parent.reference()
 
-    check_status(data)
+    # check_status(data)
 
-    ligne_doc = LigneDoc.objects(iddevis=data.id)
+    ligne_doc = LigneDoc.objects(iddocument=data.id)
 
     customer = Compagnie.objects.get(id=data.client_id.id)
     form_client = FormClient(prefix="client", obj=customer)
@@ -61,17 +62,17 @@ def view(devis_id):
 
     services = LigneService.objects()
 
-    return render_template('devis/view.html', **locals())
+    return render_template('facture/view.html', **locals())
 
 
-@prefix.route('/edit/<objectid:devis_id>', methods=['GET', 'POST'])
+@prefix.route('/edit/<objectid:facture_id>', methods=['GET', 'POST'])
 @prefix.route('/edit/', methods=['GET', 'POST'])
 @login_required
-def edit(devis_id=None):
+def edit(facture_id=None):
 
     current_ref = Config_reference.objects().first()
 
-    title_page = 'Devis'
+    title_page = 'Facture'
 
     # if devis_id:
     #     data = Document.objects.get(id=devis_id)
@@ -99,7 +100,7 @@ def edit(devis_id=None):
     # else:
 
     data = Document()
-    form = FormDevis()
+    form = FormFacture()
 
     customer = Compagnie()
     form_client = FormClient(prefix="client")
@@ -124,8 +125,8 @@ def edit(devis_id=None):
 
     services = LigneService.objects()
 
-    if 'package' not in session:
-        session['package'] = []
+    if 'package_fact' not in session:
+        session['package_fact'] = []
 
     current_client = None
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
@@ -151,20 +152,23 @@ def edit(devis_id=None):
         form_contact.fonction.data = current_contact.fonction
         form_contact.phone.data = current_contact.phone
 
-    current_opportunite = None
-    if request.args.get('opportunite_id'):
-        current_opportunite = Opportunite.objects.get(id=request.args.get('opportunite_id'))
-        form.opportunite_id.data = str(current_opportunite.id)
-        form.opportunite_text.data = str(current_opportunite.name)
-        form_client = FormClient(prefix="client", obj=current_opportunite.client_id)
+    current_devis = None
+    if request.args.get('devis_id'):
+
+        current_devis = Document.objects.get(id=request.args.get('devis_id'))
+        form.devis_id.data = str(current_devis.id)
+        form.devis_text.data = str(current_devis.ref)
+        form_client = FormClient(prefix="client", obj=current_devis.client_id)
 
         contact_list = []
-        for cont in current_opportunite.client_id.idcontact:
+        for cont in current_devis.client_id.idcontact:
             contact_list.append(cont)
 
-        for cont in current_opportunite.client_id.iduser:
+        for cont in current_devis.client_id.iduser:
             if cont not in contact_list:
                 contact_list.append(cont)
+
+        ligne_doc = LigneDoc.objects(iddevis=current_devis.id)
 
     form_client.notCat.data = '1'
 
@@ -180,8 +184,8 @@ def edit(devis_id=None):
         if 'client_exist' in request.form and request.form['client_exist']:
             data.client_id = current_client
         else:
-            if not devis_id:
-                if not form.opportunite_id.data:
+            if not facture_id:
+                if not form.devis_id.data:
                     customer.raison = form_client.raison.data
                     customer.name = form_client.name.data
                     customer.ville = form_client.ville.data
@@ -195,14 +199,14 @@ def edit(devis_id=None):
 
                     data.client_id = current_client
                 else:
-                    current_client = current_opportunite.client_id
+                    current_client = current_devis.client_id
                     data.client_id = current_client
 
         if 'contact_exist' in request.form and request.form['contact_exist']:
             data.contact_id = current_contact
             data.status = 0
         else:
-            if not devis_id:
+            if not facture_id:
 
                 contact.email = form_contact.email.data
                 contact.first_name = form_contact.first_name.data
@@ -224,52 +228,65 @@ def edit(devis_id=None):
                     cli.idcontact.append(contact)
                     cli.save()
 
+        data.devisDoc = False
+
         total = 0
-        for item in session.get('package')['data']:
-            total += item['st']
+        if current_devis:
+            ligne_doc = LigneDoc.objects(iddevis=current_devis.id)
+            for ligne in ligne_doc:
+                total += ligne.prix
+        else:
+            for item in session.get('package_fact')['data']:
+                total += item['st']
 
         data.montant = total
 
         vendeur = Users.objects.get(id=current_user.id)
         data.vendeur_id = vendeur
 
-        if form.opportunite_id.data:
-            opport = Opportunite.objects.get(id=form.opportunite_id.data)
-            data.opportunite_id = opport
+        if form.devis_id.data:
+            devis = Document.objects.get(id=form.devis_id.data)
+            data.parent = devis
 
-        if not devis_id:
-            count_exist = Document.objects(devisDoc=True).count()
+        if not facture_id:
+            count_exist = Document.objects(devisDoc=False).count()
             data.ref = function.reference(count=count_exist+1, caractere=7, refuser=data.vendeur_id.ref)
 
         data = data.save()
 
         position = 0
-        if not devis_id:
-            for item in session.get('package')['data']:
-                ligne = LigneDoc()
+        if not facture_id:
+            if current_devis:
+                ligne_doc = LigneDoc.objects(iddevis=current_devis.id)
+                for ligne in ligne_doc:
+                    ligne.iddocument = data
+                    ligne.save()
+            else:
+                for item in session.get('package_fact')['data']:
+                    ligne = LigneDoc()
 
-                ligne.iddevis = data
-                ligne.prix = float(item['st'])
-                ligne.qte = item['qte']
+                    ligne.iddocument = data
+                    ligne.prix = float(item['st'])
+                    ligne.qte = item['qte']
 
-                ligne.idcompagnie = current_client
-                package = Package.objects.get(id=item['package'])
-                ligne.idpackage = package
+                    ligne.idcompagnie = current_client
+                    package = Package.objects.get(id=item['package'])
+                    ligne.idpackage = package
 
-                ligne.save()
-                position += 1
+                    ligne.save()
+                    position += 1
 
-            session.pop('package')
+            session.pop('package_fact')
 
         flash('Enregistement effectue avec succes', 'success')
 
         if request.form['nouveau'] == '1':
-            check_status(data)
-            return redirect(url_for('devis.edit'))
+            # check_status(data)
+            return redirect(url_for('facture.edit'))
         else:
-            return redirect(url_for('devis.view', devis_id=data.id))
+            return redirect(url_for('facture.view', facture_id=data.id))
 
-    return render_template('devis/edit.html', **locals())
+    return render_template('facture/edit.html', **locals())
 
 
 @prefix.route('/ligne/commande', methods=['POST'])
@@ -277,7 +294,7 @@ def ligne_commande():
 
     from ..package.models_package import Package
 
-    session['package'] = []
+    session['package_fact'] = []
 
     data = []
 
@@ -311,7 +328,7 @@ def ligne_commande():
 
                 data.append(ligne)
 
-    session['package'] = {
+    session['package_fact'] = {
         'exist_ici': exist_ici,
         'data': data
     }
@@ -321,45 +338,58 @@ def ligne_commande():
     return data
 
 
-@prefix.route('/change/<objectid:devis_id>/<int:status>', methods=['GET'])
-def change_satus(devis_id, status):
+@prefix.route('/reglement/<objectid:facture_id>', methods=['GET', 'POST'])
+@login_required
+def reglement(facture_id):
 
-    data = Document.objects.get(id=devis_id)
+    data = Document.objects.get(id=facture_id)
 
-    if not current_user.has_roles([('super_admin', 'devis')], ['edit']) and data.vendeur_id.id != current_user.id:
-        flash('Vous n\'avez pas les droits necessaires sur ce devis', 'warning')
-        return redirect(url_for('devis.view', devis_id=devis_id))
+    users = data.client_id.iduser
+    contacts = data.client_id.idcontact
 
-    if int(status) == 3:
-        if data.facture_valid():
-            flash('Le devis "'+data.ref+'" contient '+str(data.factu_devis().count())+' Facture(s) validee(s). il ne peut etre annule.', 'warning')
-            return redirect(url_for('devis.view', devis_id=devis_id))
+    list = []
+
+    for user in users:
+        current = {}
+        current['id'] = str(user.id)
+        current['name'] = user.full_name()
+        current['fonction'] = ''
+        if user.fonction:
+            current['fonction'] = '(' + user.fonction + ')'
+        list.append(current)
+
+    for contact in contacts:
+        current = {}
+        current['id'] = str(contact.id)
+        current['name'] = contact.full_name()
+        current['fonction'] = ''
+        if contact.fonction:
+            current['fonction'] = '(' + contact.fonction + ')'
+        list.append(current)
+
+    return render_template('facture/reglement.html', **locals())
+
+
+@prefix.route('/change/<objectid:facture_id>/<int:status>', methods=['GET'])
+def change_satus(facture_id, status):
+
+    data = Document.objects.get(id=facture_id)
+
+    if not current_user.has_roles([('super_admin', 'facture')], ['edit']) and data.vendeur_id.id != current_user.id:
+        flash('Vous n\'avez pas les droits necessaires sur cette facture', 'success')
+        return redirect(url_for('facture.view', facture_id=facture_id))
 
     data.status = status
 
     data.save()
 
     flash('Enregistement effectue avec succes', 'success')
-    return redirect(url_for('devis.view', devis_id=devis_id))
-
-
-@prefix.route('/devis/<objectid:devis_id>')
-@login_required
-def facture(devis_id):
-
-    title_page = 'Factures'
-
-    current = Document.objects.get(id=devis_id)
-
-    current_ref = Config_reference.objects().first()
-    datas = Document.objects(Q(parent=current) & Q(devisDoc=False))
-
-    return render_template('facture/index.html', **locals())
+    return redirect(url_for('facture.view', facture_id=facture_id))
 
 
 @prefix.route('/canceled', methods=['POST'])
 @login_required
-@roles_required([('super_admin', 'devis')], ['edit'])
+@roles_required([('super_admin', 'facture')], ['edit'])
 def canceled():
 
     count = 0
@@ -369,12 +399,12 @@ def canceled():
         info = {}
         item_found = Document.objects.get(id=item)
 
-        if item_found.facture_valid():
+        if item_found.status == 2:
             info['statut'] = 'NOK'
-            info['message'] = 'Le devis "'+item_found.ref+'" contient '+str(item_found.factu_devis().count())+' Facture(s) validee(s).'
+            info['message'] = 'La facture "'+item_found.ref+'" ne peut plus etre supprimee car elle a deja des paiements en cours.'
 
         if not item_found.facture_valid():
-            item_found.status = 3
+            item_found.status = 0
             item_found.save()
             element.append(str(item_found.id))
             count += 1
@@ -392,14 +422,13 @@ def canceled():
 
     return data
 
-
-@prefix.route('/print/<objectid:devis_id>', methods=['GET'])
-def print_devis(devis_id):
+@prefix.route('/print/<objectid:facture_id>', methods=['GET'])
+def print_facture(facture_id):
 
     current_ref = Config_reference.objects().first()
     compagnie = Company.objects.first()
 
-    data = Document.objects.get(id=devis_id)
+    data = Document.objects.get(id=facture_id)
 
     CURRENT_FILE = os.path.abspath(__file__)
     CURRENT_DIR = os.path.dirname(CURRENT_FILE)
@@ -420,7 +449,7 @@ def print_devis(devis_id):
         PROJECT_DIR+'/static/css/material-icon.css',
         PROJECT_DIR+'/static/css/apps.css',
         PROJECT_DIR+'/static/css/pdf.css',
-    ]
+        ]
 
     pdfs = pdfkit.from_string(
         rendered, False,
@@ -448,9 +477,8 @@ def print_devis(devis_id):
     return response
 
 
-
-@prefix.route('/print2/<objectid:devis_id>', methods=['GET'])
-def print2_devis(devis_id):
+@prefix.route('/print2/<objectid:facture_id>', methods=['GET'])
+def print2_facture(facture_id):
 
     CURRENT_FILE = os.path.abspath(__file__)
     CURRENT_DIR = os.path.dirname(CURRENT_FILE)
@@ -471,7 +499,7 @@ def print2_devis(devis_id):
         PROJECT_DIR+'/static/css/material-icon.css',
         PROJECT_DIR+'/static/css/apps.css',
         PROJECT_DIR+'/static/css/pdf.css',
-    ]
+        ]
     # # pdf = pdfkit.from_file(rendered, 'output.pdf')
     pdfs = pdfkit.from_string(
         rendered, False,
@@ -495,9 +523,3 @@ def print2_devis(devis_id):
     # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
 
     return response
-
-
-
-
-
-

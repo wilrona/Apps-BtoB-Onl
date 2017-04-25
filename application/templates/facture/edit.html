@@ -6,30 +6,29 @@
 
 {% block  button %}
     <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</a>
-    {% if not form.opportunite_id.data %}
-        {% if devis_id %}
-            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.view', devis_id=devis_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+    {% if not form.devis_id.data %}
+        {% if facture_id %}
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.view', facture_id=facture_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
         {% else %}
             <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et Nouveau</a>
             {% if request.args.get('dashboard') %}
                 <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('dashboard.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
             {% else %}
-            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
                 {% endif %}
         {% endif %}
     {% else %}
-        {% if devis_id %}
-            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.view', devis_id=devis_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+        {% if facture_id %}
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.view', facture_id=facture_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
         {% else %}
             <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et Nouveau</a>
-            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('opportunite.view', opportunite_id=current_opportunite.id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.view', devis_id=current_devis.id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
 
         {% endif %}
     {% endif %}
 {% endblock %}
 
 {% block layout_content %}
-
     <div class="uk-container uk-margin">
             {% include 'includes/flash_message.html' %}
             <div class="uk-grid-small" uk-grid>
@@ -41,11 +40,6 @@
 
                         <input type="hidden" name="nouveau" value="0" id="nouveau"/>
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
-                            {% if devis_id %}
-                                <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
-                                    <a href="" class="uk-button waves-effect uk-button-default">0 Factures</a>
-                                </div>
-                            {% endif %}
                             <div class="uk-padding uk-padding-remove-horizontal uk-grid-small uk-grid-divider" uk-grid>
                                  <div class="uk-width-1-1@s">
                                     <div class="uk-margin">
@@ -55,14 +49,14 @@
                                         </div>
                                     </div>
                                  </div>
-                                {% if form.opportunite_id.data or data.opportunite_id %}
+                                {% if form.devis_id.data or data.parent %}
                                     <div class="uk-width-1-1@s">
                                         <div class="uk-margin">
-                                            {{ form.opportunite_text.label(class_='uk-form-label uk-text-bold') }}
+                                            {{ form.devis_text.label(class_='uk-form-label uk-text-bold') }}
                                             <div class="uk-form-controls ">
                                                 <div class="uk-inline  uk-width-1-1">
-                                                    {{ form.opportunite_text(class_='uk-input uk-form-blank') }}
-                                                    <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('opportunite.view', opportunite_id=current_opportunite.id) }}" uk-icon="icon: link"></a>
+                                                    {{ form.devis_text(class_='uk-input uk-form-blank') }}
+                                                    <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('devis.view', devis_id=current_devis.id) }}" uk-icon="icon: link"></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -75,7 +69,7 @@
                                         <div class="uk-width-1-1@s">
                                             <h3 class="uk-heading-line uk-text-center"><span>Information du client</span></h3>
                                         </div>
-                                    {% if form.opportunite_id.data or data.opportunite_id %}
+                                    {% if form.devis_id.data or data.parent %}
                                         <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
                                                 {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
@@ -131,21 +125,19 @@
                                             </div>
                                         </div>
                                     {% else %}
-                                        {% if not devis_id %}
-                                            <div class="uk-width-1-1@s">
-                                                <div class="uk-margin">
-                                                    <label for="" class="uk-form-label"></label>
-                                                    <div class="uk-form-controls">
-                                                        <select  name="client_exist" id="client_exist" class="uk-select selected">
-                                                            <option value="">Selectionnez un client existant</option>
-                                                            {% for client in client_list %}
-                                                                <option value="{{ client.id }}" {% if form_client.id.data|string == client.id|string %} selected {% endif %}>{{ client.name }}</option>
-                                                            {% endfor %}
-                                                        </select>
-                                                    </div>
+                                        <div class="uk-width-1-1@s">
+                                            <div class="uk-margin">
+                                                <label for="" class="uk-form-label"></label>
+                                                <div class="uk-form-controls">
+                                                    <select  name="client_exist" id="client_exist" class="uk-select selected">
+                                                        <option value="">Selectionnez un client existant</option>
+                                                        {% for client in client_list %}
+                                                            <option value="{{ client.id }}" {% if form_client.id.data|string == client.id|string %} selected {% endif %}>{{ client.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </div>
                                             </div>
-                                        {% endif %}
+                                        </div>
                                         <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
                                                 {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
@@ -228,7 +220,6 @@
                                         <div class="uk-width-1-1@s">
                                             <h3 class="uk-heading-line uk-text-center"><span>Information contact</span></h3>
                                         </div>
-                                        {% if not devis_id %}
                                             <div class="uk-width-1-1@s">
                                                 <div class="uk-margin">
                                                     <label for="" class="uk-form-label"></label>
@@ -242,7 +233,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        {% endif %}
                                         <div class="uk-width-1-2@s">
                                             <div class="uk-margin">
                                                 {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
@@ -311,9 +301,10 @@
 
                                 <ul class="uk-switcher uk-margin">
                                     <li>
-                                    {% if not devis_id %}
-                                        <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
-                                    {% endif %}
+                                        {% if not form.devis_id.data %}
+                                            <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
+                                        {% endif %}
+
                                         <div class="uk-overflow-auto">
                                             <input type="hidden" name="ici_cm" id="ici_cm" value="{{ session.get('package')['exist_ici']|string }}">
                                             <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
@@ -328,61 +319,110 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for pack in session.get('package')['data'] %}
-                                                    <tr>
-                                                        <td>
-                                                            <div class="uk-form-controls uk-form-service">
+                                                {% if form.devis_id.data or data.parent %}
+                                                    {% for pack in ligne_doc %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-service">
 
-                                                                <select name="services"  class="uk-select selected services">
-                                                                    <option value="">Choisir un service</option>
-                                                                    {% for service in services %}
-                                                                        <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
-                                                                    {% endfor %}
-                                                                </select>
+                                                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                                                        {% for service in services %}
+                                                                            {% if service.sigle == pack.idpackage.idligneService %}
+                                                                                <li class="uk-active">{{ service.name }}</li>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </ul>
 
-                                                            </div>
-                                                        </td>
-                                                        <td>
+                                                                </div>
+                                                            </td>
+                                                            <td>
 
-                                                            <div class="uk-form-controls uk-form-package">
+                                                                <div class="uk-form-controls uk-form-package">
 
-                                                                <select name="package" class="uk-select selected package">
-                                                                    <option value="">Choisir un produit</option>
-                                                                    {% for package in pack['similaire'] %}
-                                                                        <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
-                                                                    {% endfor %}
-                                                                </select>
+                                                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                                                        <li class="uk-active">{{ pack.idpackage.name }}</li>
+                                                                    </ul>
 
-                                                            </div>
+                                                                </div>
 
-                                                        </td>
-                                                        <td>
-                                                            <div class="uk-form-controls uk-form-qte">
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-qte">
 
-                                                                <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>
+                                                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
 
-                                                                <input type="text" value="{{ pack['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-prix">
+                                                                    <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-st">
+                                                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                                                </div>
+                                                            </td>
+                                                            <td></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {% for pack in session.get('package_fact')['data'] %}
+                                                        <tr>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-service">
 
-                                                                <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>
+                                                                    <select name="services"  class="uk-select selected services">
+                                                                        <option value="">Choisir un service</option>
+                                                                        {% for service in services %}
+                                                                            <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
 
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="uk-form-controls uk-form-prix">
-                                                                <div class="uk-width-auto uk-text-center" data-old="{{ pack['prix'] }}">{{ pack['prix']|round(2, 'floor') }}</div>
-                                                                <input type="hidden" value="{{ pack['prix'] }}" name="prix" class="change_prix"/>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="uk-form-controls uk-form-st">
-                                                                <input type="text" value="{{ pack['st'] }}" name="st" class="uk-input change_st uk-width-auto uk-text-center" data-old="{{ pack['st'] }}">
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+
+                                                                <div class="uk-form-controls uk-form-package">
+
+                                                                    <select name="package" class="uk-select selected package">
+                                                                        <option value="">Choisir un produit</option>
+                                                                        {% for package in pack['similaire'] %}
+                                                                            <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+
+                                                                </div>
+
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-qte">
+
+                                                                    <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>
+
+                                                                    <input type="text" value="{{ pack['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>
+
+                                                                    <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>
+
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-prix">
+                                                                    <div class="uk-width-auto uk-text-center" data-old="{{ pack['prix'] }}">{{ pack['prix']|round(2, 'floor') }}</div>
+                                                                    <input type="hidden" value="{{ pack['prix'] }}" name="prix" class="change_prix"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-st">
+                                                                    <input type="text" value="{{ pack['st'] }}" name="st" class="uk-input change_st uk-width-auto uk-text-center" data-old="{{ pack['st'] }}">
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                {% endif %}
                                                 </tbody>
 
                                             </table>
@@ -958,7 +998,7 @@
         function save_ligne_doc(){
             var datas = table_produit.$('input, select').serialize();
 
-            var url = '{{ url_for('devis.ligne_commande') }}';
+            var url = '{{ url_for('facture.ligne_commande') }}';
             $.ajax({
                 method: "POST",
                 data: datas,

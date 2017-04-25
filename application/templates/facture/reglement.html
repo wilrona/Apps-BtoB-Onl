@@ -1,0 +1,105 @@
+<button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Reglement Facture</h2>
+</div>
+<div class="uk-padding-small">
+    <form class="uk-form-horizontal uk-margin-large" id="formulaire_modal" method="post">
+
+        <div class="uk-margin">
+            <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Reference :</label>
+            <div class="uk-form-controls">
+                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.reference() }}">
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Client :</label>
+            <div class="uk-form-controls">
+                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.client_id.name }}">
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <label class="uk-form-label uk-text-bold" for="form-horizontal-select">Contact éffectuant le paiment :</label>
+            <div class="uk-form-controls">
+                <select class="uk-select selected required" id="form-horizontal-select">
+                    <option value="">Choix du contact </option>
+                    {% for contact in list %}
+                        <option value="{{ contact.id }}">{{ contact.name }} {{ contact.fonction }}</option>
+                    {% endfor %}
+                </select>
+                <div class="uk-alert uk-alert-danger uk-hidden" id="error_select">Information obligatoire</div>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Montant Facture :</label>
+            <div class="uk-form-controls">
+                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.montant|format_price() }}">
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-form-label uk-text-bold">Type de paiement :</div>
+            <div class="uk-form-controls uk-form-controls-text">
+                <label><input class="uk-radio" type="radio" name="radio1" checked="checked" id="total"> Total </label><br>
+                <label><input class="uk-radio" type="radio" name="radio1" id="partiel"> Partiel </label>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-form-controls">
+                <input class="uk-input required uk-hidden" type="text" name="montant_partiel" id="montant_partiel" disabled placeholder="Valeur du montant partiel">
+                <div class="uk-alert uk-alert-danger uk-hidden" id="partial_input">Information obligatoire</div>
+            </div>
+        </div>
+        <div class="uk-margin uk-float-right">
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-success uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small" id="submit_modal"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Valider</a>
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-danger uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small uk-modal-close"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+
+        </div>
+
+    </form>
+    </form>
+</div>
+
+<script>
+    $(".selected").select2({width:'100%'});
+
+    $('#submit_modal').on('click', function(e){
+        e.preventDefault();
+        var $montant_partial = $('#montant_partiel');
+        var $partial = $('#partial_input');
+
+        var $select = $('#form-horizontal-select');
+        var $select_error = $('#error_select');
+
+        if(!$montant_partial.prop('disabled')){
+            if($montant_partial.val() == ''){
+                $partial.removeClass('uk-hidden');
+            }else{
+                if($.isNumeric($montant_partial.val())){
+                    $partial.addClass('uk-hidden');
+                }else {
+                    $partial.removeClass('uk-hidden');
+                }
+            }
+        }
+
+        if (!$select.val()){
+            $select_error.removeClass('uk-hidden');
+        }else{
+            $select_error.addClass('uk-hidden');
+        }
+    });
+
+    $('#partiel').on('click', function(){
+        $('#montant_partiel').removeClass('uk-hidden').prop('disabled', false);
+    });
+    $('#total').on('click', function(){
+        $('#montant_partiel').addClass('uk-hidden').prop('disabled', true);
+    });
+{#    {% if success %}#}
+{#        $('#closing').trigger('click');#}
+{#        $('#full').trigger('click');#}
+{#    {% endif %}#}
+</script>

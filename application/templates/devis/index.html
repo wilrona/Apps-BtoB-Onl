@@ -17,7 +17,7 @@
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
             <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
-                        <li><a {% if not current_user.has_roles([('super_admin', 'devis')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('devis.canceled') }}" id="deleted" {% endif %}>Annuler devis</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'devis')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('devis.canceled') }}" id="deleted" {% endif %}>Annuler</a></li>
                 </ul>
             </div>
         </div>
@@ -55,7 +55,7 @@
                         {% for data in datas %}
                           <tr data-link="{{ url_for('devis.view', devis_id=data.id) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
-                            <td>{{ current_ref.ref_devis }}/{{ data.ref }}</td>
+                            <td>{{ data.reference() }}</td>
                             <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
                             <td>{{ data.client_id.name }}</td>
                             <td>{{ data.vendeur_id.full_name() }}</td>

@@ -20,6 +20,15 @@
             <li><a href="{{ url_for('client.index') }}" class="waves-effect">Clients</a></li>
         </ul>
     </li>
+    <li class="uk-nav-divider"></li>
+    <li class="uk-parent">
+        <a href="#" class="waves-effect">Facturation</a>
+        <ul class="uk-nav-sub">
+            <li><a href="{{ url_for('facture.index') }}" class="waves-effect">Facture</a></li>
+            <li><a href="#" class="waves-effect">Règlement facture</a></li>
+            <li><a href="#" class="waves-effect">Facture Non soldé</a></li>
+        </ul>
+    </li>
     {% if current_user.has_roles([('super_admin', 'claim', 'relation')]) or current_user.has_roles([('super_admin', 'client')], ['edit']) %}
     <li class="uk-nav-divider"></li>
     <li class="uk-parent">
@@ -38,9 +47,6 @@
     </li>
     {% endif %}
     <li class="uk-nav-divider"></li>
-{#    <li class="uk-parent"><a href="#">Facturation</a></li>#}
-
-{#    <li class="uk-nav-divider"></li>#}
 {#    <li class="uk-parent"><a href="#">Rapport</a></li>#}
 {#    <li class="uk-nav-divider"></li>#}
     {% if current_user.has_roles([('super_admin', 'user', 'entreprise', 'general', 'etape', 'activite', 'libelle_opportunite', 'categorie', 'service', 'package', 'moyen_paiement')]) %}

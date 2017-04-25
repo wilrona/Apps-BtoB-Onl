@@ -27,9 +27,53 @@ class Document(db.Document):
         self.updateDate = datetime.datetime.now()
         return super(Document, self).save(*args, **kwargs)
 
-    def lignedoc(self):
-        lignes = LigneDoc.objects(doc_id=self.id)
+    def lignedoc_devis(self):
+        lignes = LigneDoc.objects(iddevis=self.id)
         return lignes
+
+    def lignedoc_facture(self):
+        lignes = LigneDoc.objects(iddocument=self.id)
+        return lignes
+
+    def factu_devis(self):
+        facture = Document.objects(parent=self.id)
+        return facture
+
+    def facture_valid(self):
+
+        resp = False
+        factures = Document.objects(parent=self.id)
+
+        for facture in factures:
+            if facture.status == 1 or facture.status == 2:
+                resp = True
+
+        return resp
+
+    def reference(self):
+        current_ref = Config_reference.objects().first()
+
+        ref = current_ref.ref_devis+'/'+self.ref
+        if not self.devisDoc:
+            ref = current_ref.ref_fact+'/'+self.ref
+
+        return ref
+
+    def reglement_facture(self):
+
+        from ..paiement.models_paiement import Paiement
+        paiement = Paiement.objects(iddocument=self.id)
+        return paiement
+
+    def montant_relement(self):
+
+        from ..paiement.models_paiement import Paiement
+        paiements = Paiement.objects(iddocument=self.id)
+        montant = 0
+        for paiement in paiements:
+            montant += paiement.montant
+        return montant
+
 
 
 class LigneDoc(db.Document):

@@ -6,11 +6,9 @@
 
 {% block  button %}
 {#    <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('devis.edit', devis_id=devis_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>#}
-    {% if not data.status == 2 %}
-    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
-    {% else %}
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('commande.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
-    {% endif %}
+
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+
 {% endblock %}
 
 {% block layout_content %}
@@ -19,34 +17,34 @@
             <div class="uk-width-1-1">
                 <div class="uk-grid-small" uk-grid>
                     <div class="uk-width-3-5@l uk-width-3-5@m uk-width-3-5@s">
-                         {% if not data.status == 3 %}
-                             <a class="uk-button waves-effect uk-button-default uk-button-small" href="{{ url_for('devis.print_devis', devis_id=devis_id) }}" id="print"><span class="uk-margin-small-right"><i class="fa fa-print"></i></span> Imprimer</a>
-                             {% if not data.status == 2 %}
-                                 <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('devis.change_satus', devis_id=devis_id, status='2') }}"><span class="uk-margin-small-right"><i class="fa fa-check-square-o"></i></span>Confirmer la vente</a>
-                             {% else %}
-                                 {% if not data.facture_valid() %}
-                                    <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('facture.edit', devis_id=devis_id) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> facture</a>
+{#                         {% if not data.status == 3 %}#}
+                             <a class="uk-button waves-effect uk-button-default uk-button-small" href="{{ url_for('facture.print_facture', facture_id=facture_id) }}" id="print"><span class="uk-margin-small-right"><i class="fa fa-print"></i></span> Imprimer</a>
+                             {% if data.status == 0 %}
+                                 {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
+                                    <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('facture.change_satus', facture_id=facture_id, status='1') }}"><span class="uk-margin-small-right"><i class="fa fa-check-square-o"></i></span>Valider</a>
                                  {% endif %}
-                             {% endif %}
-                         {% endif %}
-                        {% if not data.status == 3 %}
-                            {% if current_user.has_roles([('super_admin', 'devis')], ['edit']) or data.vendeur_id.id == current_user.id %}
-                                {% if not data.facture_valid() %}
-                                    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.change_satus', devis_id=devis_id, status='3') }}"><span class="uk-margin-small-right"><i class="fa fa-trash-o"></i></span> devis</a>
+                             {% elif data.status == 1 %}
+                                {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
+                                    <a class="uk-button waves-effect uk-button-success uk-button-small modal" id="open-modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;"  href="{{ url_for('facture.reglement', facture_id=facture_id) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Reglement facture</a>
                                 {% endif %}
+                             {% endif %}
+{#                         {% endif %}#}
+                        {% if data.status == 1 %}
+                            {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
+                                <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.change_satus', facture_id=facture_id, status='3') }}"><span class="uk-margin-small-right"><i class="fa fa-trash-o"></i></span> Annuler</a>
                             {% endif %}
-                        {% else %}
-                            <a class="uk-button waves-effect uk-button-info uk-button-small" href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}">Remettre le devis</a>
+                        {% elif data.status == 3 %}
+                            <a class="uk-button waves-effect uk-button-info uk-button-small" href="{{ url_for('facture.change_satus', facture_id=facture_id, status='0') }}">Relancer la facture</a>
                         {% endif %}
                     </div>
                     <div class="uk-width-2-5@l uk-width-2-5@m uk-width-2-5@s">
-                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-center" uk-margin>
+                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-right" uk-margin>
 
-                            <li {% if data.status == 0 %} class="uk-active" {% endif %}><a {% if data.status <= 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}"{% else %} href="#"{% endif %}>Devis</a></li>
-                            <li {% if data.status == 1 %} class="uk-active" {% endif %}><a href="#">Devis Envoyé</a></li>
-                            <li {% if data.status == 2 %} class="uk-active" {% endif %}><a {% if data.status > 1 and data.status < 3 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='2') }}"{% else %} href="#"{% endif %}>Bon de commande</a></li>
+                            <li {% if data.status == 0 %} class="uk-active" {% endif %}><a href="#">Brouillon</a></li>
+                            <li {% if data.status == 1 %} class="uk-active" {% endif %}><a href="#">Validée</a></li>
+                            <li {% if data.status == 2 %} class="uk-active" {% endif %}><a href="#">Payée</a></li>
                             {% if data.status == 3 %}
-                                <li class="uk-active"><a href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}">Annulé</a></li>
+                                <li class="uk-active"><a href="#">Annulé</a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -61,30 +59,25 @@
                     <form method="post" id="formulaire">
                         {{ form.hidden_tag() }}
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
-                                <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
-                                    <a href="{{ url_for('devis.facture', devis_id=devis_id) }}" class="uk-button waves-effect uk-button-default uk-button-small">
-                                        <span class="uk-margin-small-right">{{ data.factu_devis().count() }}</span>  Facture(s)
-                                    </a>
-                                </div>
 
                             <div class="uk-padding uk-padding-remove-horizontal uk-grid-small uk-grid-divider" uk-grid>
                                  <div class="uk-width-1-1@s">
                                     <div class="uk-margin">
                                         <label class="uk-form-label uk-text-bold">Reference : </label>
                                         <div class="uk-form-controls">
-                                            <input type="text" class="uk-input uk-form-blank uk-width-1-1" {% if devis_id %} value="{{ data.reference() }}" {% endif %}/>
+                                            <input type="text" class="uk-input uk-form-blank uk-width-1-1" value="{{ data.reference() }}" />
                                         </div>
                                     </div>
                                  </div>
-                                {% if form.opportunite_id.data or data.opportunite_id %}
+                                {% if form.devis_id.data or data.parent %}
                                     <div class="uk-width-1-1@s">
                                         <div class="uk-margin">
-                                            {{ form.opportunite_text.label(class_='uk-form-label uk-text-bold') }}
+                                            {{ form.devis_text.label(class_='uk-form-label uk-text-bold') }}
                                             <div class="uk-form-controls ">
                                                 <div class="uk-inline  uk-width-1-1">
-                                                    {{ form.opportunite_text(class_='uk-input uk-form-blank') }}
-                                                    {% if data.opportunite_id %}
-                                                        <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('opportunite.view', opportunite_id=data.opportunite_id.id) }}" uk-icon="icon: link"></a>
+                                                    {{ form.devis_text(class_='uk-input uk-form-blank') }}
+                                                    {% if data.parent %}
+                                                        <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('devis.view', devis_id=data.parent.id) }}" uk-icon="icon: link"></a>
                                                     {% endif %}
                                                 </div>
                                             </div>
