@@ -170,7 +170,7 @@ global_role = [
          {'titre': 'Traitement des commande ', 'valeur': 'commande', 'action': 1},
          {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2},
          {'titre': 'Traitement des factures ', 'valeur': 'facture', 'action': 2},
-         {'titre': 'Traitement des reglements ', 'valeur': 'reglement', 'action': 2}
+         {'titre': 'Traitement des reglements factures', 'valeur': 'reglement', 'action': 2}
      ]
     },
 ]

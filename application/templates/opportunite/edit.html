@@ -81,14 +81,14 @@
                                         <div class="uk-form-controls">
 
                                             {% if not opportunite_id %}
-                                                <select name="name" id="" class="uk-select selected required">
+                                                <select name="name" id="" class="uk-select selected required uk-form-small">
                                                     <option value="">Selectionez un object</option>
                                                 {% for lib in libelle %}
                                                     <option value="{{ lib.name }}" {% if form.name.data == lib.name %} selected {% endif %}>{{ lib.name }}</option>
                                                 {% endfor %}
                                                 </select>
                                             {% else %}
-                                                {{ form.name(class_='uk-input uk-form-blank') }}
+                                                {{ form.name(class_='uk-input uk-form-blank uk-form-small') }}
 
                                             {% endif %}
                                             {% for message in form.name.errors %}
@@ -105,7 +105,7 @@
                                     <div class="uk-margin">
                                         <label for="" class="uk-form-label"></label>
                                         <div class="uk-form-controls">
-                                            <select  name="client_exist" id="client_exist" class="uk-select selected">
+                                            <select  name="client_exist" id="client_exist" class="uk-select selected uk-form-small">
                                                  <option value="">Selectionnez un client existant</option>
                                                     {% for client in client_list %}
                                                         <option value="{{ client.id }}" {% if form_client.id.data == client.id|string %} selected {% endif %}>{{ client.name }}</option>
@@ -119,7 +119,7 @@
                                      <div class="uk-margin">
                                         {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            <select name="client-raison" id="client-raison" class="uk-select selected">
+                                            <select name="client-raison" id="client-raison" class="uk-select selected uk-form-small uk-form-small">
                                                 <option value="">Selectionnez votre forme juridique</option>
                                                 <option value="LT" {% if form_client.raison.data == 'LT' %} selected {% endif %}>Etablissement</option>
                                                 <option value="SARL" {% if form_client.raison.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
@@ -135,7 +135,7 @@
                                     <div class="uk-margin">
                                         {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_client.name(class_='uk-input required') }}
+                                            {{ form_client.name(class_='uk-input required uk-form-small') }}
                                             {% for message in form_client.name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -146,7 +146,7 @@
                                     <div class="uk-margin">
                                         {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_client.email(class_='uk-input required') }}
+                                            {{ form_client.email(class_='uk-input required uk-form-small') }}
                                             {% for message in form_client.email.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -157,7 +157,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.phone(class_='uk-input') }}
+                                                    {{ form_client.phone(class_='uk-input uk-form-small') }}
                                                     {% for message in form_client.phone.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -168,7 +168,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.ville(class_='uk-input required') }}
+                                                    {{ form_client.ville(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.ville.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -179,7 +179,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.quartier(class_='uk-input required') }}
+                                                    {{ form_client.quartier(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.quartier.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -195,7 +195,7 @@
                                     <div class="uk-margin">
                                         <label for="" class="uk-form-label"></label>
                                         <div class="uk-form-controls">
-                                            <select  name="contact_exist" id="contact_exist" class="uk-select selected">
+                                            <select  name="contact_exist" id="contact_exist" class="uk-select selected uk-form-small">
                                                  <option value="">Selectionnez un contact existant</option>
                                                 {% for contact in contact_list %}
                                                     <option value="{{ contact.id }}" {% if form_contact.id.data == contact.id|string %} selected {% endif %}>{{ contact.full_name() }}</option>
@@ -209,7 +209,7 @@
                                     <div class="uk-margin">
                                         {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.last_name(class_='uk-input required') }}
+                                            {{ form_contact.last_name(class_='uk-input required uk-form-small') }}
                                             {% for message in form_contact.last_name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -220,7 +220,7 @@
                                     <div class="uk-margin">
                                         {{ form_contact.first_name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.first_name(class_='uk-input required') }}
+                                            {{ form_contact.first_name(class_='uk-input required uk-form-small') }}
                                             {% for message in form_contact.first_name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -231,7 +231,7 @@
                                     <div class="uk-margin">
                                         {{ form_contact.email.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.email(class_='uk-input required') }}
+                                            {{ form_contact.email(class_='uk-input required uk-form-small') }}
                                             {% for message in form_contact.email.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -242,7 +242,7 @@
                                     <div class="uk-margin">
                                         {{ form_contact.phone.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.phone(class_='uk-input') }}
+                                            {{ form_contact.phone(class_='uk-input uk-form-small') }}
                                             {% for message in form_contact.phone.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -253,7 +253,7 @@
                                     <div class="uk-margin">
                                         {{ form_contact.fonction.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form_contact.fonction(class_='uk-input') }}
+                                            {{ form_contact.fonction(class_='uk-input uk-form-small') }}
                                             {% for message in form_contact.fonction.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -269,7 +269,7 @@
                                         <div class="uk-margin">
                                             {{ form.vendeur_id.label(class_='uk-form-label uk-text-bold') }}
                                             <div class="uk-form-controls">
-                                                {{ form.vendeur_id(class_='uk-select selected required') }}
+                                                {{ form.vendeur_id(class_='uk-select selected required uk-form-small') }}
                                                 {% for message in form.vendeur_id.errors %}
                                                     <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                 {% endfor %}

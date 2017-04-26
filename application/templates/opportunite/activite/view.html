@@ -43,7 +43,7 @@
                                     <div class="uk-margin">
                                         {{ form.next.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.next(class_='uk-select selected  uk-form-blank', id="enter") }}
+                                            {{ form.next(class_='uk-select selected  uk-form-blank uk-form-small', id="enter") }}
                                             {% for message in form.next.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}

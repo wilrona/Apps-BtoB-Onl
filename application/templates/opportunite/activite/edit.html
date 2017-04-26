@@ -38,7 +38,7 @@
                                     <div class="uk-margin">
                                         {{ form.name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.name(class_='uk-input required') }}
+                                            {{ form.name(class_='uk-input required uk-form-small') }}
                                             {% for message in form.name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -49,7 +49,7 @@
                                     <div class="uk-margin">
                                         {{ form.next.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.next(class_='uk-select selected ') }}
+                                            {{ form.next(class_='uk-select selected  uk-form-small') }}
                                             {% for message in form.next.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -60,7 +60,7 @@
                                     <div class="uk-margin">
                                         {{ form.jour.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.jour(class_='uk-input ') }}
+                                            {{ form.jour(class_='uk-input  uk-form-small') }}
                                             {% for message in form.jour.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -72,7 +72,7 @@
                                     <div class="uk-margin">
                                         {{ form.description.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.description(class_='uk-input') }}
+                                            {{ form.description(class_='uk-input uk-form-small') }}
                                             {% for message in form.description.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -95,7 +95,7 @@
                                         <div class="uk-margin">
                                             <label for="" class='uk-form-label uk-text-bold'>Sigle developpeur :</label>
                                             <div class="uk-form-controls">
-                                                {{ form.default(class_='uk-input') }}
+                                                {{ form.default(class_='uk-input uk-form-small') }}
                                             </div>
                                         </div>
                                     </div>

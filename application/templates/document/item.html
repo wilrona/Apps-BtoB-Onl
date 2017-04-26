@@ -1,7 +1,7 @@
 <tr>
     <td><input type="checkbox" value="" name="id" class="uk-checkbox uk-checkbox-item"/></td>
     <td>
-        <select name="user_id[]" id="" class="uk-select selected" required>
+        <select name="user_id[]" id="" class="uk-select selected uk-form-small" required>
             <option value="">Produits</option>
             {% for produit in data_produit %}
                 <option value="{{ produit.id }}" >{{ produit.name }}</option>
@@ -9,7 +9,7 @@
         </select>
     </td>
     <td><input type="number" class="uk-input" value="1" name="qte[]"/></td>
-    <td><input type="text" class="uk-input uk-form-blank prix" name="prix[]"/></td>
+    <td><input type="text" class="uk-input uk-form-blank prix uk-form-small" name="prix[]"/></td>
     <td><div class="uk-text-right utotal"></div></td>
     <td></td>
 </tr>

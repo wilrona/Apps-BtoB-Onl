@@ -36,7 +36,7 @@
                                     <div class="uk-margin">
                                         {{ form.name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.name(class_='uk-input required') }}
+                                            {{ form.name(class_='uk-input required uk-form-small') }}
                                             {% for message in form.name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -48,7 +48,7 @@
                                     <div class="uk-margin">
                                         {{ form.idligneService.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.idligneService(class_='uk-select selected required') }}
+                                            {{ form.idligneService(class_='uk-select selected required uk-form-small') }}
                                             {% for message in form.idligneService.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -60,7 +60,7 @@
                                     <div class="uk-margin">
                                         {{ form.duree.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.duree(class_='uk-input required') }}
+                                            {{ form.duree(class_='uk-input required uk-form-small') }}
                                             {% for message in form.duree.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -73,7 +73,7 @@
                                     <div class="uk-margin">
                                         {{ form.prix.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.prix(class_='uk-input required') }}
+                                            {{ form.prix(class_='uk-input required uk-form-small') }}
                                             {% for message in form.prix.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -86,7 +86,7 @@
                                     <div class="uk-margin">
                                         {{ form.prix_promo.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.prix_promo(class_='uk-input ') }}
+                                            {{ form.prix_promo(class_='uk-input  uk-form-small') }}
                                             {% for message in form.prix_promo.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}

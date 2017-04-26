@@ -45,7 +45,7 @@
                                     <div class="uk-margin">
                                         <label class="uk-form-label uk-text-bold">Reference : </label>
                                         <div class="uk-form-controls">
-                                            <input type="text" class="uk-input uk-form-blank uk-width-1-1" {% if devis_id %} value="{{ current_ref.ref_devis }}/{{ data.ref }}" {% endif %}/>
+                                            <input type="text" class="uk-input uk-form-blank uk-width-1-1 uk-form-small" {% if devis_id %} value="{{ current_ref.ref_devis }}/{{ data.ref }}" {% endif %}/>
                                         </div>
                                     </div>
                                  </div>
@@ -55,7 +55,7 @@
                                             {{ form.devis_text.label(class_='uk-form-label uk-text-bold') }}
                                             <div class="uk-form-controls ">
                                                 <div class="uk-inline  uk-width-1-1">
-                                                    {{ form.devis_text(class_='uk-input uk-form-blank') }}
+                                                    {{ form.devis_text(class_='uk-input uk-form-blank uk-form-small') }}
                                                     <a class="uk-form-icon uk-form-icon-flip" id="print" href="{{ url_for('devis.view', devis_id=current_devis.id) }}" uk-icon="icon: link"></a>
                                                 </div>
                                             </div>
@@ -88,7 +88,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.name(class_='uk-input uk-form-blank') }}
+                                                    {{ form_client.name(class_='uk-input uk-form-blank uk-form-small') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -96,7 +96,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.email(class_='uk-input uk-form-blank') }}
+                                                    {{ form_client.email(class_='uk-input uk-form-blank uk-form-small') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -104,7 +104,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.phone(class_='uk-input uk-form-blank') }}
+                                                    {{ form_client.phone(class_='uk-input uk-form-blank uk-form-small') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -112,7 +112,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.ville(class_='uk-input uk-form-blank') }}
+                                                    {{ form_client.ville(class_='uk-input uk-form-blank uk-form-small') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -120,7 +120,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.quartier(class_='uk-input uk-form-blank') }}
+                                                    {{ form_client.quartier(class_='uk-input uk-form-blank uk-form-small') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -129,7 +129,7 @@
                                             <div class="uk-margin">
                                                 <label for="" class="uk-form-label"></label>
                                                 <div class="uk-form-controls">
-                                                    <select  name="client_exist" id="client_exist" class="uk-select selected">
+                                                    <select  name="client_exist" id="client_exist" class="uk-select selected uk-form-small">
                                                         <option value="">Selectionnez un client existant</option>
                                                         {% for client in client_list %}
                                                             <option value="{{ client.id }}" {% if form_client.id.data|string == client.id|string %} selected {% endif %}>{{ client.name }}</option>
@@ -142,7 +142,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.raison.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    <select name="client-raison" id="client-raison" class="uk-select selected">
+                                                    <select name="client-raison" id="client-raison" class="uk-select selected uk-form-small">
                                                         <option value="">Selectionnez votre forme juridique</option>
                                                         <option value="LT" {% if form_client.raison.data == 'LT' %} selected {% endif %}>Etablissement</option>
                                                         <option value="SARL" {% if form_client.raison.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
@@ -158,7 +158,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.name.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.name(class_='uk-input required') }}
+                                                    {{ form_client.name(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.name.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -169,7 +169,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.email.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.email(class_='uk-input required') }}
+                                                    {{ form_client.email(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.email.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -180,7 +180,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.phone.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.phone(class_='uk-input') }}
+                                                    {{ form_client.phone(class_='uk-input uk-form-small') }}
                                                     {% for message in form_client.phone.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -191,7 +191,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.ville.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.ville(class_='uk-input required') }}
+                                                    {{ form_client.ville(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.ville.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -202,7 +202,7 @@
                                             <div class="uk-margin">
                                                 {{ form_client.quartier.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_client.quartier(class_='uk-input required') }}
+                                                    {{ form_client.quartier(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_client.quartier.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -224,7 +224,7 @@
                                                 <div class="uk-margin">
                                                     <label for="" class="uk-form-label"></label>
                                                     <div class="uk-form-controls">
-                                                        <select  name="contact_exist" id="contact_exist" class="uk-select selected">
+                                                        <select  name="contact_exist" id="contact_exist" class="uk-select selected uk-form-small">
                                                             <option value="">Selectionnez un contact existant</option>
                                                             {% for contact in contact_list %}
                                                                 <option value="{{ contact.id }}" {% if form_contact.id.data|string == contact.id|string %} selected {% endif %}>{{ contact.full_name() }}</option>
@@ -237,7 +237,7 @@
                                             <div class="uk-margin">
                                                 {{ form_contact.last_name.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_contact.last_name(class_='uk-input required') }}
+                                                    {{ form_contact.last_name(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_contact.last_name.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -248,7 +248,7 @@
                                             <div class="uk-margin">
                                                 {{ form_contact.first_name.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_contact.first_name(class_='uk-input required') }}
+                                                    {{ form_contact.first_name(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_contact.first_name.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -259,7 +259,7 @@
                                             <div class="uk-margin">
                                                 {{ form_contact.email.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_contact.email(class_='uk-input required') }}
+                                                    {{ form_contact.email(class_='uk-input required uk-form-small') }}
                                                     {% for message in form_contact.email.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -270,7 +270,7 @@
                                             <div class="uk-margin">
                                                 {{ form_contact.phone.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_contact.phone(class_='uk-input') }}
+                                                    {{ form_contact.phone(class_='uk-input uk-form-small') }}
                                                     {% for message in form_contact.phone.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -281,7 +281,7 @@
                                             <div class="uk-margin">
                                                 {{ form_contact.fonction.label(class_='uk-form-label uk-text-bold') }}
                                                 <div class="uk-form-controls">
-                                                    {{ form_contact.fonction(class_='uk-input') }}
+                                                    {{ form_contact.fonction(class_='uk-input uk-form-small') }}
                                                     {% for message in form_contact.fonction.errors %}
                                                         <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                     {% endfor %}
@@ -349,7 +349,7 @@
                                                             <td>
                                                                 <div class="uk-form-controls uk-form-qte">
 
-                                                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+                                                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank uk-form-small"/>
 
                                                                 </div>
                                                             </td>
@@ -360,7 +360,7 @@
                                                             </td>
                                                             <td>
                                                                 <div class="uk-form-controls uk-form-st">
-                                                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank uk-form-small">
                                                                 </div>
                                                             </td>
                                                             <td></td>
@@ -372,7 +372,7 @@
                                                             <td>
                                                                 <div class="uk-form-controls uk-form-service">
 
-                                                                    <select name="services"  class="uk-select selected services">
+                                                                    <select name="services"  class="uk-select selected services uk-form-small">
                                                                         <option value="">Choisir un service</option>
                                                                         {% for service in services %}
                                                                             <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
@@ -385,7 +385,7 @@
 
                                                                 <div class="uk-form-controls uk-form-package">
 
-                                                                    <select name="package" class="uk-select selected package">
+                                                                    <select name="package" class="uk-select selected package uk-form-small">
                                                                         <option value="">Choisir un produit</option>
                                                                         {% for package in pack['similaire'] %}
                                                                             <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
@@ -400,7 +400,7 @@
 
                                                                     <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>
 
-                                                                    <input type="text" value="{{ pack['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>
+                                                                    <input type="text" value="{{ pack['qte'] }}" name="qte" class="uk-input change_qte uk-width-auto uk-text-center uk-form-small"/>
 
                                                                     <a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>
 
@@ -414,7 +414,7 @@
                                                             </td>
                                                             <td>
                                                                 <div class="uk-form-controls uk-form-st">
-                                                                    <input type="text" value="{{ pack['st'] }}" name="st" class="uk-input change_st uk-width-auto uk-text-center" data-old="{{ pack['st'] }}">
+                                                                    <input type="text" value="{{ pack['st'] }}" name="st" class="uk-input change_st uk-width-auto uk-text-center uk-form-small" data-old="{{ pack['st'] }}">
                                                                 </div>
                                                             </td>
                                                             <td>
@@ -641,7 +641,7 @@
 
             $select = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-service').append(
-                    $('<select/>').addClass('uk-select selected services').attr({
+                    $('<select/>').addClass('uk-select selected services uk-form-small').attr({
                         name: 'services'
                     }).append(
                         $('<option value="">Choisir un service</option>'),
@@ -654,7 +654,7 @@
 
             $select_pack = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-package').append(
-                    $('<select/>').addClass('uk-select selected package').attr({
+                    $('<select/>').addClass('uk-select selected package uk-form-small').attr({
                         name: 'package'
                     }).append(
                         $('<option value="">Choisir un produit</option>')
@@ -665,7 +665,7 @@
             $input_qte = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-qte').append(
                     $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>'),
-                    $('<input type="text" value="1" name="qte" class="uk-input change_qte uk-width-auto uk-text-center"/>'),
+                    $('<input type="text" value="1" name="qte" class="uk-input change_qte uk-width-auto uk-text-center uk-form-small"/>'),
                     $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="1"><span uk-icon="icon: plus"></span></a>')
                 )
             );
@@ -684,7 +684,7 @@
 
             $input_st = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-st').append(
-                    $('<input type="text" value="0" name="st" class="uk-input change_st uk-width-auto uk-text-center"/>').attr(
+                    $('<input type="text" value="0" name="st" class="uk-input change_st uk-width-auto uk-text-center uk-form-small"/>').attr(
                         {
                             "data-old": 0
                         }

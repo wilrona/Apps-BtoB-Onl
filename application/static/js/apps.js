@@ -75,6 +75,14 @@
 
         $('.count-to').countTo();
 
+        // $('.columnSearch tfoot th').each( function () {
+        //     if(!$(this).hasClass('no-sort')){
+        //         var title = $(this).text();
+        //         $(this).html( '<div class="uk-form-controls"><input type="text" placeholder="Recherche '+title+'" class="uk-input uk-form-small" style="height: 30px;"/></div>' );
+        //
+        //     }
+        // } );
+
            // Datable excecution
 
         var table = $('#dataTable').DataTable({
@@ -138,6 +146,19 @@
             //dom: 'f',
             "bLengthChange" : true
         });
+
+
+        // table.columns().every( function () {
+        //     var that = this;
+        //
+        //     $( 'input', this.footer() ).on( 'keyup change', function () {
+        //         if ( that.search() !== this.value ) {
+        //             that
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     } );
+        // } );
 
 
         $('body').on('draw.dt', table, function() {

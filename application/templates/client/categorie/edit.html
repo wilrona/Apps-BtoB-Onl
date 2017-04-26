@@ -36,7 +36,7 @@
                                     <div class="uk-margin">
                                         {{ form.name.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.name(class_='uk-input required') }}
+                                            {{ form.name(class_='uk-input required uk-form-small') }}
                                             {% for message in form.name.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -49,7 +49,7 @@
                                         <div class="uk-margin">
                                             {{ form.parent_idcategorie.label(class_='uk-form-label uk-text-bold') }}
                                             <div class="uk-form-controls">
-                                                {{ form.parent_idcategorie(class_='uk-select selected required') }}
+                                                {{ form.parent_idcategorie(class_='uk-select selected required uk-form-small') }}
                                                 {% for message in form.parent_idcategorie.errors %}
                                                     <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                                 {% endfor %}

@@ -25,7 +25,7 @@
                         <div class="uk-margin">
                             {{ form.typEnt.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                <select name="typEnt" id="" class="uk-select selected required">
+                                <select name="typEnt" id="" class="uk-select selected required uk-form-small">
                                     <option value="">Selectionnez votre type d'entreprise</option>
                                     <option value="LT" {% if form.typEnt.data == 'LT' %} selected {% endif %}>Etablissement</option>
                                     <option value="SARL" {% if form.typEnt.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
@@ -40,7 +40,7 @@
                         <div class="uk-margin">
                             {{ form.name.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.name(class_='uk-input required') }}
+                                {{ form.name(class_='uk-input required uk-form-small') }}
                                 {% for message in form.name.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -50,7 +50,7 @@
                         <div class="uk-margin">
                             {{ form.slogan.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.slogan(class_='uk-input') }}
+                                {{ form.slogan(class_='uk-input uk-form-small') }}
                                 {% for message in form.slogan.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -60,7 +60,7 @@
                         <div class="uk-margin">
                             {{ form.numcontr.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.numcontr(class_='uk-input required') }}
+                                {{ form.numcontr(class_='uk-input required uk-form-small') }}
                                 {% for message in form.numcontr.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -70,7 +70,7 @@
                         <div class="uk-margin">
                             {{ form.registcom.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.registcom(class_='uk-input required') }}
+                                {{ form.registcom(class_='uk-input required uk-form-small') }}
                                 {% for message in form.registcom.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -80,7 +80,7 @@
                         <div class="uk-margin">
                             {{ form.adress.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.adress(class_='uk-input required') }}
+                                {{ form.adress(class_='uk-input required uk-form-small') }}
                                 {% for message in form.adress.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -90,7 +90,7 @@
                         <div class="uk-margin">
                             {{ form.pays.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.pays(class_='uk-input') }}
+                                {{ form.pays(class_='uk-input uk-form-small') }}
                                 {% for message in form.pays.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -100,7 +100,7 @@
                         <div class="uk-margin">
                             {{ form.ville.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.ville(class_='uk-input required') }}
+                                {{ form.ville(class_='uk-input required uk-form-small') }}
                                 {% for message in form.ville.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -112,7 +112,7 @@
                         <div class="uk-margin">
                             {{ form.quartier.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.quartier(class_='uk-input required') }}
+                                {{ form.quartier(class_='uk-input required uk-form-small') }}
                                 {% for message in form.quartier.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -124,7 +124,7 @@
                         <div class="uk-margin">
                             {{ form.bp.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.bp(class_='uk-input') }}
+                                {{ form.bp(class_='uk-input uk-form-small') }}
                                 {% for message in form.bp.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -135,7 +135,7 @@
                         <div class="uk-margin">
                             {{ form.phone.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.phone(class_='uk-input required') }}
+                                {{ form.phone(class_='uk-input required uk-form-small') }}
                                 {% for message in form.phone.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -145,7 +145,7 @@
                         <div class="uk-margin">
                             {{ form.email.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.email(class_='uk-input required') }}
+                                {{ form.email(class_='uk-input required uk-form-small') }}
                                 {% for message in form.email.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -155,7 +155,7 @@
                         <div class="uk-margin">
                             {{ form.siteweb.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.siteweb(class_='uk-input required') }}
+                                {{ form.siteweb(class_='uk-input required uk-form-small') }}
                                 {% for message in form.siteweb.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -165,7 +165,7 @@
                          <div class="uk-margin">
                             {{ form.facebook.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.facebook(class_='uk-input required') }}
+                                {{ form.facebook(class_='uk-input required uk-form-small') }}
                                 {% for message in form.facebook.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}
@@ -175,7 +175,7 @@
                          <div class="uk-margin">
                             {{ form.twitter.label(class_='uk-form-label') }}
                             <div class="uk-form-controls">
-                                {{ form.twitter(class_='uk-input required') }}
+                                {{ form.twitter(class_='uk-input required uk-form-small') }}
                                 {% for message in form.twitter.errors %}
                                     <span class="uk-text-danger">{{ message }}</span>
                                 {% endfor %}

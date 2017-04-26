@@ -61,7 +61,7 @@
                                     <div class="uk-margin">
                                         {{ form.client_id.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.client_id(class_='uk-select uk-form-blank') }}
+                                            {{ form.client_id(class_='uk-select uk-form-blank uk-form-small') }}
                                             {% for message in form.client_id.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -72,7 +72,7 @@
                                     <div class="uk-margin">
                                         {{ form.support_id.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.support_id(class_='uk-select uk-form-blank') }}
+                                            {{ form.support_id(class_='uk-select uk-form-blank uk-form-small') }}
                                             {% for message in form.support_id.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -124,8 +124,8 @@
                                                             <td>{{ item['ref'] }} <br/> {{ item['name'] }}
                                                             <input type="hidden" value="{{ item['id'] }}" name="id"/>
                                                             </td>
-                                                            <td><input type="number" class="uk-input change_qte {% if devis_id %} uk-form-blank {% endif %}" value="{{ item['qte'] }}" name="qte" min="1"/></td>
-                                                            <td><input type="text" value="{{ item['prix'] }}" class="uk-input uk-form-blank prix" name="prix"/></td>
+                                                            <td><input type="number" class="uk-input change_qte uk-form-small {% if devis_id %} uk-form-blank {% endif %}" value="{{ item['qte'] }}" name="qte" min="1"/></td>
+                                                            <td><input type="text" value="{{ item['prix'] }}" class="uk-input uk-form-blank prix uk-form-small" name="prix"/></td>
                                                             <td><div class="utotal change_total">{{ item['total'] }}</div></td>
                                                             <td>
                                                                 {% if not devis_id %}

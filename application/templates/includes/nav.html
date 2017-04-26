@@ -25,7 +25,9 @@
         <a href="#" class="waves-effect">Facturation</a>
         <ul class="uk-nav-sub">
             <li><a href="{{ url_for('facture.index') }}" class="waves-effect">Facture</a></li>
-            <li><a href="#" class="waves-effect">Règlement facture</a></li>
+            {% if current_user.has_roles([('super_admin', 'reglement')]) %}
+                <li><a href="{{ url_for('reglement.index') }}" class="waves-effect">Règlement facture</a></li>
+            {% endif %}
             <li><a href="#" class="waves-effect">Facture Non soldé</a></li>
         </ul>
     </li>

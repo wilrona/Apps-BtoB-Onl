@@ -8,21 +8,21 @@
         <div class="uk-margin">
             <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Reference :</label>
             <div class="uk-form-controls">
-                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.reference() }}">
+                <input class="uk-input uk-form-blank uk-form-small" id="form-horizontal-text" type="text" disabled value="{{ data.reference() }}">
             </div>
         </div>
 
         <div class="uk-margin">
             <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Client :</label>
             <div class="uk-form-controls">
-                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.client_id.name }}">
+                <input class="uk-input uk-form-blank uk-form-small" id="form-horizontal-text" type="text" disabled value="{{ data.client_id.name }}">
             </div>
         </div>
 
         <div class="uk-margin">
             <label class="uk-form-label uk-text-bold" for="form-horizontal-select">Contact éffectuant le paiment :</label>
             <div class="uk-form-controls">
-                <select class="uk-select selected required" id="form-horizontal-select" name="user_paid">
+                <select class="uk-select selected required uk-form-small" id="form-horizontal-select" name="user_paid">
                     <option value="">Choix du contact </option>
                     {% for contact in list %}
                         <option value="{{ contact.id }}">{{ contact.name }} {{ contact.fonction }}</option>
@@ -35,7 +35,7 @@
         <div class="uk-margin">
             <label class="uk-form-label uk-text-bold" for="form-horizontal-montant">Montant Facture :</label>
             <div class="uk-form-controls">
-                <input class="uk-input uk-form-blank" id="form-horizontal-montant" type="text" disabled value="{{ data.montant - data.montant_reglement() }}">
+                <input class="uk-input uk-form-blank uk-form-small" id="form-horizontal-montant" type="text" disabled value="{{ data.montant - data.montant_reglement() }}">
             </div>
         </div>
 
@@ -48,7 +48,7 @@
         </div>
         <div class="uk-margin">
             <div class="uk-form-controls">
-                <input class="uk-input required uk-hidden" type="text" name="montant_partiel" id="montant_partiel" disabled placeholder="Valeur du montant partiel">
+                <input class="uk-input required uk-hidden uk-form-small" type="text" name="montant_partiel" id="montant_partiel" disabled placeholder="Valeur du montant partiel">
                 <div class="uk-alert uk-alert-danger uk-hidden" id="partial_input">Information obligatoire</div>
                 <div class="uk-alert uk-alert-danger uk-hidden" id="partial_input_supp">Montant Suppérieur</div>
             </div>

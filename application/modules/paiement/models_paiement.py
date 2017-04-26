@@ -10,12 +10,12 @@ class Paiement(db.Document):
     idmoyen_paiement = db.StringField()
     montant = db.FloatField()
     idvendeur = db.ReferenceField('Users')
+    iduser_valid = db.ReferenceField('Users')
     createDate = db.DateTimeField()
     validDate = db.DateTimeField()
     updateDate = db.DateTimeField()
     auto = db.BooleanField(default=False)
     souche = db.StringField()
-    from_soldier = db.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.createDate:

@@ -35,7 +35,7 @@
                                     <div class="uk-margin">
                                         {{ form.raison.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            <select name="raison" id="" class="uk-select selected ">
+                                            <select name="raison" id="" class="uk-select selected uk-form-small">
                                                 <option value="">Selectionnez</option>
                                                 <option value="LT" {% if form.raison.data == 'LT' %} selected {% endif %}>Etablissement</option>
                                                 <option value="SARL" {% if form.raison.data == 'SARL' %} selected {% endif %}>SARL (Société à responsabilité limitée)</option>
@@ -62,7 +62,7 @@
                                     <div class="uk-margin">
                                         {{ form.idcategorie.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.idcategorie(class_='uk-select selected required') }}
+                                            {{ form.idcategorie(class_='uk-select selected required uk-form-small') }}
                                             {% for message in form.idcategorie.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -73,7 +73,7 @@
                                     <div class="uk-margin">
                                         {{ form.maincategorie.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.maincategorie(class_='uk-select selected required') }}
+                                            {{ form.maincategorie(class_='uk-select selected required uk-form-small') }}
                                             {% for message in form.maincategorie.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}
@@ -84,7 +84,7 @@
                                     <div class="uk-margin">
                                         {{ form.email.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ form.email(class_='uk-input required') }}
+                                            {{ form.email(class_='uk-input required uk-form-small') }}
                                             {% for message in form.email.errors %}
                                                 <div class="uk-alert uk-alert-danger">{{ message }}</div>
                                             {% endfor %}

@@ -322,6 +322,12 @@ html, div *{
     border-right: 1px solid #e5e5e5;
 }
 
+.uk-table th .uk-form-label{
+    color: #fff;
+    font-weight: bold;
+    font-style: italic;
+}
+
 .uk-table th:first-child{
     border-left: none;
 }
