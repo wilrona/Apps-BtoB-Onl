@@ -47,7 +47,7 @@
 
                         </div>
                         <div class="uk-width-2-5@l uk-width-2-5@m uk-width-2-5@s">
-                            <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-center" uk-margin>
+                            <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-right" uk-margin>
                                 {% for etape in etape_list %}
                                 <li {% if data.etape == etape.sigle %} class = 'uk-active' {% endif %}><a href="{{ url_for('opportunite.change_etape', etape_id=etape.sigle, opportunite_id=opportunite_id) }}">{{ etape.name }}</a></li>
                                 {% endfor %}

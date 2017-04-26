@@ -63,7 +63,13 @@
                             <td>
                                 {% if data.status == 0 %} Brouillon {% endif %}
                                 {% if data.status == 1 %} Validée {% endif %}
-                                {% if data.status == 2 %} Payée {% endif %}
+                                {% if data.status == 2 %}
+                                    {% if data.is_partiel() %}
+                                        Paiement Partiel
+                                    {% else %}
+                                        Payée
+                                    {% endif %}
+                                {% endif %}
                                 {% if data.status == 3 %} Annulée {% endif %}
                             </td>
                           </tr>

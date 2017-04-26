@@ -27,6 +27,12 @@ class Paiement(db.Document):
 
         return super(Paiement, self).save(*args, **kwargs)
 
+    def info_paiement(self):
+
+        paid = Moyen_paiement.objects(sigle=self.idmoyen_paiement).get()
+
+        return paid
+
 
 class Moyen_paiement(db.Document):
     name = db.StringField()

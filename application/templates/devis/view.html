@@ -40,7 +40,7 @@
                         {% endif %}
                     </div>
                     <div class="uk-width-2-5@l uk-width-2-5@m uk-width-2-5@s">
-                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-center" uk-margin>
+                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-right" uk-margin>
 
                             <li {% if data.status == 0 %} class="uk-active" {% endif %}><a {% if data.status <= 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}"{% else %} href="#"{% endif %}>Devis</a></li>
                             <li {% if data.status == 1 %} class="uk-active" {% endif %}><a href="#">Devis Envoyé</a></li>
@@ -209,7 +209,7 @@
                              <div class=" uk-clearfix uk-width-1-1">
                                 <hr class="uk-divider-icon"/>
                                 <ul uk-tab>
-                                    <li><a href="#">Ligne de commandes</a></li>
+                                    <li><a href="#">Produits de la commande</a></li>
 
                                 </ul>
 
@@ -311,8 +311,12 @@
                                                  <td class="uk-text-right">{{ data.vendeur_id.full_name() }}</td>
                                              </tr>
                                              <tr>
-                                                 <td><strong>Date de creation</strong></td>
+                                                 <td><strong>Crée le </strong></td>
                                                  <td class="uk-text-right">{{ data.createDate|format_date('%d/%m/%Y') }} à {{ data.createDate|format_date('%H:%M') }} </td>
+                                             </tr>
+                                             <tr>
+                                                 <td><strong>Derniere Modification</strong></td>
+                                                 <td class="uk-text-right">{{ data.updateDate|format_date('%d/%m/%Y') }} à {{ data.updateDate|format_date('%H:%M') }} </td>
                                              </tr>
                                              </tbody>
 

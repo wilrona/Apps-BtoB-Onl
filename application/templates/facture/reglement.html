@@ -22,7 +22,7 @@
         <div class="uk-margin">
             <label class="uk-form-label uk-text-bold" for="form-horizontal-select">Contact éffectuant le paiment :</label>
             <div class="uk-form-controls">
-                <select class="uk-select selected required" id="form-horizontal-select">
+                <select class="uk-select selected required" id="form-horizontal-select" name="user_paid">
                     <option value="">Choix du contact </option>
                     {% for contact in list %}
                         <option value="{{ contact.id }}">{{ contact.name }} {{ contact.fonction }}</option>
@@ -33,9 +33,9 @@
         </div>
 
         <div class="uk-margin">
-            <label class="uk-form-label uk-text-bold" for="form-horizontal-text">Montant Facture :</label>
+            <label class="uk-form-label uk-text-bold" for="form-horizontal-montant">Montant Facture :</label>
             <div class="uk-form-controls">
-                <input class="uk-input uk-form-blank" id="form-horizontal-text" type="text" disabled value="{{ data.montant|format_price() }}">
+                <input class="uk-input uk-form-blank" id="form-horizontal-montant" type="text" disabled value="{{ data.montant - data.montant_reglement() }}">
             </div>
         </div>
 
@@ -50,6 +50,7 @@
             <div class="uk-form-controls">
                 <input class="uk-input required uk-hidden" type="text" name="montant_partiel" id="montant_partiel" disabled placeholder="Valeur du montant partiel">
                 <div class="uk-alert uk-alert-danger uk-hidden" id="partial_input">Information obligatoire</div>
+                <div class="uk-alert uk-alert-danger uk-hidden" id="partial_input_supp">Montant Suppérieur</div>
             </div>
         </div>
         <div class="uk-margin uk-float-right">
@@ -69,37 +70,88 @@
         e.preventDefault();
         var $montant_partial = $('#montant_partiel');
         var $partial = $('#partial_input');
+        var $partial_sup = $('#partial_input_supp');
 
         var $select = $('#form-horizontal-select');
         var $select_error = $('#error_select');
 
+        var $current_montant = $('#form-horizontal-montant');
+
+        var $montant_partiel_check = false;
+        var $select_check = false;
+
         if(!$montant_partial.prop('disabled')){
+
             if($montant_partial.val() == ''){
+
                 $partial.removeClass('uk-hidden');
+                $partial_sup.addClass('uk-hidden');
+                $montant_partiel_check = true;
+
             }else{
+
                 if($.isNumeric($montant_partial.val())){
-                    $partial.addClass('uk-hidden');
+
+                    if(parseInt($montant_partial.val()) > parseInt($current_montant.val())){
+
+                        $montant_partiel_check = true;
+                        $partial_sup.removeClass('uk-hidden');
+                        $partial.addClass('uk-hidden');
+
+                    }else if($montant_partial.val() <= 0){
+
+                        $partial.removeClass('uk-hidden');
+                        $montant_partiel_check = true;
+
+                    }else{
+
+                        $partial_sup.addClass('uk-hidden');
+                        $montant_partiel_check = false;
+                        $partial.addClass('uk-hidden');
+
+                    }
                 }else {
+
                     $partial.removeClass('uk-hidden');
+                    $montant_partiel_check = true;
+
                 }
+
             }
         }
 
         if (!$select.val()){
             $select_error.removeClass('uk-hidden');
+            $select_check = true;
         }else{
             $select_error.addClass('uk-hidden');
+            $select_check = false;
+        }
+
+        if(!$select_check && !$montant_partiel_check){
+            console.log('ok');
+            $.ajax({
+                url: "{{ url_for('facture.reglement', facture_id=facture_id) }}",
+                data: $('#formulaire_modal').serialize(),
+                type: 'POST',
+                success: function(data) {
+                    $('#modal-id .uk-body-custom').html(data);
+                }
+            });
         }
     });
 
     $('#partiel').on('click', function(){
-        $('#montant_partiel').removeClass('uk-hidden').prop('disabled', false);
+        $('#montant_partiel').removeClass('uk-hidden').prop('disabled', false).val(0);
     });
+
     $('#total').on('click', function(){
+        $('#partial_input').addClass('uk-hidden');
+        $('#partial_input_supp').addClass('uk-hidden');
         $('#montant_partiel').addClass('uk-hidden').prop('disabled', true);
     });
-{#    {% if success %}#}
-{#        $('#closing').trigger('click');#}
-{#        $('#full').trigger('click');#}
-{#    {% endif %}#}
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('facture.view', facture_id=facture_id) }}").delay();
+    {% endif %}
 </script>

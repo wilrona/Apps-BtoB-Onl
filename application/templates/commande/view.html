@@ -23,7 +23,7 @@
 
                     </div>
                     <div class="uk-width-2-5@l uk-width-2-5@m uk-width-2-5@s">
-                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-center" uk-margin>
+                        <ul class="uk-subnav uk-subnav-divider uk-subnav-pill uk-flex-right" uk-margin>
                             <li {% if data.status == 0 %} class="uk-active" {% endif %}><a {% if data.status <= 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='0') }}"{% else %} href="#"{% endif %}>Devis</a></li>
                             <li {% if data.status == 1 %} class="uk-active" {% endif %}><a href="#">Devis Envoyé</a></li>
                             <li {% if data.status == 2 %} class="uk-active" {% endif %}><a {% if data.status > 1 %}href="{{ url_for('devis.change_satus', devis_id=devis_id, status='2') }}"{% else %} href="#"{% endif %}>Bon de commande</a></li>

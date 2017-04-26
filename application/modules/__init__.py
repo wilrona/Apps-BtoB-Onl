@@ -152,7 +152,7 @@ global_role = [
          {'titre': 'Gestion des utilisateurs ', 'valeur': 'user', 'action': 2},
          {'titre': 'Gestion des lignes de service ', 'valeur': 'service', 'action': 2},
          {'titre': 'Gestion des packages ', 'valeur': 'package', 'action': 2},
-         {'titre': 'Gestion des paiements ', 'valeur': 'paiement', 'action': 2},
+         {'titre': 'Gestion des Moyens de paiement ', 'valeur': 'paiement', 'action': 2},
      ]
     },
     {'module': 'Gestion des demandes', 'valeur': 'module_demande',
@@ -168,7 +168,9 @@ global_role = [
          {'titre': 'Definir des clients institutions ', 'valeur': 'client_institution', 'action': 0},
          {'titre': 'Traitement des devis ', 'valeur': 'devis', 'action': 2},
          {'titre': 'Traitement des commande ', 'valeur': 'commande', 'action': 1},
-         {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2}
+         {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2},
+         {'titre': 'Traitement des factures ', 'valeur': 'facture', 'action': 2},
+         {'titre': 'Traitement des reglements ', 'valeur': 'reglement', 'action': 2}
      ]
     },
 ]

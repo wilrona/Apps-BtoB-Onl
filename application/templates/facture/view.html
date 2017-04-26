@@ -23,7 +23,7 @@
                                  {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
                                     <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('facture.change_satus', facture_id=facture_id, status='1') }}"><span class="uk-margin-small-right"><i class="fa fa-check-square-o"></i></span>Valider</a>
                                  {% endif %}
-                             {% elif data.status == 1 %}
+                             {% elif data.status == 1 or data.is_partiel() %}
                                 {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
                                     <a class="uk-button waves-effect uk-button-success uk-button-small modal" id="open-modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;"  href="{{ url_for('facture.reglement', facture_id=facture_id) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Reglement facture</a>
                                 {% endif %}
@@ -59,7 +59,9 @@
                     <form method="post" id="formulaire">
                         {{ form.hidden_tag() }}
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
-
+                            <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
+                                <a href="" class="uk-button waves-effect uk-button-default">{{ data.reglement_facture().count() }} Versement(s)</a>
+                            </div>
                             <div class="uk-padding uk-padding-remove-horizontal uk-grid-small uk-grid-divider" uk-grid>
                                  <div class="uk-width-1-1@s">
                                     <div class="uk-margin">
@@ -202,7 +204,7 @@
                              <div class=" uk-clearfix uk-width-1-1">
                                 <hr class="uk-divider-icon"/>
                                 <ul uk-tab>
-                                    <li><a href="#">Ligne de commandes</a></li>
+                                    <li><a href="#">Produits de la commande</a></li>
 
                                 </ul>
 
@@ -296,20 +298,66 @@
                                 </ul>
 
 
-                                     <div class="uk-float-left uk-width-1-2@s">
-                                         <table class="uk-table uk-table-small uk-table-middle">
-                                             <tbody>
-                                             <tr>
-                                                 <td><strong>Information vendeur</strong></td>
-                                                 <td class="uk-text-right">{{ data.vendeur_id.full_name() }}</td>
-                                             </tr>
-                                             <tr>
-                                                 <td><strong>Date de creation</strong></td>
-                                                 <td class="uk-text-right">{{ data.createDate|format_date('%d/%m/%Y') }} à {{ data.createDate|format_date('%H:%M') }} </td>
-                                             </tr>
-                                             </tbody>
+                                     <div class="uk-grid">
+                                         <div class="uk-width-1-2@s">
+                                             <table class="uk-table uk-table-small uk-table-middle">
+                                                 <tbody>
+                                                 <tr>
+                                                     <td><strong>Information vendeur</strong></td>
+                                                     <td class="uk-text-right">{{ data.vendeur_id.full_name() }}</td>
+                                                 </tr>
+                                                 <tr>
+                                                     <td><strong>Crée le </strong></td>
+                                                     <td class="uk-text-right">{{ data.createDate|format_date('%d/%m/%Y') }} à {{ data.createDate|format_date('%H:%M') }} </td>
+                                                 </tr>
+                                                 <tr>
+                                                     <td><strong>Derniere Modification</strong></td>
+                                                     <td class="uk-text-right">{{ data.updateDate|format_date('%d/%m/%Y') }} à {{ data.updateDate|format_date('%H:%M') }} </td>
+                                                 </tr>
+                                                 </tbody>
 
-                                         </table>
+                                             </table>
+                                         </div>
+                                         <div class="uk-width-1-2@s">
+                                             <table class="uk-table uk-table-small uk-table-middle">
+                                                 <thead>
+                                                 <tr>
+                                                     <th>Reglement Facture <a href="#" class="uk-display-inline-block uk-float-right uk-button-small uk-button uk-padding-remove">Plus de détails</a></th>
+                                                 </tr>
+                                                 </thead>
+                                                 <tbody>
+                                                 <tr>
+                                                     <td class="uk-padding-remove">
+                                                        <table class="uk-table uk-table-small uk-table-middle">
+
+                                                            <tbody>
+                                                            <tr>
+                                                                <td><strong>Date</strong></td>
+                                                                <td><strong>Client</strong></td>
+                                                                <td><strong>Montant</strong></td>
+                                                            </tr>
+                                                            {% for reglement in data.reglement_facture() %}
+                                                            <tr>
+                                                                <td>{{ reglement.createDate|format_date('%d/%m/%Y %H:%M')  }} {%  if reglement.validDate %}<br>
+                                                                    <small>Validé le {{ reglement.validDate|format_date('%d/%m/%Y %H:%M') }}</small> {% endif %}
+                                                                </td>
+                                                                <td>{{ reglement.iduser_paid.full_name() }}</td>
+                                                                <td>{{ reglement.montant|format_price() }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                     </td>
+                                                 </tr>
+                                                 </tbody>
+                                                 <tfoot>
+                                                 <tr>
+                                                     <th>Reste : <span class="uk-display-inline-block uk-float-right">{{ (data.montant - data.montant_reglement())|format_price() }}</span></th>
+                                                 </tr>
+                                                 </tfoot>
+
+                                             </table>
+                                         </div>
                                      </div>
                             </div>
 
@@ -385,7 +433,7 @@
                 total = total + parseFloat($(this).val());
             });
 
-            console.log(total);
+{#            console.log(total);#}
 
             $('#global_total').text(total);
 

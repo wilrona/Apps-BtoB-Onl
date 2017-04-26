@@ -23,9 +23,9 @@ def index():
     title_page = 'Devis'
 
     if current_user.has_roles([('super_admin', 'devis')]):
-        datas = Document.objects(devisDoc=True)
+        datas = Document.objects(Q(devisDoc=True)& Q(status__lt=2))
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=2))
 
     return render_template('devis/index.html', **locals())
 

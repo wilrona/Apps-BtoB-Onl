@@ -342,6 +342,8 @@ def ligne_commande():
 @login_required
 def reglement(facture_id):
 
+    from ..paiement.models_paiement import Paiement
+
     data = Document.objects.get(id=facture_id)
 
     users = data.client_id.iduser
@@ -366,6 +368,34 @@ def reglement(facture_id):
         if contact.fonction:
             current['fonction'] = '(' + contact.fonction + ')'
         list.append(current)
+
+    success = False
+    if request.method == 'POST':
+
+        reglement = Paiement()
+
+        if 'montant_partiel' in request.form:
+            reglement.montant = float(request.form['montant_partiel'])
+        else:
+            reglement.montant = data.montant
+
+        user = Users.objects.get(id=request.form['user_paid'])
+        reglement.iduser_paid = user
+
+        reglement.iddocument = data
+
+        vendeur = Users.objects.get(id=current_user.id)
+        reglement.idvendeur = vendeur
+
+        reglement.idmoyen_paiement = 'cash'
+
+        # Modification du status du document facture.
+        data.status = 2
+        data.save()
+
+        reglement.save()
+
+        success = True
 
     return render_template('facture/reglement.html', **locals())
 

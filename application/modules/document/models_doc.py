@@ -65,7 +65,7 @@ class Document(db.Document):
         paiement = Paiement.objects(iddocument=self.id)
         return paiement
 
-    def montant_relement(self):
+    def montant_reglement(self):
 
         from ..paiement.models_paiement import Paiement
         paiements = Paiement.objects(iddocument=self.id)
@@ -74,6 +74,19 @@ class Document(db.Document):
             montant += paiement.montant
         return montant
 
+    def is_partiel(self):
+
+        from ..paiement.models_paiement import Paiement
+        paiements = Paiement.objects(iddocument=self.id)
+        montant = 0
+        for paiement in paiements:
+            montant += paiement.montant
+
+        partiel = False
+        if montant < self.montant:
+            partiel = True
+
+        return partiel
 
 
 class LigneDoc(db.Document):
