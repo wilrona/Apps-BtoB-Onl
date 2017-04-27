@@ -116,12 +116,8 @@ def edit(facture_id=None):
         cur_client = Compagnie.objects.get(id=request.form['client_exist'])
 
         contact_list = []
-        for cont in cur_client.idcontact:
+        for cont in cur_client.relation():
             contact_list.append(cont)
-
-        for cont in cur_client.iduser:
-            if cont not in contact_list:
-                contact_list.append(cont)
 
     services = LigneService.objects()
 
@@ -161,12 +157,8 @@ def edit(facture_id=None):
         form_client = FormClient(prefix="client", obj=current_devis.client_id)
 
         contact_list = []
-        for cont in current_devis.client_id.idcontact:
+        for cont in current_devis.client_id.relation():
             contact_list.append(cont)
-
-        for cont in current_devis.client_id.iduser:
-            if cont not in contact_list:
-                contact_list.append(cont)
 
         ligne_doc = LigneDoc.objects(iddevis=current_devis.id)
 
@@ -346,27 +338,17 @@ def reglement(facture_id):
 
     data = Document.objects.get(id=facture_id)
 
-    users = data.client_id.iduser
-    contacts = data.client_id.idcontact
+    contacts = data.client_id.relation()
 
     list = []
 
-    for user in users:
+    for user in contacts:
         current = {}
         current['id'] = str(user.id)
         current['name'] = user.full_name()
         current['fonction'] = ''
         if user.fonction:
             current['fonction'] = '(' + user.fonction + ')'
-        list.append(current)
-
-    for contact in contacts:
-        current = {}
-        current['id'] = str(contact.id)
-        current['name'] = contact.full_name()
-        current['fonction'] = ''
-        if contact.fonction:
-            current['fonction'] = '(' + contact.fonction + ')'
         list.append(current)
 
     success = False

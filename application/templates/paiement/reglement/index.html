@@ -27,14 +27,14 @@
 
 {% block  button %}
     {% if current_user.has_roles([('super_admin', 'reglement')], ['edit']) %}
-    <a class="uk-button waves-effect uk-button-success uk-button-small" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer un reglement</a>
+    <a class="uk-button waves-effect uk-button-success uk-button-small modal-container" href="{{ url_for('reglement.edit') }}" uk-toggle="target:#modal-container; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer des reglements</a>
     {% endif %}
 {% endblock %}
 
 {% block layout_content %}
 
     <div class="uk-container-expand">
-
+        {% include 'includes/flash_message.html' %}
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1">
                 <div class="uk-overflow-auto">
@@ -46,7 +46,7 @@
                             <th width="15%">Ref</th>
                             <th width="">Client</th>
                             <th width="">Contact</th>
-                            <th width="">Montant</th>
+                            <th width="15%">Montant</th>
                             <th width="">Reste</th>
                             <th width="10%">N° Reçu</th>
                         </tr>
@@ -59,8 +59,8 @@
                             <td>{{ data.iddocument.reference() }}</td>
                             <td>{{ data.iddocument.client_id.name }}</td>
                             <td>{{ data.iduser_paid.full_name() }}</td>
-                            <td>{{ data.montant|format_price() }}</td>
-                            <td>{{ (data.iddocument.montant - data.montant)|format_price() }}</td>
+                            <td>{{ data.montant|format_price() }} <small class="uk-float-right uk-label uk-label-success">{{ data.iddocument.montant|format_price() }}</small></td>
+                            <td>{{ (data.iddocument.montant - data.iddocument.montant_reglement())|format_price() }}</td>
                             <td>
                                 <div class="uk-form-controls uk-form-st">
                                     <input type="text" value="" name="souche" class="uk-input uk-width-auto uk-text-center uk-form-small souche" disabled>
@@ -77,7 +77,6 @@
             </div>
         </div>
     </div>
-
 
 {% endblock %}
 

@@ -592,3 +592,9 @@ html, div *{
 .dataTables_scrollBody table.dataTable thead>tr>td.sorting_asc:after{
     display: none;
 }
+
+.uk-table .uk-input, .uk-table .uk-select, .uk-table .uk-textarea {
+    background-color: #f8f8f8 !important;
+    color: #444 !important;
+    border-color: #e5e5e5 !important;
+}

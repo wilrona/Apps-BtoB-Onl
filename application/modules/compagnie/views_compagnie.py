@@ -333,22 +333,10 @@ def find_contact():
     customer_id = str(request.json['client'])
 
     customer = Compagnie.objects.get(id=customer_id)
-    users = customer.iduser
-    contact = customer.idcontact
 
     list = []
 
-    for data in users:
-        current = {}
-        current['id'] = str(data.id)
-        current['first_name'] = data.first_name
-        current['last_name'] = data.last_name
-        current['fonction'] = ''
-        if data.fonction:
-            current['fonction'] = '(' + data.fonction + ')'
-        list.append(current)
-
-    for data in contact:
+    for data in customer.relation():
         current = {}
         current['id'] = str(data.id)
         current['first_name'] = data.first_name

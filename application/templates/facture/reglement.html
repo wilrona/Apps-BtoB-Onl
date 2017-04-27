@@ -60,7 +60,6 @@
         </div>
 
     </form>
-    </form>
 </div>
 
 <script>
@@ -129,7 +128,6 @@
         }
 
         if(!$select_check && !$montant_partiel_check){
-            console.log('ok');
             $.ajax({
                 url: "{{ url_for('facture.reglement', facture_id=facture_id) }}",
                 data: $('#formulaire_modal').serialize(),

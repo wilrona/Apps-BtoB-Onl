@@ -41,6 +41,24 @@
 
         });
 
+        $('.modal-container').on('click', function(e){
+            e.preventDefault();
+            var url =  $(this).attr('href');
+
+            $.ajax({
+                method: "GET",
+                url: url
+            })
+                .done(function( msg ) {
+                    $('#modal-container .uk-body-custom').html(msg);
+                    if($(".selected").hasClass('required')){
+                        $(".selected.required").next().children().children().addClass('required');
+                    }
+                });
+
+
+        });
+
         $('#modal-id').on('hide', function () {
             $('#modal-id .uk-body-custom').html('');
         });

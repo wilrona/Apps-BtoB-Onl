@@ -54,6 +54,19 @@ class Compagnie(db.Document):
         self.updateDate = datetime.datetime.now()
         return super(Compagnie, self).save(*args, **kwargs)
 
+    def relation(self):
+
+        list = []
+
+        for user in self.iduser:
+            list.append(user)
+
+        for contact in self.idcontact:
+            if contact not in list:
+                list.append(contact)
+
+        return list
+
 
 class Media(db.Document):
     type = db.StringField()

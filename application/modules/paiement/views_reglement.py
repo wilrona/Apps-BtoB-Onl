@@ -1,6 +1,6 @@
-
 from ...modules import *
 from models_paiement import Paiement
+from ..document.models_doc import Document
 from ..user.models_user import Users
 
 prefix = Blueprint('reglement', __name__)
@@ -10,7 +10,6 @@ prefix = Blueprint('reglement', __name__)
 @login_required
 @roles_required([('super_admin', 'reglement')])
 def index():
-
     title_page = 'Reglement Facture'
 
     datas = Paiement.objects(Q(status=0) & Q(idmoyen_paiement='cash')).order_by('-createDate')
@@ -18,11 +17,56 @@ def index():
     return render_template('paiement/reglement/index.html', **locals())
 
 
+@prefix.route('/edit/', methods=['GET', 'POST'])
+@login_required
+def edit():
+
+    factures = Document.objects(devisDoc=False)
+
+    datas = []
+
+    for facture in factures:
+        if facture.is_partiel():
+            datas.append(facture)
+
+    success = False
+    if request.method == 'POST':
+
+        count = 0
+        for item in request.form.getlist('item_id'):
+
+            data = Document.objects.get(id=item)
+
+            reglement = Paiement()
+
+            reglement.montant = float(request.form.getlist('montant')[count])
+
+            user = Users.objects.get(id=request.form.getlist('contact')[count])
+            reglement.iduser_paid = user
+
+            reglement.iddocument = data
+
+            vendeur = Users.objects.get(id=current_user.id)
+            reglement.idvendeur = vendeur
+
+            reglement.idmoyen_paiement = 'cash'
+
+            # Modification du status du document facture.
+            data.status = 2
+            data.save()
+
+            reglement.save()
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('paiement/reglement/edit.html', **locals())
+
+
 @prefix.route('/valide', methods=['POST'])
 @login_required
 @roles_required([('super_admin', 'reglement')], ['delete'])
 def valide():
-
     data = []
     element = []
     count = 0
@@ -47,8 +91,8 @@ def valide():
         else:
 
             info['statut'] = 'NOK'
-            info['message'] = 'La facture No: "'+item_found.iddocument.reference()+'" ne contient pas de souche ' \
-                                                                                  'renseigne. '
+            info['message'] = 'La facture No: "' + item_found.iddocument.reference() + '" ne contient pas de souche ' \
+                                                                                       'renseigne. '
             data.append(info)
 
         item_index += 1
@@ -56,7 +100,7 @@ def valide():
     if count:
         info = {}
         info['statut'] = 'OK'
-        info['message'] = str(count)+' element(s) ont ete valide avec success.'
+        info['message'] = str(count) + ' element(s) ont ete valide avec success.'
         info['element'] = element
         data.append(info)
 

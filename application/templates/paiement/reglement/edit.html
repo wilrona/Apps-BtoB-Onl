@@ -1,112 +1,208 @@
-{% extends 'base.html' %}
+<button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Facture en attente de reglement</h2>
+</div>
+<div class="uk-padding-small">
 
-{% block title %} {{ title_page }} {% endblock %}
-
-{% block title_header %} {{ title_page }} {% endblock %}
-
-{% block  button %}
-    <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</a>
-    {% if moyen_paiement_id %}
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('moyen_paiement.view', moyen_paiement_id=moyen_paiement_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
-    {% else %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et Nouveau</a>
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('moyen_paiement.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
-    {% endif %}
-{% endblock %}
-
-{% block  layout_content %}
-<div class="uk-container uk-margin">
-            {% include 'includes/flash_message.html' %}
-            <div class="uk-grid-small" uk-grid>
-                <div class="uk-width-1-1">
-                    <form method="post" id="formulaire" enctype="multipart/form-data">
-                        <div class="uk-card uk-card-default uk-card-small uk-card-body" >
-
-                            {{ form.hidden_tag() }}
-                            <input type="hidden" name="nouveau" value="0" id="nouveau"/>
-                            <div class="uk-padding uk-padding-remove-horizontal uk-grid-small" uk-grid>
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.name.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.name(class_='uk-input required uk-form-small') }}
-                                            {% for message in form.name.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="uk-width-1-2@s">
-                                    <div class="uk-margin">
-                                        {{ form.sigle.label(class_='uk-form-label uk-text-bold') }}
-                                        <div class="uk-form-controls">
-                                            {{ form.sigle(class_='uk-input required uk-form-small') }}
-                                            {% for message in form.sigle.errors %}
-                                                <div class="uk-alert uk-alert-danger">{{ message }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="uk-width-1-2@s">
-
-                                    {{ form.logo.label(class_='uk-form-label uk-text-bold') }}
-
-                                    <div class="test-upload uk-placeholder uk-text-center">
-                                        <div uk-form-custom class="uk-margin-bottom">
-                                            <span uk-icon="icon: cloud-upload"></span>
-                                            <input type="file" name="file" id="file_upload">
-                                            <span class="uk-link">Cliquez pour selectionnez l'image</span>
-                                        </div>
-                                        <br/>
-                                        <img src="{% if form.logo.data %}{{ form.logo.data }}{% endif %}" id="image_upload" alt="" class="{% if not form.logo.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </form>
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-1">
+            <div class="uk-margin uk-float-right">
+                <div class="uk-inline">
+                    <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+                    <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox_modal">
                 </div>
-
             </div>
+        </div>
+        <div class="uk-width-1-1">
+            <div class="uk-overflow-auto">
+                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable_modal">
+                    <thead>
+                    <tr>
+                        <th class="no-sort" width="3%"></th>
+                        <th width="">Date</th>
+                        <th width="">Ref</th>
+                        <th width="">Client</th>
+                        <th width="15%">Contact</th>
+                        <th width="">Montant</th>
+                        <th width="">Reste</th>
+                        <th width="15%">Mont. perçu</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for data in datas %}
+                        <tr>
+                            <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                            <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
+                            <td>{{ data.reference() }}</td>
+                            <td>{{ data.client_id.name }}</td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st">
+                                    <select name="contact" id="" class="ul-select selected uk-form-small contact_select uk-width-1-1" disabled>
+                                        <option value="">Choisir un contact</option>
+                                        {% for contact in data.client_id.relation() %}
+                                            <option value="{{ contact.id }}">{{ contact.full_name() }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </td>
+                            <td>{{ data.montant|format_price() }}</td>
+                            <td class="reste">{{ (data.montant - data.montant_reglement())|format_price() }}</td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st">
+                                    <input type="text" value="" name="montant" class="uk-input uk-width-1-1 uk-text-center uk-form-small montant" disabled>
+                                </div>
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
     </div>
 
 
-{% endblock %}
+    <div class="uk-modal-footer">
+        <div class="uk-margin uk-float-right">
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-danger uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small uk-modal-close"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-success uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small" id="submit_modal"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Valider</a>
 
-{% block footer_script %}
 
-     <script>
-        $('#submit').on('click', function(e){
-            e.preventDefault();
-            $('#formulaire').submit();
-        });
-        $('#submit_nouveau').on('click', function(e){
-            e.preventDefault();
-            $('#nouveau').val(1);
-            $('#formulaire').submit();
-        });
+        </div>
+    </div>
 
-        $("#file_upload").on('change', function(){
-            readURL(this);
-        });
+</div>
+<script>
 
-        function readURL(input) {
 
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
 
-                reader.onload = function (e) {
-                    $('#image_upload').attr('src', e.target.result).removeClass('uk-hidden');
-
-                };
-
-                reader.readAsDataURL(input.files[0]);
+    $(".selected").select2({width:'100%'});
+    var table_modal = $('#dataTable_modal').DataTable({
+        'language':{
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+            "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
             }
-        }
-    </script>
+        },
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
+        "info": false,
+        //"searching": false,
+        "iDisplayLength": 25,
+        //dom: 'f',
+        "bLengthChange" : true
+    });
 
-{% endblock %}
+    $('#submit_modal').on('click', function(e) {
+        e.preventDefault();
+
+        $('.montant').each(function(){
+            var value = $(this).val();
+            var $parent = $(this).parent().parent().parent();
+            if($.isNumeric(concat(value))){
+                $(this).val(concat(value))
+            }else{
+                $parent.find('.uk-checkbox-item').prop('checked', false);
+                $parent.removeClass('uk-background-primary').removeClass('uk-background-danger').attr({'style':''});
+                $parent.find('.contact_select').prop('disabled', true).val('').change();
+            }
+
+        });
+
+        $.ajax({
+            url: "{{ url_for('reglement.edit') }}",
+            data: table_modal.$('input, select').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#modal-container .uk-body-custom').html(data);
+            }
+        });
+
+    });
+
+    function concat($value){
+        $int = $value.split(" ");
+
+        var $values = '';
+        $.each($int, function(index, value){
+            $values = $values + value;
+        });
+
+        return $values;
+    }
+
+    table_modal.on('change', 'input.uk-checkbox-item', function(){
+        // If checkbox is not checked
+        var $parent = $(this).parent().parent();
+
+        if(!this.checked){
+{#            $parent.find('.montant').prop('disabled', true).val('');#}
+            $parent.find('.contact_select').prop('disabled', true).val('').change();
+            $parent.removeClass('uk-background-primary').attr({'style':''});
+        }else{
+{#            table_modal.$('tr.uk-background-primary').find('input.uk-checkbox-item').prop('checked', false);#}
+{#            table_modal.$('tr.uk-background-primary').removeClass('uk-background-primary').attr({'style':''});#}
+
+
+{#            $parent.find('.montant').prop('disabled', false);#}
+            $parent.find('.contact_select').prop('disabled', false).focus();
+
+            $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
+        }
+    });
+
+    $('.montant').on('keyup', function () {
+
+            var $parent = $(this).parent().parent().parent();
+            var reste = $parent.find('.reste');
+
+            if($(this).val() != ''){
+                if($.isNumeric(concat($(this).val()))){
+                    if(parseFloat(concat($(this).val())) > parseFloat(concat(reste.text())) || $(this).val() == 0){
+                        $parent.removeClass('uk-background-primary').addClass('uk-background-danger');
+                    }else{
+                        $parent.addClass('uk-background-primary').removeClass('uk-background-danger');
+                    }
+                }else{
+                    $parent.removeClass('uk-background-primary').addClass('uk-background-danger');
+                }
+            }else{
+                $parent.addClass('uk-background-primary').removeClass('uk-background-danger');
+            }
+    });
+
+    $('.contact_select').on('change', function(){
+        var $parent = $(this).parent().parent().parent();
+        var $montant = $parent.find('.montant');
+        if($(this).val() != ''){
+            $montant.prop('disabled', false).focus();
+        }else{
+            $montant.prop('disabled', true).val('')
+        }
+    });
+
+    $('#searchbox_modal').on('keyup', function(){
+        table_modal.search($(this).val()).draw() ;
+    });
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('reglement.index') }}").delay();
+    {% endif %}
+</script>
