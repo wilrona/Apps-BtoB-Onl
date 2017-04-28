@@ -23,6 +23,7 @@ class Compagnie(db.Document):
 
     postal_code = db.StringField()
     activated = db.BooleanField()
+    verify = db.BooleanField()
 
     imagedir = db.StringField()
     logo = db.StringField()
@@ -40,7 +41,7 @@ class Compagnie(db.Document):
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
 
-    etat_souscription = db.IntField()
+    etat_souscription = db.IntField() #0 non paye; 1 paye; 2 expiree
     uploaded = db.BooleanField()
     partenaire = db.IntField(default=0) # 1 partenaire et institution; 2 institution
 

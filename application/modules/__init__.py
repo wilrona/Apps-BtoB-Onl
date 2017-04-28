@@ -44,7 +44,7 @@ from application import function
 # import pytz
 
 # from pytz.gae import pytz
-from dateutil.tz import tzlocal
+from dateutil.tz.tz import tzlocal
 
 from itertools import groupby
 from operator import itemgetter

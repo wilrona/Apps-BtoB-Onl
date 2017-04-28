@@ -13,7 +13,7 @@ def index():
 
     title_page = 'Packages/Offres'
 
-    datas = Package.objects()
+    datas = Package.objects().order_by('idligneService', 'level')
 
     return render_template('package/index.html', **locals())
 
@@ -82,9 +82,9 @@ def edit(package_id=None):
             data.is_package = False
 
         if form.sale.data:
-            data.sale = True
+            data.sale = 1
         else:
-            data.sale = False
+            data.sale = 0
 
         if form.prix_promo.data:
             data.prix_promo = float(form.prix_promo.data)
@@ -94,9 +94,15 @@ def edit(package_id=None):
         else:
             data.promo = False
 
-        if ligne.package and not package_id:
-            count = Package.objects(idligneService=form.idligneService.data).count()
+        if ligne.package and not package_id and not data.sale:
+            count = Package.objects(Q(idligneService=form.idligneService.data) & Q(sale=0)).count()
             data.level = (count + 1)
+            data.hight = True
+
+            prev = Package.objects(Q(idligneService=form.idligneService.data) & Q(level=count) & Q(sale=0)).get()
+            prev.hight = False
+            prev.save()
+
 
         data.attribut = []
         for attr in request.form.getlist('attr'):
@@ -129,8 +135,18 @@ def etat(package_id):
     pack = Package.objects.get(id=package_id)
     if pack.status:
         pack.status = False
+        if pack.hight:
+            prev = Package.objects(Q(idligneService=pack.idligneService) & Q(level=(pack.level - 1)) & Q(sale=0)).get()
+            prev.hight = True
+            prev.save()
     else:
         pack.status = True
+        if pack.level == pack.similar().count():
+            prev = Package.objects(hight=True).get()
+            prev.hight = False
+            prev.save()
+
+            pack.hight = True
 
     pack.save()
 
@@ -147,7 +163,15 @@ def up(package_id):
     prev = current_etape.level - 1
     precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
     if precedent:
+
+        hight_current = current_etape.hight
+
         precedent.level = current_etape.level
+
+        if hight_current:
+            precedent.hight = True
+            current_etape.hight = False
+
         precedent.save()
 
         current_etape.level = prev
@@ -163,10 +187,17 @@ def down(package_id):
     current_etape = Package.objects.get(id=package_id)
 
     prev = current_etape.level + 1
-    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
-    if precedent:
-        precedent.level = current_etape.level
-        precedent.save()
+    next = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
+    if next:
+        hight_current = next.hight
+
+        if hight_current:
+            next.hight = False
+            current_etape.hight = True
+
+        next.level = current_etape.level
+        next.save()
+
 
         current_etape.level = prev
         current_etape.save()

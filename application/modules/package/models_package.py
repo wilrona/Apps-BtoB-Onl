@@ -16,12 +16,14 @@ class Package(db.Document):
     status = db.BooleanField(default=True)
     attribut = db.ListField(db.StringField())
     sale = db.IntField()
+    hight = db.BooleanField()
 
     def similar(self):
 
-        pack = Package.objects(idligneService=self.idligneService)
+        pack = Package.objects(Q(idligneService=self.idligneService) & Q(sale=0))
 
         return pack
+
 
 class LigneService(db.Document):
     name = db.StringField()

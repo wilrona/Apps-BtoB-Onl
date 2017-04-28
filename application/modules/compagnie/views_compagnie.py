@@ -313,7 +313,6 @@ def find_customer():
 
     customer = Compagnie.objects.get(id=customer_id)
 
-
     data = json.dumps({
         'id': str(customer.id),
         'name': customer.name,
@@ -398,8 +397,10 @@ def edit_special():
                     flash('Ajout des partenaires reussis avec success', 'success')
                 else:
                     current.partenaire = 2
-                    flash('Ajout des partenaires reussis avec success', 'success')
-                current.save()
+                    flash('Ajout des institutions reussis avec success', 'success')
+                current = current.save()
+                from ..workflow.workflow_partenaire import active_partenaire_facture
+                active_partenaire_facture(current)
 
             datas = json.dumps({
                 'statut': 'OK'

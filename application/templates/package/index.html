@@ -68,8 +68,20 @@
                             <td>{{ data.level }}</td>
                             <td class="uk-flex uk-flex-column">
                                   {% if current_user.has_roles([('super_admin', 'package')], ['edit']) %}
-                                      <div><a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a></div>
-                                      <div><a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a></div>
+                                    {% if not data.sale %}
+                                        <div>
+                                            {% if loop.index != 1 %}
+                                              <a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a>
+                                            {% endif %}
+                                        </div>
+
+
+                                        <div>
+                                          {% if data.similar().count() != loop.index %}
+                                            <a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a>
+                                          {% endif %}
+                                        </div>
+                                    {% endif %}
                                   {% endif %}
                             </td>
 

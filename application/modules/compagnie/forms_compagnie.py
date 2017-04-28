@@ -34,7 +34,7 @@ class FormClient(wtf.Form):
     repere = wtf.StringField(label='Reperage :')
     region = wtf.StringField(label='Region :')
 
-    email = wtf.StringField(label='Adresse Email :', validators=[validators.Required(message='Champ obligatoire'), validators.Email('Invalid Email'), unique_email_validator])
+    email = wtf.StringField(label='Adresse Email :', validators=[unique_email_validator])
     phone = wtf.StringField(label='Numero de telephone :')
     description = wtf.TextAreaField(label='Description :')
     urlsite = wtf.StringField(label='Site web :')
