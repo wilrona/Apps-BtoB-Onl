@@ -33,6 +33,25 @@ class Paiement(db.Document):
 
         return paid
 
+    def reste(self):
+
+        all_paiement = Paiement.objects(iddocument=self.iddocument).order_by('-createDate')
+
+        reste = self.iddocument.montant - self.montant
+
+        index = len(all_paiement)
+        for pay in all_paiement:
+            index -= 1
+            if pay.id == self.id:
+                break
+
+        while index > 0:
+            reste = reste - all_paiement[index].montant
+            index -= 1
+
+        return reste
+
+
 
 class Moyen_paiement(db.Document):
     name = db.StringField()

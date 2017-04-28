@@ -6,8 +6,11 @@
 
 {% block  button %}
 {#    <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('devis.edit', devis_id=devis_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>#}
-
+    {% if not request.args.get('solde') %}
     <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% else %}
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.solde', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% endif %}
 
 {% endblock %}
 
@@ -25,7 +28,7 @@
                                  {% endif %}
                              {% elif data.status == 1 or data.is_partiel() %}
                                 {% if current_user.has_roles([('super_admin', 'facture')], ['edit']) or data.vendeur_id.id == current_user.id %}
-                                    <a class="uk-button waves-effect uk-button-success uk-button-small modal" id="open-modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;"  href="{{ url_for('facture.reglement', facture_id=facture_id) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Reglement facture</a>
+                                    <a class="uk-button waves-effect uk-button-success uk-button-small modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;"  href="{{ url_for('facture.reglement', facture_id=facture_id) }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Reglement facture</a>
                                 {% endif %}
                              {% endif %}
 {#                         {% endif %}#}

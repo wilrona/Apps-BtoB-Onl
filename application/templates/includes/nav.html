@@ -28,7 +28,10 @@
             {% if current_user.has_roles([('super_admin', 'reglement')]) %}
                 <li><a href="{{ url_for('reglement.index') }}" class="waves-effect">Règlement facture</a></li>
             {% endif %}
-            <li><a href="#" class="waves-effect">Facture Non soldé</a></li>
+            <li><a href="{{ url_for('facture.solde') }}" class="waves-effect">Facture non soldé</a></li>
+            {% if current_user.has_roles([('super_admin', 'reglement')]) %}
+                <li><a href="{{ url_for('reglement.transaction') }}" class="waves-effect">Historique des transactions</a></li>
+            {% endif %}
         </ul>
     </li>
     {% if current_user.has_roles([('super_admin', 'claim', 'relation')]) or current_user.has_roles([('super_admin', 'client')], ['edit']) %}

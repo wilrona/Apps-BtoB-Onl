@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% if current %} - {{ current.reference() }} {% endif %}{% endblock %}
+
+
+{% block search %}
+    <div class="uk-inline">
+        <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+        <input class="uk-input uk-form-width-large uk-input-search uk-form-small uk-form-small" placeholder="Recherche" id="searchbox">
+    </div>
+{% endblock %}
+
+{% block  button %}
+    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('facture.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer facture</a>
+{% endblock %}
+
+{% block layout_content %}
+
+    <div class="uk-container-expand">
+
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="15%">N° facture</th>
+                            <th width="15%">Date Facture</th>
+                            <th width="">Clients</th>
+                            <th width="">Vendeur</th>
+                            <th width="">Total</th>
+                            <th width="">Reste</th>
+                            <th width="10%">Status</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for data in datas %}
+                            <tr data-link="{{ url_for('facture.view', facture_id=data.id, solde=solde) }}">
+                                <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                <td>{{ data.reference() }}</td>
+                                <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
+                                <td>{{ data.client_id.name }}</td>
+                                <td>{{ data.vendeur_id.full_name() }}</td>
+                                <td>{{ data.montant }}</td>
+                                <td>{{ (data.montant - data.montant_reglement())|format_price() }}</td>
+                                <td>
+                                    {% if data.status == 0 %} Brouillon {% endif %}
+                                    {% if data.status == 1 %} Validée {% endif %}
+                                    {% if data.status == 2 %}
+                                        {% if data.is_partiel() %}
+                                            Partiel
+                                        {% else %}
+                                            Payée
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if data.status == 3 %} Annulée {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+    {% if request.args.get('paged')|int %}
+        <script>
+            table.page({{ request.args.get('paged')|int }}).draw( 'page' );
+        </script>
+    {% endif %}
+
+{% endblock %}

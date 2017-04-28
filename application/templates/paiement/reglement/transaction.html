@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block search %}
+    <div class="uk-inline">
+        <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox">
+    </div>
+{% endblock %}
+
+
+{% block layout_content %}
+
+    <div class="uk-container-expand">
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable">
+                        <thead>
+                        <tr>
+                            <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="15%">Date</th>
+                            <th width="15%">Ref</th>
+                            <th width="">Client</th>
+                            <th width="">Contact</th>
+                            <th width="15%">Montant</th>
+                            <th width="10%">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in datas %}
+                            <tr data-link="">
+                                <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
+                                <td>{{ data.iddocument.reference() }}</td>
+                                <td>{{ data.iddocument.client_id.name }}</td>
+                                <td>{{ data.iduser_paid.full_name() }}</td>
+                                <td>{{ data.montant|format_price() }} <small class="uk-float-right uk-label uk-label-success">{{ (data.reste())|format_price() }}</small></td>
+                                <td>
+
+                                </td>
+
+
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block footer_script %}
+
+    {% if request.args.get('paged')|int %}
+        <script>
+            table.page({{ request.args.get('paged')|int }}).draw( 'page' );
+        </script>
+    {% endif %}
+
+    <script>
+        $('body #dataTable').on('click', 'tbody .uk-checkbox-item', function(e){
+            var $check = $(this);
+            var $parent = $check.parent().parent();
+            if(!$check.is(':checked')){
+                $parent.find('.souche').prop('disabled', true).val('');
+            }else{
+                $parent.find('.souche').prop('disabled', false).focus();
+            }
+
+        });
+
+        $('body').on('click', '#valide', function(e){
+            e.preventDefault();
+            var url =  $(this).attr('href');
+            $.ajax({
+                method: "POST",
+                data: table.$('input').serialize(),
+                url: url
+            })
+                .done(function( msg ) {
+
+                    msg = $.parseJSON(msg);
+                    var $document = $("<p/>").addClass('uk-modal-body');
+                    $.each(msg, function(i, item){
+                        if(item['statut'] == 'OK'){
+
+                            for(var x=0; x<item['element'].length; x++){
+                                $input = $('input[value='+item['element'][x]+']');
+                                $parent = $input.parent().parent();
+                                table.row($parent).remove().draw( false );
+                            };
+
+                            $document.append(
+                                $('<br/>')
+                            ).append(
+                                $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
+                                    $('<p/>').html(item['message'])
+                                )
+                            );
+                            // activer la reactualisation de la page en cours
+                            if(item['reload'] == 1){
+                                reload = true;
+                                reloading();
+                            }
+
+                        }
+                        if(item['statut'] == 'NOK'){
+                            $document.append(
+                                $('<br/>')
+                            ).append(
+                                $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(
+                                    $('<p/>').html(item['message'])
+                                )
+                            )
+                        }
+                    });
+
+                    var rows = table.rows({ 'search': 'applied' }).nodes();
+                    $('input.uk-checkbox-item', rows).prop('checked', false).parent().parent().removeClass('uk-background-primary').attr({'style':''});
+
+                    UIkit.modal.dialog('<div class="uk-body-custom"></div>');
+                    $document.appendTo('.uk-body-custom');
+                    $('.uk-div').addClass('uk-hidden');
+                    $('.uk-checkbox-all').prop('checked', false);
+
+                });
+
+        });
+    </script>
+
+{% endblock %}

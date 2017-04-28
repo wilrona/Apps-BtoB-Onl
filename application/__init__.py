@@ -13,6 +13,9 @@ from flask.ext.login import LoginManager
 from flask_mongoengine import MongoEngine
 from flask_mail import Mail, Message
 
+from flask_apscheduler import APScheduler
+
+
 app = Flask('application')
 
 if os.getenv('FLASK_CONF') == 'TEST':
@@ -70,9 +73,15 @@ app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_USERNAME"] = 'wilrona@gmail.com'
 app.config["MAIL_PASSWORD"] = 'ElsamarieRapide'
 
-
 db = MongoEngine(app)
 mail = Mail(app)
+
+from application.modules.utilities.cron import Config
+
+app.config.from_object(Config())
+
+scheduler = APScheduler()
+scheduler.init_app(app)
 
 # app.permanent_session_lifetime = timedelta(seconds=1200)
 

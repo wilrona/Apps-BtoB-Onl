@@ -46,7 +46,7 @@ def login():
                 return redirect(url_for('user.logout'))
 
             #implementation de l'heure local
-            time_zones = pytz.timezone('Africa/Douala')
+            time_zones = tzlocal()
             date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
 
             session['user_id'] = str(user_login.id)

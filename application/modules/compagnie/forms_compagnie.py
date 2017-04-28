@@ -28,7 +28,7 @@ class FormClient(wtf.Form):
     raison = wtf.StringField(label='Forme juridique :')
     name = wtf.StringField(label='Nom de l\'entreprise :', validators=[validators.Required(message='Champ obligatoire')])
     ville = wtf.StringField(label='Ville :', validators=[validators.Required(message='Champ obligatoire')])
-    quartier = wtf.StringField(label='Quartier :', validators=[validators.Required(message='Champ obligatoire')])
+    quartier = wtf.StringField(label='Quartier :')
     adresse = wtf.StringField(label='Adresse :')
     postal_code = wtf.StringField(label='Code postal :')
     repere = wtf.StringField(label='Reperage :')

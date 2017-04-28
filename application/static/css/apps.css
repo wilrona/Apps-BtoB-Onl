@@ -77,6 +77,9 @@ html, div *{
     border-bottom: 2px solid rgba(0, 0, 0, 0.08);
     padding-left: 0;
     padding-right: 0;
+    height: 30px !important;
+    line-height: 30px !important;
+    font-size: 0.875rem;
 }
 
 .uk-input:focus, .uk-select:focus, .uk-textarea:focus, .uk-search-input:focus, .select2-search__field.uk-input:focus, .select2-selection--single.uk-input:focus, .select2-selection--multiple.uk-input:focus{
@@ -107,7 +110,7 @@ html, div *{
     border: none !important;
     border-radius: 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    margin-top: -40px;
+    margin-top: -30px;
 }
 
 .select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple{
@@ -596,5 +599,5 @@ html, div *{
 .uk-table .uk-input, .uk-table .uk-select, .uk-table .uk-textarea {
     background-color: #f8f8f8 !important;
     color: #444 !important;
-    border-color: #e5e5e5 !important;
+    /*border-color: #e5e5e5 !important;*/
 }

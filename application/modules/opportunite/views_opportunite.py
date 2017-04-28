@@ -258,7 +258,7 @@ def edit(opportunite_id=None):
             suivie.activite = first_activite.name
             suivie.sigle_activite = 'faire_devis'
 
-            time_zones = pytz.timezone('Africa/Douala')
+            time_zones = tzlocal()
             date_auto_nows = datetime.datetime.now(time_zones).strftime("%m/%d/%y")
             current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
 

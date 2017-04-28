@@ -17,6 +17,17 @@ def index():
     return render_template('paiement/reglement/index.html', **locals())
 
 
+@prefix.route('/transaction')
+@login_required
+@roles_required([('super_admin', 'reglement')])
+def transaction():
+    title_page = 'Transactions Financieres'
+
+    datas = Paiement.objects().order_by('-createDate')
+
+    return render_template('paiement/reglement/transaction.html', **locals())
+
+
 @prefix.route('/edit/', methods=['GET', 'POST'])
 @login_required
 def edit():

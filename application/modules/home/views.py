@@ -69,7 +69,7 @@ def setting():
                 flash('Mots de passe invalide', 'danger')
                 return redirect(url_for('home.setting'))
 
-            time_zones = pytz.timezone('Africa/Douala')
+            time_zones = tzlocal()
             date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
 
             Role = Roles()

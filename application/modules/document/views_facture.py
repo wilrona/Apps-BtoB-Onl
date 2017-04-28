@@ -32,6 +32,29 @@ def index():
     return render_template('facture/index.html', **locals())
 
 
+@prefix.route('/solde')
+@login_required
+def solde():
+
+    current_ref = Config_reference.objects().first()
+    title_page = 'Facture Non solde'
+
+    solde = '1'
+
+    if current_user.has_roles([('super_admin', 'facture')]):
+        data = Document.objects(devisDoc=False)
+    else:
+        data = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False))
+
+    datas = []
+
+    for facture in data:
+        if facture.is_partiel():
+            datas.append(facture)
+
+    return render_template('facture/solde.html', **locals())
+
+
 @prefix.route('/view/<objectid:facture_id>', methods=['GET'])
 def view(facture_id):
 
@@ -433,6 +456,7 @@ def canceled():
     data = json.dumps(data)
 
     return data
+
 
 @prefix.route('/print/<objectid:facture_id>', methods=['GET'])
 def print_facture(facture_id):
