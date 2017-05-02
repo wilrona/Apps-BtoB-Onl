@@ -136,7 +136,7 @@ def convert_in_second(time):
         return time
 
 
-#jinja 2 ajoute du temps sur le temp en cours
+# jinja 2 ajoute du temps sur le temp en cours
 def add_time(time, retard):
     time = datetime_convert(time)
     if retard:
@@ -150,6 +150,7 @@ def add_time(time, retard):
     else:
         new_time = time
     return new_time.time()
+
 
 # jinja 2 formatage du prix avec des espaces
 def format_price(price):
@@ -244,6 +245,8 @@ def string(data):
 
 _slugify_strip_re = re.compile(r'[^\w\s-]')
 _slugify_hyphenate_re = re.compile(r'[-\s]+')
+
+
 def _slugify(value):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,

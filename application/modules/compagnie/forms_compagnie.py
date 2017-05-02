@@ -3,7 +3,7 @@ __author__ = 'User'
 
 from flaskext import wtf
 from flaskext.wtf import validators
-from models_compagnie import Compagnie, Q
+from models_compagnie import Compagnie, Q, Categorie
 
 
 def unique_email_validator(form, field):
@@ -61,12 +61,25 @@ def check_enfant_media(form, field):
         raise wtf.ValidationError('Ajout du Media Obligatoire')
 
 
+def unique_code_validator(form, field):
+    code_unique = Categorie.objects(
+        name = field.data
+    ).count()
+    if code_unique:
+        if not form.id.data:
+            raise wtf.ValidationError('Ce nom est deja utilise.')
+        else:
+            code = Categorie.objects.get(id=form.id.data)
+            if code.name != field.data:
+                raise wtf.ValidationError('Ce nom est deja utilise.')
+
+
 class FormCategorie(wtf.Form):
 
     id = wtf.HiddenField()
     enfant = wtf.HiddenField()
 
-    name = wtf.StringField(label='Nom de la categorie :', validators=[validators.Required(message='Champ obligatoire')])
+    name = wtf.StringField(label='Nom de la categorie :', validators=[validators.Required(message='Champ obligatoire'), unique_code_validator])
     description = wtf.TextAreaField(label='Description de la categorie :')
     url_image = wtf.StringField(label='Image de la categorie :')
     icone = wtf.StringField(label='Icone de la categorie :')

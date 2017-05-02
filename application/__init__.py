@@ -55,11 +55,15 @@ app.config['MONGODB_SETTINGS'] = {
 }
 
 # This is the path to the upload directory
-
 CURRENT_FILE = os.path.abspath(__file__)
 CURRENT_DIR = os.path.dirname(CURRENT_FILE)
 
-app.config['UPLOAD_FOLDER'] = APP_ROOT
+ici_link_categorie = 'ici_cm/media/pictures/categories'
+ici_link = 'ici_cm/media/pictures/companies'
+
+app.config['UPLOAD_FOLDER_CATEGORIE'] = os.path.join(os.path.dirname(os.path.dirname(APP_ROOT)), ici_link_categorie)
+app.config['UPLOAD_FOLDER_CLIENT'] = os.path.join(os.path.dirname(os.path.dirname(APP_ROOT)), ici_link)
+
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 
@@ -71,7 +75,7 @@ app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_USERNAME"] = 'wilrona@gmail.com'
-app.config["MAIL_PASSWORD"] = 'ElsamarieRapide'
+app.config["MAIL_PASSWORD"] = ''
 
 db = MongoEngine(app)
 mail = Mail(app)

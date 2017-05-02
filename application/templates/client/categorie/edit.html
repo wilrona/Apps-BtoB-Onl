@@ -16,6 +16,7 @@
 
 {% block  layout_content %}
 <div class="uk-container uk-margin">
+
             {% include 'includes/flash_message.html' %}
             <div class="uk-grid-small" uk-grid>
                 <div class="uk-width-1-1">
@@ -80,7 +81,7 @@
                                                 <span class="uk-link">Cliquez pour selectionnez l'image</span>
                                             </div>
                                             <br/>
-                                            <img src="{% if form.url_image.data %}{{ form.url_image.data }}{% endif %}" id="image_upload" alt="" class="{% if not form.url_image.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <img src="{% if form.url_image.data %}{{ url_for('download_file', filename=form.url_image.data) }}{% endif %}" id="image_upload" alt="" class="{% if not form.url_image.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
                                         </div>
 
                                     </div>
@@ -95,7 +96,7 @@
                                                 <span class="uk-link">Cliquez pour selectionnez une icone</span>
                                             </div>
                                             <br/>
-                                            <img src="{% if form.icone.data %}{{ form.icone.data }}{% endif %}" id="image_upload_icone" alt="" class="{% if not form.icone.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <img src="{% if form.icone.data %}{{ url_for('download_file', filename=form.icone.data) }}{% endif %}" id="image_upload_icone" alt="" class="{% if not form.icone.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
                                         </div>
 
                                     </div>

@@ -15,6 +15,12 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER_CATEGORIE'],
+                               filename, as_attachment=True)
+
+
 @prefix_categorie.route('/')
 @login_required
 @roles_required([('super_admin', 'categorie')])
@@ -72,39 +78,21 @@ def edit(categorie_id=None):
     for choice in all:
         form.parent_idcategorie.choices.append((str(choice.id), choice.name))
 
-    if (not request.args.get('categorie') and not categorie_id) or not form.parent_idcategorie.data:
+    if not request.args.get('categorie') and not categorie_id:
+        form.parent_idcategorie.data = ''
+
+    if not form.parent_idcategorie.data or not data.parent_idcategorie:
         form.parent_idcategorie.data = ''
 
     form.enfant.data = 0
     if request.args.get('categorie') or data.parent_idcategorie:
         form.enfant.data = 1
 
-    if request.method == 'POST' and not form.parent_idcategorie.data:
-
-        file = request.files['file']
-        file_icone = request.files['file_icone']
-
-        if file:
-
-            if allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                link_save_file = '/static/uploads/'+filename
-                form.url_image.data = link_save_file
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            else:
-                flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg', 'warning')
-
-        if file_icone:
-
-            if allowed_file(file_icone.filename):
-                filename = secure_filename(file_icone.filename)
-                link_save_file_icone = '/static/uploads/'+filename
-                form.icone.data = link_save_file_icone
-                file_icone.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            else:
-                flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg pour les icones', 'warning')
-
     if form.validate_on_submit():
+
+        old_name = None
+        if categorie_id:
+            old_name = data.name
 
         data.name = form.name.data
         data.slug = function._slugify(form.name.data)
@@ -112,6 +100,69 @@ def edit(categorie_id=None):
         if form.parent_idcategorie.data:
             categorie = Categorie.objects().get(id=form.parent_idcategorie.data)
             data.parent_idcategorie = categorie
+
+        error_file = False
+        if not form.parent_idcategorie.data:
+
+            file = request.files['file']
+            file_icone = request.files['file_icone']
+
+            if old_name:
+                old_rename = function._slugify(old_name)
+            else:
+                old_rename = function._slugify(data.name)
+
+            if file:
+
+                if allowed_file(file.filename):
+
+                    if data.url_image:
+                        os.remove(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], data.url_image))
+
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], filename))
+
+                    extension = filename.split(".")
+                    extension = extension[1]
+
+                    source = os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], filename)
+                    destination = app.config['UPLOAD_FOLDER_CATEGORIE']+"/image-"+old_rename+"."+extension
+
+                    os.rename(source, destination)
+
+                    link_save_file = "image-"+old_rename+"."+extension
+                    form.url_image.data = link_save_file
+
+                else:
+                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg', 'warning')
+                    error_file = True
+
+            if file_icone:
+
+                if allowed_file(file_icone.filename):
+
+                    if data.icone:
+                        os.remove(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], data.icone))
+
+                    filename = secure_filename(file_icone.filename)
+
+                    filename = secure_filename(file_icone.filename)
+                    file_icone.save(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], filename))
+
+                    extension = filename.split(".")
+                    extension = extension[1]
+
+                    source = os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], filename)
+                    destination = app.config['UPLOAD_FOLDER_CATEGORIE']+"/icone-"+old_rename+"."+extension
+
+                    os.rename(source, destination)
+
+                    link_save_file_icone = "icone-"+old_rename+"."+extension
+                    form.icone.data = link_save_file_icone
+
+                else:
+                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg pour les icones', 'warning')
+                    error_file = True
 
         if form.url_image.data:
             data.url_image = form.url_image.data
@@ -122,14 +173,15 @@ def edit(categorie_id=None):
         if form.description.data:
             data.description = form.description.data
 
-        data = data.save()
+        if not error_file:
+            data = data.save()
 
-        flash('Enregistement effectue avec succes', 'success')
+            flash('Enregistement effectue avec succes', 'success')
 
-        if request.form['nouveau'] == '1':
-            return redirect(url_for('categorie.edit', categorie=request.args.get('categorie')))
-        else:
-            return redirect(url_for('categorie.view', categorie_id=data.id))
+            if request.form['nouveau'] == '1':
+                return redirect(url_for('categorie.edit', categorie=request.args.get('categorie')))
+            else:
+                return redirect(url_for('categorie.view', categorie_id=data.id))
 
     return render_template('client/categorie/edit.html', **locals())
 
