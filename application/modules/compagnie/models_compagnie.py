@@ -68,6 +68,20 @@ class Compagnie(db.Document):
 
         return list
 
+    def dateExpired(self):
+        from ..document.models_doc import LigneDoc
+
+        lignes = LigneDoc.objects(Q(idcompagnie=self.id) & Q(etat=1) & Q(dateFin__ne=None)).order_by('-dateFin')
+
+        ligne = None
+
+        for lign in lignes:
+            if lign.idpackage.idligneService == 'ici_cm':
+                ligne = lign
+                break
+
+        return ligne
+
 
 class Media(db.Document):
     type = db.StringField()

@@ -5,8 +5,6 @@ from ..compagnie.models_compagnie import Compagnie
 from ..user.models_user import Users
 from ..paiement.models_paiement import Paiement
 
-from dateutil.relativedelta import relativedelta
-
 
 def active_partenaire_facture(current):
 
@@ -18,23 +16,26 @@ def active_partenaire_facture(current):
     facture = Document()
     facture.client_id = partenaire
 
-    contact = Users.objects(email='support@yoomee.onl').get()
+    contact = Users.objects(email='support@yoomee.onl').first()
     if contact:
         facture.contact_id = contact
-        partenaire.idcontact = contact
+        partenaire.idcontact.append(contact)
 
         facture.vendeur_id = contact
 
+        count_exist = Document.objects(devisDoc=False).count()
+        facture.ref = function.reference(count=count_exist+1, caractere=7, refuser=contact.ref)
+
     facture.devisDoc = False
     facture.status = 2
-    facture.montant = level_pack.montant
+    facture.montant = level_pack.prix
 
     facture = facture.save()
 
     # Creation des lignes de la facture
     ligne = LigneDoc()
     ligne.iddocument = facture
-    ligne.prix = level_pack.montant
+    ligne.prix = level_pack.prix
     ligne.idpackage = level_pack
 
     time_zones = tzlocal()
@@ -45,13 +46,14 @@ def active_partenaire_facture(current):
     ligne.dateFin = current_date + relativedelta(months=int(level_pack.duree))
     ligne.qte = level_pack.duree
     ligne.idcompagnie = partenaire
+    ligne.etat = 1
 
     ligne.save()
 
     # Validation du paiement de la facture
     paiement = Paiement()
     paiement.status = 1
-    paiement.montant = level_pack.montant
+    paiement.montant = level_pack.prix
     paiement.iddocument = facture
     if contact:
         paiement.idvendeur = contact
@@ -59,14 +61,16 @@ def active_partenaire_facture(current):
     paiement.idmoyen_paiement = 'cash'
     paiement.auto = True
 
-    paiement = paiement.save()
-
+    paiement.save()
 
     partenaire.etat_souscription = 1
 
+    if not partenaire.activated:
+        partenaire.activated = True
+
     partenaire.save()
 
-    return paiement
+    return 'True'
 
 
 

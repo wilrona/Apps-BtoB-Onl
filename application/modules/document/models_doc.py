@@ -21,6 +21,8 @@ class Document(db.Document):
     opportunite_id = db.ReferenceField('Opportunite')
     note = db.StringField()
 
+    ckeched_ici_cm = db.BooleanField() # verifier si une facture a deja ete traite
+
     def save(self, *args, **kwargs):
         if not self.createDate:
             self.createDate = datetime.datetime.now()
@@ -88,6 +90,28 @@ class Document(db.Document):
 
         return partiel
 
+    def package_ici_cm(self):
+
+        lignes = LigneDoc.objects(iddocument=self.id)
+
+        data = []
+        for ligne in lignes:
+            if ligne.idpackage.idligneService == 'ici_cm' and ligne.etat == 0:
+                data.append(ligne)
+
+        return data
+
+    def montant_package_ici_cm(self):
+
+        lignes = LigneDoc.objects(iddocument=self.id)
+
+        montant = 0
+        for ligne in lignes:
+            if ligne.idpackage.idligneService == 'ici_cm' and ligne.etat == 0:
+                montant += ligne.prix
+
+        return montant
+
 
 class LigneDoc(db.Document):
     iddocument = db.ReferenceField('Document')
@@ -96,7 +120,7 @@ class LigneDoc(db.Document):
     qte = db.IntField()
     dateDebut = db.DateTimeField()
     dateFin = db.DateTimeField()
-    etat = db.IntField(default=0)
+    etat = db.IntField(default=0) # 1 : ligne document active
     idcompagnie = db.ReferenceField('Compagnie')
     idpackage = db.ReferenceField('Package')
 

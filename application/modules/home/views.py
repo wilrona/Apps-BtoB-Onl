@@ -87,6 +87,8 @@ def setting():
             User.activated = True
             User.user = True
             User.roles.append(User_Role)
+            count_user = Users.objects(user__gte=1).count()
+            User.ref = function.reference(count=count_user+1, caractere=4, user=True, refuser=None)
             user_id = User.save()
 
             return redirect(url_for('home.setting'))

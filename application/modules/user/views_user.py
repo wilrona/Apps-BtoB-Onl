@@ -195,6 +195,11 @@ def edit_exist():
                     current.user = 1
                 else:
                     current.user = 2
+
+                if not current.ref:
+                    count_user = Users.objects(user__gte=1).count()
+                    current.ref = function.reference(count=count_user+1, caractere=4, user=True, refuser=None)
+
                 current.save()
 
             flash('Ajout des administrateurs/Commerciaux reussis avec success', 'success')

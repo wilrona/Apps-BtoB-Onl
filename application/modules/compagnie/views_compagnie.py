@@ -13,7 +13,7 @@ prefix = Blueprint('client', __name__)
 def index():
     title_page = 'Clients'
 
-    datas = Compagnie.objects(activated=True)
+    datas = Compagnie.objects(verify=True)
 
     return render_template('client/index.html', **locals())
 
@@ -24,7 +24,7 @@ def new():
     title_page = 'Nouveaux Clients'
 
     news = '1'
-    datas = Compagnie.objects(activated=False)
+    datas = Compagnie.objects(verify=False)
 
     return render_template('client/index.html', **locals())
 
@@ -236,6 +236,8 @@ def etat_activated():
 
         if not item_found.activated:
             item_found.activated = True
+            if not item_found.verify:
+                item_found.verify = True
             element.append(str(item_found.id))
             item_found.save()
             count += 1
@@ -294,11 +296,15 @@ def etat_unactivated():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat(client_id):
+
     client = Compagnie.objects.get(id=client_id)
+
     if client.activated:
         client.activated = False
     else:
         client.activated = True
+        if not client.verify:
+            client.verify = True
 
     client.save()
 
@@ -380,10 +386,10 @@ def edit_special():
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
-        datas = Compagnie.objects(Q(partenaire=None) | Q(partenaire=2) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire=0) | Q(partenaire=2) & Q(verify=True))
         title_page += '- Partenaires'
     else:
-        datas = Compagnie.objects(Q(partenaire=None) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire=0) & Q(verify=True))
         title_page += '- Institutions'
 
     if request.method == 'POST':
