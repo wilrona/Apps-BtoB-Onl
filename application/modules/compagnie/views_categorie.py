@@ -15,7 +15,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 
-@app.route('/uploads/<path:filename>')
+@prefix_categorie.route('/uploads/<path:filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_CATEGORIE'],
                                filename, as_attachment=True)
@@ -116,7 +116,7 @@ def edit(categorie_id=None):
 
                 if allowed_file(file.filename):
 
-                    if data.url_image:
+                    if data.url_image and request.form['url_image_change'] == '1' and categorie_id:
                         os.remove(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], data.url_image))
 
                     filename = secure_filename(file.filename)
@@ -141,7 +141,7 @@ def edit(categorie_id=None):
 
                 if allowed_file(file_icone.filename):
 
-                    if data.icone:
+                    if data.icone and request.form['icone_change'] == '1' and categorie_id:
                         os.remove(os.path.join(app.config['UPLOAD_FOLDER_CATEGORIE'], data.icone))
 
                     filename = secure_filename(file_icone.filename)

@@ -20,6 +20,8 @@ from dateutil.relativedelta import relativedelta
 import json
 import requests
 
+import  base64
+
 # ajoute des fonts dans mes pdfs
 import os
 import reportlab

@@ -50,6 +50,8 @@ class FormClient(wtf.Form):
     idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[check_not_cat])
     maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[check_not_cat])
 
+    logo = wtf.StringField(label='Logo entreprise :')
+
 
 def check_enfant(form, field):
     if form.enfant.data and not field.data:

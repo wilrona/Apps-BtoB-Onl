@@ -61,8 +61,8 @@ CURRENT_DIR = os.path.dirname(CURRENT_FILE)
 ici_link_categorie = 'ici_cm/media/pictures/categories'
 ici_link = 'ici_cm/media/pictures/companies'
 
-app.config['UPLOAD_FOLDER_CATEGORIE'] = os.path.join(os.path.dirname(os.path.dirname(APP_ROOT)), ici_link_categorie)
-app.config['UPLOAD_FOLDER_CLIENT'] = os.path.join(os.path.dirname(os.path.dirname(APP_ROOT)), ici_link)
+app.config['UPLOAD_FOLDER_CATEGORIE'] = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(APP_ROOT))), ici_link_categorie)
+app.config['UPLOAD_FOLDER_CLIENT'] = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(APP_ROOT))), ici_link)
 
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])

@@ -18,6 +18,18 @@ prefix = Blueprint('home', __name__)
 #     })
 
 
+@prefix.route('/test')
+def test():
+
+    from Crypto.Cipher import AES
+    from Crypto import Random
+    iv = Random.new().read(AES.block_size)
+    ds = AES.new(b'012345670000000000000000', AES.MODE_CBC, iv)
+    text = b'abcdefgh'
+    cipher_text = ds.encrypt(text)
+    print (cipher_text)
+    print(ds.decrypt(cipher_text))
+
 
 @prefix.route('/')
 def index():

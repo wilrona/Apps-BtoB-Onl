@@ -8,6 +8,17 @@ from ..user.models_user import Users
 prefix = Blueprint('client', __name__)
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+
+@prefix.route('/uploads/<path:filename>')
+def download_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER_CLIENT'],
+                               filename, as_attachment=True)
+
+
 @prefix.route('/')
 @login_required
 def index():
@@ -32,7 +43,6 @@ def new():
 @prefix.route('/view/<objectid:client_id>')
 @login_required
 def view(client_id):
-
     if request.args.get('news'):
         title_page = 'Nouveaux Client'
     else:
@@ -50,7 +60,6 @@ def view(client_id):
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def edit(client_id=None):
-
     if request.args.get('news'):
         title_page = 'Nouveaux Client'
     else:
@@ -90,6 +99,10 @@ def edit(client_id=None):
 
     if form.validate_on_submit():
 
+        old_name = None
+        if client_id:
+            old_name = data.name
+
         data.raison = form.raison.data
         data.name = form.name.data
         data.ville = form.ville.data
@@ -116,7 +129,6 @@ def edit(client_id=None):
         data.idcategorie = []
 
         for cat_id in request.form.getlist('idcategorie'):
-
             the_cat = Categorie.objects.get(id=cat_id)
 
             data.idcategorie.append(the_cat)
@@ -124,25 +136,74 @@ def edit(client_id=None):
         principale = Categorie.objects.get(id=form.maincategorie.data)
         data.maincategorie = principale
 
-        data = data.save()
+        error_file = False
+        file = request.files['file']
 
-        ## verifier que les nouvelles categories ont les informations de l'entreprise cours
-        for cat_id in request.form.getlist('idcategorie'):
+        if file:
 
-            the_cat = Categorie.objects.get(id=cat_id)
+            if old_name:
+                old_rename = function._slugify(old_name)
+            else:
+                old_rename = function._slugify(data.name)
 
-            if data not in the_cat.compagnie:
-                the_cat.compagnie.append(data)
-                the_cat.save()
+            if not data.imagedir:
 
-        ## Enlever les informations de l'entreprise dans les anciennes categories qui ne l'appartienne
-        for old_cat in old_categorie:
-            if old_cat not in data.idcategorie:
-                old_c = Categorie.objects(id=old_cat.id)
-                old_c.update_one(pull__compagnie=data)
+                import calendar
+                time_zones = tzlocal()
+                date_auto_nows = datetime.datetime.now(time_zones)
 
-        flash('Enregistement effectue avec succes', 'success')
-        return redirect(url_for('client.view', client_id=data.id, news=request.args.get('news')))
+                current_date = date_auto_nows
+                current_date = calendar.timegm(current_date.utctimetuple())
+                current_date = str(current_date).encode('base64').rstrip()
+                os.makedirs(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], current_date))
+                data.imagedir = current_date
+
+            url_dossier = os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imagedir)
+
+            if allowed_file(file.filename):
+
+                if data.logo and request.form['url_image_change'] == '1' and client_id:
+                    os.remove(os.path.join(url_dossier, data.url_image))
+
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(url_dossier, filename))
+
+                extension = filename.split(".")
+                extension = extension[1]
+
+                source = os.path.join(url_dossier, filename)
+                destination = url_dossier + "/logo-" + old_rename + "." + extension
+
+                os.rename(source, destination)
+
+                link_save_file = "/logo-"+old_rename+"."+extension
+                data.logo = data.imagedir+link_save_file
+
+            else:
+                flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg', 'warning')
+                error_file = True
+
+        if not error_file:
+
+            data = data.save()
+
+            ## verifier que les nouvelles categories ont les informations de l'entreprise cours
+            for cat_id in request.form.getlist('idcategorie'):
+
+                the_cat = Categorie.objects.get(id=cat_id)
+
+                if data not in the_cat.compagnie:
+                    the_cat.compagnie.append(data)
+                    the_cat.save()
+
+            ## Enlever les informations de l'entreprise dans les anciennes categories qui ne l'appartienne
+            for old_cat in old_categorie:
+                if old_cat not in data.idcategorie:
+                    old_c = Categorie.objects(id=old_cat.id)
+                    old_c.update_one(pull__compagnie=data)
+
+            flash('Enregistement effectue avec succes', 'success')
+            return redirect(url_for('client.view', client_id=data.id, news=request.args.get('news')))
 
     return render_template('client/edit.html', **locals())
 
@@ -222,7 +283,6 @@ def reload_categorie():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat_activated():
-
     data = []
     element = []
     count = 0
@@ -232,7 +292,7 @@ def etat_activated():
 
         if item_found.activated:
             info['statut'] = 'NOK'
-            info['message'] = 'L\'entreprise "'+item_found.name+'" est deja active'
+            info['message'] = 'L\'entreprise "' + item_found.name + '" est deja active'
 
         if not item_found.activated:
             item_found.activated = True
@@ -247,7 +307,7 @@ def etat_activated():
     if count:
         info = {}
         info['statut'] = 'OK'
-        info['message'] = str(count)+' element(s) ont ete active avec success'
+        info['message'] = str(count) + ' element(s) ont ete active avec success'
         info['element'] = element
         data.append(info)
 
@@ -260,7 +320,6 @@ def etat_activated():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat_unactivated():
-
     data = []
     element = []
     count = 0
@@ -270,7 +329,7 @@ def etat_unactivated():
 
         if not item_found.activated:
             info['statut'] = 'NOK'
-            info['message'] = 'L\'entreprise "'+item_found.name+'" est deja desactive'
+            info['message'] = 'L\'entreprise "' + item_found.name + '" est deja desactive'
 
         if item_found.activated:
             item_found.activated = False
@@ -283,7 +342,7 @@ def etat_unactivated():
     if count:
         info = {}
         info['statut'] = 'OK'
-        info['message'] = str(count)+' element(s) ont ete desactive avec success'
+        info['message'] = str(count) + ' element(s) ont ete desactive avec success'
         info['element'] = element
         data.append(info)
 
@@ -296,7 +355,6 @@ def etat_unactivated():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat(client_id):
-
     client = Compagnie.objects.get(id=client_id)
 
     if client.activated:
@@ -382,7 +440,6 @@ def find_single_contact():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def edit_special():
-
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
@@ -425,7 +482,6 @@ def edit_special():
 
 @prefix.route('/all_activated')
 def all_activated():
-
     compagnie = Compagnie.objects(uploaded=True)
 
     count = 0
@@ -436,9 +492,3 @@ def all_activated():
             count += 1
 
     return str(count)
-
-
-
-
-
-

@@ -81,7 +81,8 @@
                                                 <span class="uk-link">Cliquez pour selectionnez l'image</span>
                                             </div>
                                             <br/>
-                                            <img src="{% if form.url_image.data %}{{ url_for('download_file', filename=form.url_image.data) }}{% endif %}" id="image_upload" alt="" class="{% if not form.url_image.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <img src="{% if form.url_image.data %}{{ url_for('categorie.download_file', filename=form.url_image.data) }}{% endif %}" id="image_upload" alt="" class="{% if not form.url_image.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <input type="hidden" name="url_image_change" value="0" id="image_upload_input">
                                         </div>
 
                                     </div>
@@ -96,7 +97,8 @@
                                                 <span class="uk-link">Cliquez pour selectionnez une icone</span>
                                             </div>
                                             <br/>
-                                            <img src="{% if form.icone.data %}{{ url_for('download_file', filename=form.icone.data) }}{% endif %}" id="image_upload_icone" alt="" class="{% if not form.icone.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <img src="{% if form.icone.data %}{{ url_for('categorie.download_file', filename=form.icone.data) }}{% endif %}" id="image_upload_icone" alt="" class="{% if not form.icone.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
+                                            <input type="hidden" name="icone_change" value="0" id="image_upload_icone_input">
                                         </div>
 
                                     </div>
@@ -140,6 +142,7 @@
 
                 reader.onload = function (e) {
                     $('#image_upload').attr('src', e.target.result).removeClass('uk-hidden');
+                    $('#image_upload_input').val('1');
 
                 };
 
@@ -158,6 +161,7 @@
 
                 reader2.onload = function (e) {
                     $('#image_upload_icone').attr('src', e.target.result).removeClass('uk-hidden');
+                    $('#image_upload_icone_input').val('1');
 
                 };
 
