@@ -7,10 +7,10 @@
 {% block  button %}
     <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> Enreg.</a>
     {% if user_id %}
-    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.view', user_id=user_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.view', user_id=user_id, paged=request.args.get('paged'), internaute=request.args.get('internaute')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Annuler</a>
     {% else %}
         <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit_nouveau" href=""><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> et nouveau</a>
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged'), internaute=request.args.get('internaute')) }}"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
     {% endif %}
 {% endblock %}
 

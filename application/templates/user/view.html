@@ -6,9 +6,13 @@
 
 {% block  button %}
     {% if current_user.has_roles([('super_admin', 'user')], ['edit']) %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('user_param.edit', user_id=user_id, paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>
+        <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('user_param.edit', user_id=user_id, paged=request.args.get('paged'), internaute=request.args.get('internaute')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>
     {% endif %}
-    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {%  if not request.args.get('internaute') %}
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% else %}
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    {% endif %}
 {% endblock %}
 
 

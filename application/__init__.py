@@ -48,10 +48,10 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_
 APP_STATIC = os.path.join(APP_ROOT, 'static')
 
 app.config['MONGODB_SETTINGS'] = {
-    'db': 'crm_yoomee'
-    # 'db': 'icicmtest',
-    # 'host': 'localhost',
-    # 'port': 28569
+    # 'db': 'crm_yoomee'
+    'db': 'icicmtest',
+    'host': 'localhost',
+    'port': 28569
 }
 
 # This is the path to the upload directory
@@ -70,12 +70,12 @@ app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 app.config['SECRET_KEY'] = '4fdb4fed4631d84f17c9711'
 app.config['SECURITY_PASSWORD_SALT'] = '4fdb4fed4631d84f17c97112e3d85442324848a29c4291a65ff53dc64bfd9a10'
 
-app.config["MAIL_SERVER"] = 'smtp.gmail.com'
-app.config["MAIL_PORT"] = 465
-app.config["MAIL_USE_TLS"] = False
-app.config["MAIL_USE_SSL"] = True
-app.config["MAIL_USERNAME"] = 'wilrona@gmail.com'
-app.config["MAIL_PASSWORD"] = ''
+# app.config["MAIL_SERVER"] = 'smtp.gmail.com'
+# app.config["MAIL_PORT"] = 465
+# app.config["MAIL_USE_TLS"] = False
+# app.config["MAIL_USE_SSL"] = True
+# app.config["MAIL_USERNAME"] = 'wilrona@gmail.com'
+# app.config["MAIL_PASSWORD"] = ''
 
 db = MongoEngine(app)
 mail = Mail(app)
@@ -114,8 +114,6 @@ app.jinja_env.filters['format_price'] = function.format_price
 app.jinja_env.filters['get_first_day'] = function.get_first_day
 app.jinja_env.filters['get_last_day'] = function.get_last_day
 app.jinja_env.filters['string'] = function.string
-
-
 
 
 # Pull in URL dispatch routes

@@ -286,18 +286,38 @@
 
                                     <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Photos et Vidéos</span></h2>
                                     <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Vidéo</a>
-                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Image</a>
+                                    <br> <br>
 
-                                    <div class="uk-grid-small uk-margin" uk-grid>
-                                        <div class="uk-width-1-4">
+                                    <div class="uk-grid-small" uk-grid uk-height-match="target: > div > .uk-card; row: false" uk-margin>
+                                        <div class="uk-width-1-4@l uk-width-1-1@s" id="plupload">
+                                            <div class="uk-card uk-padding-remove uk-placeholder" id="droparea">
+
+                                                <div class="uk-card-media-top uk-height-medium uk-height-max-medium uk-padding uk-text-center uk-text-lead">
+
+                                                    Deplacer les images ici
+
+                                                    <div>
+                                                        <i class="fa fa-picture-o"></i>
+                                                    </div>
+
+                                                </div>
+                                                <div class="uk-card-body uk-text-center">
+                                                        ou
+                                                </div>
+                                                <div class="uk-card-footer uk-text-center">
+                                                    <a class="uk-button waves-effect uk-button-default uk-button-small uk-text-lowercase" href="" id="browse">Ajouter image</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="uk-width-1-4@l uk-width-1-1@s">
                                             <div class="uk-card uk-card-default uk-card-small">
 
                                                 <div class="uk-card-media-top">
-                                                    <img src="" alt="">
+                                                    <img src="/static/images/default.png" alt="" class="uk-height-medium uk-height-max-medium uk-width-1-1">
                                                 </div>
                                                 <div class="uk-card-body">
                                                     Titre de l'image
-                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-video-camera"></i></div>
+                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>
                                                 </div>
                                                 <div class="uk-card-footer uk-text-right">
                                                     <a class="uk-button waves-effect uk-button-default uk-button-small" href="" ><i class="fa fa-search-plus"></i></a>
@@ -305,9 +325,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="uk-width-1-4">
-                                            <div class="uk-card uk-card-default uk-card-small">
-
+                                        <div class="uk-width-1-4@l uk-width-1-1@s">
+                                            <div class="uk-card uk-card-default">
                                                 <div class="uk-card-media-top">
                                                     <img src="" alt="">
                                                 </div>
@@ -321,26 +340,22 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="uk-width-1-4">
+                                        <div class="uk-width-1-4@l uk-width-1-1@s">
                                             <div class="uk-card uk-card-default">
                                                 <div class="uk-card-media-top">
                                                     <img src="" alt="">
                                                 </div>
-                                                <div class="uk-card-footer">
-                                                    Pied
+                                                <div class="uk-card-body">
+                                                    Titre de l'image
+                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>
+                                                </div>
+                                                <div class="uk-card-footer uk-text-right">
+                                                    <a class="uk-button waves-effect uk-button-default uk-button-small" href="" ><i class="fa fa-search-plus"></i></a>
+                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase" href="" >Suppr.</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="uk-width-1-4">
-                                            <div class="uk-card uk-card-default">
-                                                <div class="uk-card-media-top">
-                                                    <img src="" alt="">
-                                                </div>
-                                                <div class="uk-card-footer">
-                                                    Pied
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
 
                                 </div>
@@ -414,5 +429,36 @@
             }
         }
     </script>
+    <script type="text/javascript" src="/static/js/plupload/plupload.full.min.js"></script>
+{#    <script type="text/javascript" src="/static/js/plupload/plupload.flash.js"></script>#}
+{#    <script type="text/javascript" src="/static/js/plupload/plupload.html5.js"></script>#}
+
+    <script>
+        var url = url;
+        var uploader = new plupload.Uploader({
+            runtimes: 'html5,flash',
+            container: "plupload",
+            browse_button : "browse",
+            url: url,
+            multipart: true,
+            urlstream_upload: true,
+            multipart_params:{directory:'test'}
+        });
+        uploader.init();
+
+        uploader.bind('FilesAdded', function(up, files){
+            var filelist = $('#plupload');
+            var $html_image = $('<div />').addClass('uk-width-1-4@l uk-width-1-1@s').append(
+                $('<div />').addClass('uk-card uk-card-default uk-card-small').append(
+                    $('<div />').addClass('uk-card-media-top').append(
+                        $('<img />').attr('src','second.jpg')
+                    ),
+                    $('<div />').addClass('uk-card-body').append(),
+                    $('<div />').addClass('uk-card-footer uk-text-right').append()
+                )
+            )
+        });
+    </script>
+    <script type="text/javascript" src="/static/js/upload.js"></script>
 
 {% endblock %}

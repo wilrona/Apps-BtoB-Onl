@@ -84,6 +84,20 @@ def logout():
     return redirect(url_for('home.index'))
 
 
+@prefix.route('/')
+@login_required
+def index():
+    title_page = 'Internautes'
+
+    internaute = '1'
+
+    admin_role = Roles.objects(valeur='super_admin').first()
+
+    datas = Users.objects(Q(user=0) & Q(roles__role_id__ne=admin_role))
+
+    return render_template('user/index.html', **locals())
+
+
 @prefix_param.route('/')
 @login_required
 @roles_required([('super_admin', 'user')])
@@ -100,7 +114,10 @@ def index():
 @prefix_param.route('/view/<objectid:user_id>', methods=['GET'])
 def view(user_id):
 
-    title_page = 'Utilisateurs'
+    if request.args.get('internaute'):
+        title_page = 'Internautes'
+    else:
+        title_page = 'Utilisateurs'
 
     data = Users.objects.get(id=user_id)
     form = FormUser(obj=data)
@@ -225,7 +242,10 @@ def edit_exist():
 @roles_required([('super_admin', 'user')], ['edit'])
 def edit(user_id=None):
 
-    title_page = 'Utilisateurs'
+    if request.args.get('internaute'):
+        title_page = 'Internautes'
+    else:
+        title_page = 'Utilisateurs'
 
     if user_id:
 

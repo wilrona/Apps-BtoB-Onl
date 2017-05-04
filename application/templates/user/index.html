@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block  button %}
-    {% if current_user.has_roles([('super_admin', 'user')], ['edit']) %}
+    {% if current_user.has_roles([('super_admin', 'user')], ['edit']) and not internaute %}
         <a class="uk-button waves-effect uk-button-success uk-button-small modal" uk-toggle="target: #modal-id" href="{{ url_for('user_param.choice') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Admin / Cam</a>
         <a class="uk-button waves-effect uk-button-success uk-button-small modal" uk-toggle="target: #modal-id" href="{{ url_for('user_param.choice_soldier') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Field Soldier</a>
     {% endif %}
@@ -42,20 +42,28 @@
                 <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
                     <thead>
                     <tr>
-                        <th class="no-sort"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                        <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
                         <th width="25%">Nom</th>
                         <th width="25%">Prenom</th>
+                        {% if not internaute %}
                         <th width="25%">Status</th>
+                            {% else %}
+                            <th width="25%">Email</th>
+                        {% endif %}
                         <th width="25%">Etat</th>
                     </tr>
                     </thead>
                     <tbody>
                         {% for data in datas %}
-                          <tr data-link="{{ url_for('user_param.view', user_id=data.id) }}">
+                          <tr data-link="{{ url_for('user_param.view', user_id=data.id, internaute=internaute) }}">
                             <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ data.last_name }}</td>
                             <td>{{ data.first_name }}</td>
+                          {% if not internaute %}
                             <td>{% if data.roles|length %} Gestionnaires {% else %} {% if data.user == 1 %} Field Soldier {% else %} Commercial {% endif %} {% endif %}</td>
+                          {% else %}
+                              <td>{{ data.email }}</td>
+                          {% endif %}
                             <td>{% if data.activated %} Activé {% else %}  {% if data.password %} Désactivé {% else %} En attente de confirmation {% endif %} {% endif %}</td>
                           </tr>
                         {% endfor %}
