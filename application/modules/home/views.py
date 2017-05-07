@@ -18,19 +18,6 @@ prefix = Blueprint('home', __name__)
 #     })
 
 
-@prefix.route('/test')
-def test():
-
-    from Crypto.Cipher import AES
-    from Crypto import Random
-    iv = Random.new().read(AES.block_size)
-    ds = AES.new(b'012345670000000000000000', AES.MODE_CBC, iv)
-    text = b'abcdefgh'
-    cipher_text = ds.encrypt(text)
-    print (cipher_text)
-    print(ds.decrypt(cipher_text))
-
-
 @prefix.route('/')
 def index():
 
@@ -97,7 +84,7 @@ def setting():
             User.email = form.email.data
             User.password = password
             User.activated = True
-            User.user = True
+            User.user = 2
             User.roles.append(User_Role)
             count_user = Users.objects(user__gte=1).count()
             User.ref = function.reference(count=count_user+1, caractere=4, user=True, refuser=None)

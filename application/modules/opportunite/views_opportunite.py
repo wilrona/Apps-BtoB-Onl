@@ -45,8 +45,10 @@ def view(opportunite_id):
     customer = Compagnie.objects.get(id=data.client_id.id)
     form_client = FormClient(obj=customer)
 
+
     form_client.idcategorie.data = [str(cat.id) for cat in customer.idcategorie]
-    form_client.maincategorie.data = str(customer.maincategorie.id)
+    if customer.maincategorie:
+        form_client.maincategorie.data = str(customer.maincategorie.id)
 
     contact = Users.objects.get(id=data.contact_id.id)
     form_contact = FormUser(obj=contact)
@@ -137,6 +139,9 @@ def edit(opportunite_id=None):
         if 'client_exist' in request.form and request.form['client_exist']:
             form_client.id.data = request.form['client_exist']
 
+        if 'contact_exist' in request.form and request.form['contact_exist']:
+            form_contact.id.data = request.form['contact_exist']
+
     form_client.notCat.data = '1'
 
     from ..user.models_user import Roles
@@ -157,7 +162,7 @@ def edit(opportunite_id=None):
     form_client.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
 
     etape_list = Etape.objects(actif=True).order_by('order')
-    client_list = Compagnie.objects(activated=True)
+    client_list = Compagnie.objects()
 
     libelle = []
     if not opportunite_id:
@@ -364,6 +369,17 @@ def relance_edit(opportunite_id):
         if request.args.get('schedule'):
             current = Suivie()
             form = FormRelance()
+
+            form.description.data = ""
+            form.resume.data = ""
+            form.activite_id.data = ""
+            form.dateNext.data = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
+
+            all = Activite.objects()
+            form.activite_id.choices = [('', ' ')]
+            for choice in all:
+                form.activite_id.choices.append((str(choice.name), choice.name))
+
             return render_template('relance/edit_schedule.html', **locals())
         else:
             success = True
