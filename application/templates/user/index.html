@@ -49,6 +49,7 @@
                         <th width="25%">Status</th>
                             {% else %}
                             <th width="25%">Email</th>
+                            <th width="25%">Fonction</th>
                         {% endif %}
                         <th width="25%">Etat</th>
                     </tr>
@@ -63,6 +64,7 @@
                             <td>{% if data.roles|length %} Gestionnaires {% else %} {% if data.user == 1 %} Field Soldier {% else %} Commercial {% endif %} {% endif %}</td>
                           {% else %}
                               <td>{{ data.email }}</td>
+                              <td>{{ data.fonction }}</td>
                           {% endif %}
                             <td>{% if data.activated %} Activé {% else %}  {% if data.password %} Désactivé {% else %} En attente de confirmation {% endif %} {% endif %}</td>
                           </tr>
