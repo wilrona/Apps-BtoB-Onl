@@ -401,10 +401,9 @@ def print_devis(devis_id):
 
     data = Document.objects.get(id=devis_id)
 
-    CURRENT_FILE = os.path.abspath(__file__)
-    CURRENT_DIR = os.path.dirname(CURRENT_FILE)
-    PROJECT_DIR = os.path.dirname(CURRENT_DIR)
-    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+    PROJECT_DIR = app.config['FOLDER_APPS']
+
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
 
     image = PROJECT_DIR+'/static/images/logo.jpeg'
 
@@ -434,7 +433,9 @@ def print_devis(devis_id):
             'zoom': '0.8',
             'encoding': "UTF-8",
 
-        })
+        },
+        configuration=config
+    )
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'

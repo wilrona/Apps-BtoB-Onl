@@ -58,6 +58,9 @@ app.config['MONGODB_SETTINGS'] = {
 CURRENT_FILE = os.path.abspath(__file__)
 CURRENT_DIR = os.path.dirname(CURRENT_FILE)
 
+app.config['FOLDER_PROJECT'] = os.path.dirname(CURRENT_DIR)
+app.config['FOLDER_APPS'] = CURRENT_DIR
+
 ici_link_categorie = 'ici_cm/media/pictures/categories'
 ici_link = 'ici_cm/media/pictures/companies'
 
