@@ -24,6 +24,11 @@ def download_file(filename):
 def index():
     title_page = 'Clients'
 
+    for newer in Compagnie.objects():
+        if not newer.partenaire:
+            newer.partenaire = False
+            newer.save()
+
     datas = Compagnie.objects(verify=True)
 
     return render_template('client/index.html', **locals())
@@ -125,6 +130,11 @@ def edit(client_id=None):
         data.linkedin = form.linkedin.data
         data.youtube = form.youtube.data
 
+        if not client_id:
+            data.source = "creation CRM"
+            data.verify = False
+            data.activated = False
+
         old_categorie = data.idcategorie
         data.idcategorie = []
 
@@ -147,7 +157,6 @@ def edit(client_id=None):
                 old_rename = function._slugify(data.name)
 
             if not data.imagedir:
-
                 import calendar
                 time_zones = tzlocal()
                 date_auto_nows = datetime.datetime.now(time_zones)
@@ -176,8 +185,8 @@ def edit(client_id=None):
 
                 os.rename(source, destination)
 
-                link_save_file = "/logo-"+old_rename+"."+extension
-                data.logo = data.imagedir+link_save_file
+                link_save_file = "/logo-" + old_rename + "." + extension
+                data.logo = data.imagedir + link_save_file
 
             else:
                 flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg', 'warning')
@@ -443,27 +452,32 @@ def edit_special():
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
-        datas = Compagnie.objects(Q(partenaire=0) | Q(partenaire=2) & Q(verify=True))
+        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire=0) | Q(partenaire=1) & Q(verify=True) & Q(activated=True))
         title_page += '- Partenaires'
     else:
-        datas = Compagnie.objects(Q(partenaire=0) & Q(verify=True))
+        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire__gte=0) & Q(verify=True) & Q(activated=True))
         title_page += '- Institutions'
 
     if request.method == 'POST':
 
         if request.form.getlist('item_id'):
-
+            error = False
             for id_compagnie in request.form.getlist('item_id'):
                 current = Compagnie.objects.get(id=id_compagnie)
                 if request.args.get('partenaire'):
                     current.partenaire = 1
-                    flash('Ajout des partenaires reussis avec success', 'success')
                 else:
                     current.partenaire = 2
-                    flash('Ajout des institutions reussis avec success', 'success')
                 current = current.save()
+
                 from ..workflow.workflow_partenaire import active_partenaire_facture
                 active_partenaire_facture(current)
+
+            if not error:
+                if request.args.get('partenaire'):
+                    flash('Ajout des partenaires reussis avec success', 'success')
+                else:
+                    flash('Ajout des institutions reussis avec success', 'success')
 
             datas = json.dumps({
                 'statut': 'OK'
@@ -478,6 +492,46 @@ def edit_special():
         return datas
 
     return render_template('client/edit_exist.html', **locals())
+
+
+@prefix.route('/remove/special', methods=['POST'])
+@login_required
+@roles_required([('super_admin', 'client')], ['edit'])
+def remove_special():
+
+    if request.form.getlist('item_id'):
+        error = False
+        for id_compagnie in request.form.getlist('item_id'):
+
+            current = Compagnie.objects.get(id=id_compagnie)
+            if request.args.get('partenaire'):
+                current.partenaire = 0
+            else:
+                if current.partenaire == 2:
+                    current.partenaire = 0
+                else:
+                    error = True
+
+            current.save()
+        if request.args.get('partenaire'):
+            flash('Les clients selectionnes ne sont plus des partenaires. Ils sont acquis une relation de client', 'success')
+        else:
+            flash('Les clients selectionnes ne sont plus des institutions. Ils sont acquis une relation de client', 'success')
+
+        if error:
+            flash('Certaines entreprises sont des partenaires. ils ne peuvent etre enlever institution', 'warning')
+
+        datas = json.dumps({
+            'statut': 'OK'
+        })
+
+    else:
+
+        datas = json.dumps({
+            'statut': 'NOK'
+        })
+
+    return datas
 
 
 @prefix.route('/all_activated')

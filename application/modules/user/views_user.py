@@ -86,6 +86,7 @@ def logout():
 
 @prefix.route('/')
 @login_required
+@roles_required([('super_admin', 'internaute')])
 def index():
     title_page = 'Internautes'
 

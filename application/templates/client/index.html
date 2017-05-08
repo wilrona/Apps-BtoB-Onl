@@ -70,6 +70,13 @@
                                 {% else %}
                                     Désactivé
                                 {% endif %}
+
+                                <br>
+                                {% if news %}
+                                    <strong>Origine:</strong>{% if data.source %}{{ data.source }}{% else %} ICI.CM {% endif %}
+                                {% else %}
+                                    <strong>Relation:</strong>{% if data.partenaire == 0 %} Client {% else %} {% if data.partenaire == 1 %} Partenaire {% else %} Partenaire Institution {% endif %} {% endif %}
+                                {% endif %}
                             </td>
                             <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
                           </tr>

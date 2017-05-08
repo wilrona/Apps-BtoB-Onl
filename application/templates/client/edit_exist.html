@@ -8,6 +8,7 @@
 {% block  button %}
     {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
         <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href="#"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> Enreg.</a>
+        <a class="uk-button waves-effect uk-button-secondary uk-button-small" id="submit_remove" href="#"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span> Enlever comme {% if request.args.get('partenaire') %} partenaire {% else %} Institutions {% endif %}</a>
         <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('client.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
     {% endif %}
 {% endblock %}
@@ -39,7 +40,9 @@
                         {% for data in datas %}
                             <tr>
                                 <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
-                                <td>{{ data.name }}  ({% if data.ville %} {{ data.ville }} {% endif %} {% if data.repere %} - {{ data.repere }}{% endif %})</td>
+                                <td>{{ data.name }}  ({% if data.ville %} {{ data.ville }} {% endif %} {% if data.repere %} - {{ data.repere }}{% endif %})
+                                <span class="uk-float-right uk-label uk-label-danger">{% if data.partenaire == 1 %} Partenaire {% elif data.partenaire == 2 %} Institutions {% endif %}</span>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -69,6 +72,28 @@
                 msg = $.parseJSON(msg);
                 if(msg['statut'] == 'OK'){
                     window.location.replace(window.location.origin+"{{ url_for('client.index') }}").delay()
+                }else{
+                    UIkit.modal.alert('Aucune entreprise n\'a été selectionnée.').then(function() {
+
+                    });
+                }
+
+
+            })
+        });
+
+        $('body').on('click', '#submit_remove', function(e){
+            e.preventDefault();
+            var url = '{{ url_for('client.remove_special', partenaire=request.args.get('partenaire')) }}';
+            $.ajax({
+                method: "POST",
+                data: table_display.$('input.uk-checkbox-item').serialize(),
+                url: url
+            }).done(function( msg ) {
+
+                msg = $.parseJSON(msg);
+                if(msg['statut'] == 'OK'){
+                    window.location.replace(window.location.origin+"{{ url_for('client.edit_special', partenaire=request.args.get('partenaire')) }}").delay()
                 }else{
                     UIkit.modal.alert('Aucune entreprise n\'a été selectionnée.').then(function() {
 

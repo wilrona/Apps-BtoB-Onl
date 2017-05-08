@@ -24,6 +24,7 @@ class Compagnie(db.Document):
     postal_code = db.StringField()
     activated = db.BooleanField()
     verify = db.BooleanField()
+    source = db.StringField()
 
     imagedir = db.StringField()
     logo = db.StringField()

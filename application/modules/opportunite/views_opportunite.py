@@ -218,6 +218,8 @@ def edit(opportunite_id=None):
                 customer.email = form_client.email.data
                 customer.phone = form_client.phone.data
                 customer.activated = False
+                customer.verify = False
+                customer.source = "opportunite"
 
                 customer = customer.save()
 
@@ -236,6 +238,7 @@ def edit(opportunite_id=None):
                     contact.fonction = form_contact.fonction.data
                 contact.phone = form_contact.phone.data
                 contact.activated = False
+                contact.source = "opportunite"
                 contact.user = 0
                 contact = contact.save()
 
@@ -355,14 +358,14 @@ def relance_edit(opportunite_id):
         current.dateNext = datetime.datetime.combine(function.date_convert(form.dateNext.data), datetime.datetime.min.time())
 
         current.status = True
-        if request.args.get('planning'):
+        if request.args.get('schedule'):
             current.status = False
 
         current.opportunite_id = opportunite
 
         current = current.save()
 
-        if not current:
+        if current not in opportunite.suivie:
             opportunite.suivie.append(current)
             opportunite.save()
 
@@ -373,18 +376,20 @@ def relance_edit(opportunite_id):
             form.description.data = ""
             form.resume.data = ""
             form.activite_id.data = ""
-            form.dateNext.data = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
+            form.dateNext.data = ""
 
             all = Activite.objects()
             form.activite_id.choices = [('', ' ')]
             for choice in all:
                 form.activite_id.choices.append((str(choice.name), choice.name))
 
-            return render_template('relance/edit_schedule.html', **locals())
         else:
             success = True
 
-    return render_template('relance/edit.html', **locals())
+    if request.args.get('schedule'):
+        return render_template('relance/edit_schedule.html', **locals())
+    else:
+        return render_template('relance/edit.html', **locals())
 
 
 @prefix_opportunite.route('/devis/<objectid:opportunite_id>')

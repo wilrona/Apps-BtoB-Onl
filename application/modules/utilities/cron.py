@@ -27,7 +27,7 @@ class Config(object):
 def active_company_ici():
     from ..document.models_doc import Document
 
-    factures = Document.objects(Q(DevisDoc=False) & Q(ckeched_ici_cm__exists=0))
+    factures = Document.objects(Q(DevisDoc=False) & Q(ckeched_ici_cm__exists=0) | Q(ckeched_ici_cm=False))
 
     enterprise = []
 
@@ -90,12 +90,21 @@ def verify_expired_company():
         if enterprise.dateExpired().dateFin == function.datetime_convert(current_date):
 
             enterprise.etat_souscription = 2
+            if enterprise.partenaire:
+                enterprise.etat_souscription = 1
+
+            no_part = True
+
+            enterprise = enterprise.save()
 
             if enterprise.partenaire:
                 active_partenaire_facture(enterprise)
-                enterprise.etat_souscription = 1
+                no_part = False
 
-            enterprise.save()
+            if no_part:
+                ligne = enterprise.dateExpired()
+                ligne.etat = 0
+                ligne.save()
 
     print('Entreprise expiree traite')
 

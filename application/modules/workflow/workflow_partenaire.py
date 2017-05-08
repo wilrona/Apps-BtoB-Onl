@@ -10,6 +10,11 @@ def active_partenaire_facture(current):
 
     partenaire = Compagnie.objects.get(id=current.id)
 
+    if partenaire.etat_souscription == 1:
+        lign = partenaire.dateExpired()
+        lign.etat = 0
+        lign.save()
+
     level_pack = Package.objects(Q(idligneService='ici_cm') & Q(hight=True) & Q(sale=0)).get()
 
     # creation du document facture
@@ -69,6 +74,10 @@ def active_partenaire_facture(current):
         partenaire.activated = True
 
     partenaire.save()
+
+
+
+
 
     return 'True'
 

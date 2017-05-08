@@ -209,6 +209,8 @@ def edit(facture_id=None):
                     customer.email = form_client.email.data
                     customer.phone = form_client.phone.data
                     customer.activated = False
+                    customer.source = "facture"
+                    customer.verify = False
 
                     current_client = customer.save()
 
@@ -230,6 +232,7 @@ def edit(facture_id=None):
                     contact.fonction = form_contact.fonction.data
                 contact.phone = form_contact.phone.data
                 contact.activated = False
+                contact.source = "facture"
                 contact.user = 0
                 contact = contact.save()
 

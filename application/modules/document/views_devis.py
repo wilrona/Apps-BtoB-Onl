@@ -190,6 +190,8 @@ def edit(devis_id=None):
                     customer.email = form_client.email.data
                     customer.phone = form_client.phone.data
                     customer.activated = False
+                    customer.verify = False
+                    customer.source = "devis"
 
                     current_client = customer.save()
 
@@ -211,6 +213,7 @@ def edit(devis_id=None):
                     contact.fonction = form_contact.fonction.data
                 contact.phone = form_contact.phone.data
                 contact.activated = False
+                contact.source = "devis"
                 contact.user = 0
                 contact = contact.save()
 

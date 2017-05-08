@@ -81,7 +81,7 @@ def edit(categorie_id=None):
     if not request.args.get('categorie') and not categorie_id:
         form.parent_idcategorie.data = ''
 
-    if not form.parent_idcategorie.data or not data.parent_idcategorie:
+    if not request.args.get('categorie') or data.parent_idcategorie:
         form.parent_idcategorie.data = ''
 
     form.enfant.data = 0
