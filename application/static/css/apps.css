@@ -601,3 +601,8 @@ html, div *{
     color: #444 !important;
     /*border-color: #e5e5e5 !important;*/
 }
+
+#droparea.hover{
+    border: 1px solid #83b4d8;
+
+}

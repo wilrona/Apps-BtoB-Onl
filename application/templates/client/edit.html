@@ -309,52 +309,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="uk-width-1-4@l uk-width-1-1@s">
-                                            <div class="uk-card uk-card-default uk-card-small">
-
-                                                <div class="uk-card-media-top">
-                                                    <img src="/static/images/default.png" alt="" class="uk-height-medium uk-height-max-medium uk-width-1-1">
-                                                </div>
-                                                <div class="uk-card-body">
-                                                    Titre de l'image
-                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>
-                                                </div>
-                                                <div class="uk-card-footer uk-text-right">
-                                                    <a class="uk-button waves-effect uk-button-default uk-button-small" href="" ><i class="fa fa-search-plus"></i></a>
-                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase" href="" >Suppr.</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="uk-width-1-4@l uk-width-1-1@s">
-                                            <div class="uk-card uk-card-default">
-                                                <div class="uk-card-media-top">
-                                                    <img src="" alt="">
-                                                </div>
-                                                <div class="uk-card-body">
-                                                    Titre de l'image
-                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>
-                                                </div>
-                                                <div class="uk-card-footer uk-text-right">
-                                                    <a class="uk-button waves-effect uk-button-default uk-button-small" href="" ><i class="fa fa-search-plus"></i></a>
-                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase" href="" >Suppr.</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="uk-width-1-4@l uk-width-1-1@s">
-                                            <div class="uk-card uk-card-default">
-                                                <div class="uk-card-media-top">
-                                                    <img src="" alt="">
-                                                </div>
-                                                <div class="uk-card-body">
-                                                    Titre de l'image
-                                                    <div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>
-                                                </div>
-                                                <div class="uk-card-footer uk-text-right">
-                                                    <a class="uk-button waves-effect uk-button-default uk-button-small" href="" ><i class="fa fa-search-plus"></i></a>
-                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase" href="" >Suppr.</a>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                     </div>
 
@@ -434,30 +388,63 @@
 {#    <script type="text/javascript" src="/static/js/plupload/plupload.html5.js"></script>#}
 
     <script>
-        var url = url;
+        var url = "{{ url_for('client.uploader', client_id=client_id) }}";
         var uploader = new plupload.Uploader({
             runtimes: 'html5,flash',
             container: "plupload",
             browse_button : "browse",
+            drop_element: "droparea",
             url: url,
             multipart: true,
             urlstream_upload: true,
-            multipart_params:{directory:'test'}
+            multipart_params:{directory:'test'},
+            filters : [ {title : "Image files", extensions : "jpg,jpeg,gif,png"} ]
         });
+
         uploader.init();
+
+        uploader.bind('UploadProgress', function(up, file) {
+            $('#'+file.id).find('#progressbar').val(file.percent)
+        });
+
+        uploader.bind('Error', function(up, err) {
+            alert("Error: " + err.code + ", Message: " + err.message + (err.file ? ", File: " + err.file.name : "") + "");
+            up.refresh(); // Reposition Flash/Silverlight
+        });
 
         uploader.bind('FilesAdded', function(up, files){
             var filelist = $('#plupload');
-            var $html_image = $('<div />').addClass('uk-width-1-4@l uk-width-1-1@s').append(
-                $('<div />').addClass('uk-card uk-card-default uk-card-small').append(
-                    $('<div />').addClass('uk-card-media-top').append(
-                        $('<img />').attr('src','second.jpg')
-                    ),
-                    $('<div />').addClass('uk-card-body').append(),
-                    $('<div />').addClass('uk-card-footer uk-text-right').append()
-                )
-            )
+            var $html_image = "";
+            plupload.each(files, function(file) {
+                $html_image = $('<div />').addClass('uk-width-1-4@l uk-width-1-1@s').append(
+                    $('<div />').addClass('uk-card uk-card-default uk-card-small').attr('id', file.id).append(
+                        $('<div />').addClass('uk-card-media-top').append(
+                            $('<img />').attr('src','/static/images/default.png').addClass('uk-height-medium uk-height-max-medium uk-width-1-1')
+                        ),
+                        $('<div />').addClass('uk-card-body').text(file.name+' ('+plupload.formatSize(file.size)+') ').append(
+                            $('<div class="uk-card-badge uk-label"> <i class="fa fa-picture-o"></i></div>')
+                        ),
+                        $('<div />').addClass('uk-card-footer uk-text-right').append(
+                            $('<progress id="progressbar" class="uk-progress" value="0" max="100"></progress>')
+                        )
+                    )
+                );
+                $html_image.insertAfter(filelist);
+            });
+            $("#droparea").removeClass('hover');
+            uploader.start();
+            uploader.refresh();
         });
+
+        $("#droparea").on('dragover', function (e) {
+            $(this).addClass('hover');
+        }).on('dragleave', function (e) {
+            $(this).removeClass('hover');
+        })
+
+
+
+
     </script>
     <script type="text/javascript" src="/static/js/upload.js"></script>
 

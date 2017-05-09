@@ -83,6 +83,7 @@ def edit(package_id=None):
 
         if form.sale.data:
             data.sale = 1
+            data.level = 0
         else:
             data.sale = 0
 

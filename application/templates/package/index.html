@@ -66,23 +66,25 @@
                                 {{ data.idligneService }}
                             </td>
                             <td>{{ data.level }}</td>
-                            <td class="uk-flex uk-flex-column">
+                            <td class="">
+                            <div class="uk-flex uk-flex-column">
                                   {% if current_user.has_roles([('super_admin', 'package')], ['edit']) %}
                                     {% if not data.sale %}
-                                        <div>
-                                            {% if loop.index != 1 %}
+                                        <div style="height: 20px;">
+                                            {% if data.level_first() != data.id %}
                                               <a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a>
                                             {% endif %}
                                         </div>
 
 
-                                        <div>
-                                          {% if data.similar().count() != loop.index %}
+                                        <div style="height: 20px;">
+                                          {% if data.level_last().id != data.id %}
                                             <a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a>
                                           {% endif %}
                                         </div>
                                     {% endif %}
                                   {% endif %}
+                            </div>
                             </td>
 
                           </tr>

@@ -2,7 +2,7 @@ __author__ = 'User'
 
 from ...modules import *
 from forms_compagnie import FormClient
-from models_compagnie import Compagnie, Categorie
+from models_compagnie import Compagnie, Categorie, Media
 from ..user.models_user import Users
 
 prefix = Blueprint('client', __name__)
@@ -172,15 +172,15 @@ def edit(client_id=None):
             if allowed_file(file.filename):
 
                 if data.logo and request.form['url_image_change'] == '1' and client_id:
-                    os.remove(os.path.join(url_dossier, data.url_image))
+                    os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.logo))
 
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(url_dossier, filename))
+                file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
 
                 extension = filename.split(".")
                 extension = extension[1]
 
-                source = os.path.join(url_dossier, filename)
+                source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
                 destination = url_dossier + "/logo-" + old_rename + "." + extension
 
                 os.rename(source, destination)
@@ -215,6 +215,62 @@ def edit(client_id=None):
             return redirect(url_for('client.view', client_id=data.id, news=request.args.get('news')))
 
     return render_template('client/edit.html', **locals())
+
+
+@prefix.route('/uploader/<objectid:client_id>', methods=['POST'])
+def uploader(client_id):
+
+    data = Compagnie.objects.get(id=client_id)
+
+    if not data.imagedir:
+        import calendar
+        time_zones = tzlocal()
+        date_auto_nows = datetime.datetime.now(time_zones)
+
+        current_date = date_auto_nows
+        current_date = calendar.timegm(current_date.utctimetuple())
+        current_date = str(current_date).encode('base64').rstrip()
+        os.makedirs(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], current_date))
+        data.imagedir = current_date
+
+        data.save()
+
+    url_dossier = os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imagedir)
+
+    saved_file_urls = []
+    for key, file in request.files.items():
+        if file: # and allowed_file(fie.filename):
+
+            filename = secure_filename(file.filename)
+
+            file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+
+            source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+            destination = url_dossier + "/" + filename
+
+            url_save = data.imagedir+"/"+filename
+
+            count_image = Media.objects(Q(type='image') & Q(url=url_save) & Q(idcompagnie=data.id)).count()
+
+            if count_image:
+                extension = filename.split(".")
+                rename = extension[0]+'-'+str(count_image)
+                filename = rename+'.'+extension[1]
+                destination = url_dossier + "/"+filename
+
+            os.rename(source, destination)
+
+            url_save = data.imagedir+"/"+filename
+            media = Media()
+            media.url = url_save
+            media.idcompagnie = data
+            media.type = 'image'
+            media.une = False
+            media.save()
+
+            saved_file_urls.append(url_for('client.download_file', filename=url_save))
+
+    return jsonify(dict(saved_file_urls=saved_file_urls))
 
 
 @prefix.route('/deleted', methods=['POST'])

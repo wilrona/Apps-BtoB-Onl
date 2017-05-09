@@ -156,6 +156,8 @@ def add_time(time, retard):
 def format_price(price):
     if price:
         return '{:,}'.format(price).replace(',', ' ')
+    else:
+        return str(0)
 
 
 def find(word, search):
