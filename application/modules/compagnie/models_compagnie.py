@@ -102,12 +102,6 @@ class Media(db.Document):
     url = db.StringField()
     idcompagnie = db.ReferenceField('Compagnie')
 
-    def name(self):
-        filename = self.url.split("/")
-        filename = filename[1].split(".")
-
-        return filename[0]
-
 
 class Categorie(db.Document):
     name = db.StringField()

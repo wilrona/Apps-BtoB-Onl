@@ -343,7 +343,6 @@
                                                     <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
                                                 </div>
                                                 <div class="uk-card-body">
-                                                    {{ image.name() }}
                                                     {% if image.type == 'image' %}
                                                     <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
                                                     {% elif image.type == 'video' %}
