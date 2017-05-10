@@ -1,0 +1,24 @@
+<div class="uk-card uk-card-default uk-card-small" id="{{ saved_file.id }}">
+
+    <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
+        <img src="{{ url_for('client.download_file', filename=saved_file.url) }}" alt="" class="uk-responsive-height uk-position-center">
+    </div>
+    <div class="uk-card-body">
+        {{ saved_file.name() }}
+        {% if saved_file.type == 'image' %}
+            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
+        {% elif saved_file.type == 'video' %}
+            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
+        {% endif %}
+    </div>
+    <div class="uk-card-footer uk-text-right">
+        <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ saved_file.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
+        <div id="modal-{{ saved_file.id }}" uk-modal="center: true">
+            <div class="uk-modal-dialog">
+                <button class="uk-modal-close-outside" type="button" uk-close></button>
+                <img src="{{ url_for('client.download_file', filename=saved_file.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
+            </div>
+        </div>
+        <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase delete_image" href="{{ url_for('client.delete_image', image_id=saved_file.id) }}" >Suppr.</a>
+    </div>
+</div>

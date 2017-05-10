@@ -83,12 +83,30 @@ class Compagnie(db.Document):
 
         return ligne
 
+    def media(self):
+
+        files = Media.objects(Q(idcompagnie=self.id) & Q(type="image"))
+
+        return files
+
+    def video(self):
+
+        vid = Media.objects(Q(idcompagnie=self.id) & Q(type="video")).first()
+
+        return vid
+
 
 class Media(db.Document):
     type = db.StringField()
     une = db.BooleanField(default=False)
     url = db.StringField()
     idcompagnie = db.ReferenceField('Compagnie')
+
+    def name(self):
+        filename = self.url.split("/")
+        filename = filename[1].split(".")
+
+        return filename[0]
 
 
 class Categorie(db.Document):

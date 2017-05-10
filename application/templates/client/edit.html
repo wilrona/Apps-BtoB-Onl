@@ -284,15 +284,39 @@
                             {% if client_id %}
                                 <div class="uk-width-1-1">
 
-                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Photos et Vidéos</span></h2>
-                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small" href=""><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Vidéo</a>
-                                    <br> <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Lien Vidéo</span></h2>
+                                        <div class="uk-grid-small" uk-grid>
+                                            <div class="uk-width-2-3@l uk-width-1-1@s">
+                                                <div class="uk-grid-small" uk-grid>
+
+                                                        <div class="uk-width-2-3"><input class="uk-input uk-display-inline" type="text" name="video" value="{{ data.video().url }}" placeholder="Lien de la video" id="input_video"></div>
+                                                        <div class="uk-width-1-3">
+                                                            <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small " href="{{ url_for('client.edit_video', client_id=client_id) }}" id="update_video"><span class=""><i class="fa fa-plus"></i> / <i class="fa fa-pencil-square-o"></i></span></a>
+
+                                                                <a class="uk-button waves-effect waves-effect uk-button-default uk-button-small" href="{{ data.video().url }}" target="_blank"><span class=""><i class="fa fa-search-plus"></i></span></a>
+
+                                                        </div>
+                                                    <script>
+                                                        $('#update_video').on('click', function (e) {
+                                                            e.preventDefault();
+                                                            var inputs = $('#input_video').val().split("v=");
+                                                            var url = $(this).attr('href');
+                                                            window.location.replace(window.location.origin+url+"/"+inputs[1]).delay();
+                                                        });
+                                                    </script>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Photos</span></h2>
 
                                     <div class="uk-grid-small" uk-grid uk-height-match="target: > div > .uk-card; row: false" uk-margin>
                                         <div class="uk-width-1-4@l uk-width-1-1@s" id="plupload">
                                             <div class="uk-card uk-padding-remove uk-placeholder" id="droparea">
 
-                                                <div class="uk-card-media-top uk-height-medium uk-height-max-medium uk-padding uk-text-center uk-text-lead">
+                                                <div class="uk-card-media-top uk-height-small uk-height-max-small uk-padding uk-text-center uk-text-lead">
 
                                                     Deplacer les images ici
 
@@ -309,6 +333,36 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {% for image in data.media() %}
+
+                                        <div class="uk-width-1-4@l uk-width-1-1@s">
+                                            <div class="uk-card uk-card-default uk-card-small" id="{{ image.id }}">
+
+                                                <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
+                                                    <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
+                                                </div>
+                                                <div class="uk-card-body">
+                                                    {{ image.name() }}
+                                                    {% if image.type == 'image' %}
+                                                    <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
+                                                    {% elif image.type == 'video' %}
+                                                    <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="uk-card-footer uk-text-right">
+                                                    <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ image.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
+                                                    <div id="modal-{{ image.id }}" uk-modal="center: true">
+                                                        <div class="uk-modal-dialog">
+                                                            <button class="uk-modal-close-outside" type="button" uk-close></button>
+                                                            <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
+                                                        </div>
+                                                    </div>
+                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase delete_image" href="{{ url_for('client.delete_image', image_id=image.id) }}" >Suppr.</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
 
                                     </div>
 
@@ -412,6 +466,11 @@
             up.refresh(); // Reposition Flash/Silverlight
         });
 
+        uploader.bind('FileUploaded', function(up, file, response) {
+            data = response.response;
+            $('#'+file.id).replaceWith(data);
+        });
+
         uploader.bind('FilesAdded', function(up, files){
             var filelist = $('#plupload');
             var $html_image = "";
@@ -440,6 +499,22 @@
             $(this).addClass('hover');
         }).on('dragleave', function (e) {
             $(this).removeClass('hover');
+        })
+
+        $('body').on('click', '.delete_image', function(e){
+            e.preventDefault();
+            url = $(this).attr('href');
+            if(confirm('Voulez vous supprimer cette image ?')){
+            $.ajax({
+                    method: "GET",
+                    url: url
+                })
+                .done(function( data ) {
+                    data = $.parseJSON(data);
+                    $("#"+data['image_id']+"").parent().remove();
+                    return false;
+                });
+            }
         })
 
 

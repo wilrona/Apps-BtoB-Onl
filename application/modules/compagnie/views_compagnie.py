@@ -79,12 +79,15 @@ def edit(client_id=None):
 
         form.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
 
-        if request.method == 'GET':
-
+        if request.method == "GET":
             form.maincategorie.data = str(data.maincategorie.id)
 
-            for choice in data.idcategorie:
-                form.maincategorie.choices.append((str(choice.id), choice.name))
+        for choice in data.idcategorie:
+            form.maincategorie.choices.append((str(choice.id), choice.name))
+
+        if request.method == "POST":
+            principale = Categorie.objects.get(id=form.maincategorie.data)
+            form.maincategorie.data = str(principale.id)
     else:
         data = Compagnie()
         form = FormClient()
@@ -220,6 +223,8 @@ def edit(client_id=None):
 @prefix.route('/uploader/<objectid:client_id>', methods=['POST'])
 def uploader(client_id):
 
+    from ..workflow.workflow_user import id_generator
+
     data = Compagnie.objects.get(id=client_id)
 
     if not data.imagedir:
@@ -237,7 +242,7 @@ def uploader(client_id):
 
     url_dossier = os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imagedir)
 
-    saved_file_urls = []
+    saved_file = None
     for key, file in request.files.items():
         if file: # and allowed_file(fie.filename):
 
@@ -246,6 +251,7 @@ def uploader(client_id):
             file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
 
             source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+
             destination = url_dossier + "/" + filename
 
             url_save = data.imagedir+"/"+filename
@@ -254,7 +260,7 @@ def uploader(client_id):
 
             if count_image:
                 extension = filename.split(".")
-                rename = extension[0]+'-'+str(count_image)
+                rename = extension[0]+'-'+str(id_generator(size=7))
                 filename = rename+'.'+extension[1]
                 destination = url_dossier + "/"+filename
 
@@ -266,11 +272,47 @@ def uploader(client_id):
             media.idcompagnie = data
             media.type = 'image'
             media.une = False
-            media.save()
 
-            saved_file_urls.append(url_for('client.download_file', filename=url_save))
+            saved_file = media.save()
 
-    return jsonify(dict(saved_file_urls=saved_file_urls))
+    return render_template('client/image.html', **locals())
+
+
+@prefix.route('/deleted/image/<objectid:image_id>', methods=['GET'])
+def delete_image(image_id):
+
+
+    media = Media.objects.get(id=image_id)
+
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], media.url))
+
+    media.delete()
+    data = json.dumps({
+        "image_id": str(image_id)
+    })
+    return data
+
+
+@prefix.route('/edit/video/<objectid:client_id>')
+@prefix.route('/edit/video/<objectid:client_id>/<video_link>')
+def edit_video(client_id, video_link=None):
+
+    company = Compagnie.objects.get(id=client_id)
+    video = Media.objects(Q(idcompagnie=client_id) & Q(type="video")).first()
+
+    if video_link:
+        if not video:
+            media_v = Media()
+            media_v.type = "video"
+            media_v.url = "https://www.youtube.com/watch?v="+video_link
+            media_v.une = False
+            media_v.idcompagnie = company
+            media_v.save()
+        else:
+            video.url = "https://www.youtube.com/watch?v="+video_link
+            video.save()
+
+    return redirect(url_for('client.edit', client_id=client_id))
 
 
 @prefix.route('/deleted', methods=['POST'])

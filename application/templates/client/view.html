@@ -243,7 +243,7 @@
                                     <div class="uk-margin">
                                         {{ form.description.label(class_='uk-form-label uk-text-bold') }}
                                         <div class="uk-form-controls">
-                                            {{ data.description }}
+                                            {{ form.description(class_='uk-textarea uk-form-blank uk-form-small') }}
                                         </div>
                                     </div>
                                 </div>
@@ -269,6 +269,66 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="uk-width-1-1">
+
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Lien Vidéo</span></h2>
+                                    <div class="uk-grid-small" uk-grid>
+                                        <div class="uk-width-2-3@l uk-width-1-1@s">
+                                            <div class="uk-grid-small" uk-grid>
+
+                                                <div class="uk-width-2-3"><input class="uk-input uk-display-inline uk-form-blank" type="text" name="video" value="{{ data.video().url }}" placeholder="Lien de la video"></div>
+                                                <div class="uk-width-1-3">
+
+                                                    <a class="uk-button waves-effect waves-effect uk-button-default uk-button-small" href="{{ data.video().url }}" target="_blank"><span class=""><i class="fa fa-search-plus"></i></span></a>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Photos</span></h2>
+
+                                    <div class="uk-grid-small" uk-grid uk-height-match="target: > div > .uk-card; row: false" uk-margin>
+
+                                        {% for image in data.media() %}
+
+                                            <div class="uk-width-1-4@l uk-width-1-1@s">
+                                                <div class="uk-card uk-card-default uk-card-small" id="{{ image.id }}">
+
+                                                    <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
+                                                        <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
+                                                    </div>
+                                                    <div class="uk-card-body">
+                                                        {{ image.name() }}
+                                                        {% if image.type == 'image' %}
+                                                            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
+                                                        {% elif image.type == 'video' %}
+                                                            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="uk-card-footer uk-text-right">
+                                                        <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ image.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
+                                                        <div id="modal-{{ image.id }}" uk-modal="center: true">
+                                                            <div class="uk-modal-dialog">
+                                                                <button class="uk-modal-close-outside" type="button" uk-close></button>
+                                                                <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+
+                                    </div>
+
+                                </div>
+
+                                </div>
+
 
                             </div>
 
