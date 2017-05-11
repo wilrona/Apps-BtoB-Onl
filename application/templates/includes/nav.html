@@ -6,6 +6,9 @@
         <ul class="uk-nav-sub">
             <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>
             <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>
+            {% if current_user.has_roles([('super_admin', 'abonnement_ici')]) %}
+                <li><a href="{{ url_for('abonnement.ici') }}" class="waves-effect">Abonnement ICI</a></li>
+            {% endif %}
 
         </ul>
     </li>
@@ -18,7 +21,9 @@
             <li><a href="{{ url_for('devis.index') }}" class="waves-effect">Devis</a></li>
             <li><a href="{{ url_for('commande.index') }}" class="waves-effect">Bon de commande</a></li>
             <li><a href="{{ url_for('client.index') }}" class="waves-effect">Clients</a></li>
-            <li><a href="{{ url_for('user.index') }}" class="waves-effect">Internautes</a></li>
+            {% if current_user.has_roles([('super_admin', 'internaute')]) %}
+                <li><a href="{{ url_for('user.index') }}" class="waves-effect">Internautes</a></li>
+            {% endif %}
         </ul>
     </li>
     <li class="uk-nav-divider"></li>

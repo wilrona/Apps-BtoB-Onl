@@ -91,6 +91,7 @@ def view(facture_id):
 @prefix.route('/edit/<objectid:facture_id>', methods=['GET', 'POST'])
 @prefix.route('/edit/', methods=['GET', 'POST'])
 @login_required
+@roles_required([('super_admin', 'facture')], ['edit'])
 def edit(facture_id=None):
 
     current_ref = Config_reference.objects().first()

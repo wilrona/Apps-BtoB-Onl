@@ -90,15 +90,13 @@ def verify_expired_company():
         if enterprise.dateExpired().dateFin == function.datetime_convert(current_date):
 
             enterprise.etat_souscription = 2
-            if enterprise.partenaire:
-                enterprise.etat_souscription = 1
-
-            no_part = True
-
             enterprise = enterprise.save()
 
+            no_part = True
             if enterprise.partenaire:
                 active_partenaire_facture(enterprise)
+                enterprise.etat_souscription = 1
+                enterprise = enterprise.save()
                 no_part = False
 
             if no_part:

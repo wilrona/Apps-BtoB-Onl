@@ -65,7 +65,7 @@
 
                                         {{ form.url_image.label(class_='uk-form-label uk-text-bold') }}
 
-                                        <div class="test-upload uk-placeholder uk-text-center">
+                                        <div class="test-upload uk-placeholder uk-text-center" style="background-color: #f2f2f2;">
                                             <br/>
                                             <img src="{% if form.url_image.data %}{{ url_for('categorie.download_file', filename=form.url_image.data) }}{% endif %}" id="image_upload" alt="" class="{% if not form.url_image.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
                                         </div>
@@ -75,7 +75,7 @@
 
                                         {{ form.icone.label(class_='uk-form-label uk-text-bold') }}
 
-                                        <div class="test-upload uk-placeholder uk-text-center">
+                                        <div class="test-upload uk-placeholder uk-text-center" style="background-color: #f2f2f2;">
                                             <br/>
                                             <img src="{% if form.icone.data %}{{ url_for('categorie.download_file', filename=form.icone.data) }}{% endif %}" id="image_upload_icone" alt="" class="{% if not form.icone.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block"/>
                                         </div>

@@ -8,7 +8,7 @@
     {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
     <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('client.edit', client_id=client_id, paged=request.args.get('paged'), news=request.args.get('news')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>
     {% endif %}
-    <a class="uk-button waves-effect uk-button-danger uk-button-small" {% if not request.args.get('news') %} href="{{ url_for('client.index', paged=request.args.get('paged')) }}" {% else %} href="{{ url_for('client.new', paged=request.args.get('paged')) }}" {% endif %}><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+    <a class="uk-button waves-effect uk-button-danger uk-button-small" {% if not request.args.get('news') %} href="{{ url_for('client.index', paged=request.args.get('paged')) }}" {% elif request.args.get('news') == "2" %}href="{{ url_for('abonnement.ici', paged=request.args.get('paged')) }}"{% else %} href="{{ url_for('client.new', paged=request.args.get('paged')) }}" {% endif %}><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
 {% endblock %}
 
 {% block layout_content %}

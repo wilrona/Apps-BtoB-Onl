@@ -48,8 +48,12 @@ def new():
 @prefix.route('/view/<objectid:client_id>')
 @login_required
 def view(client_id):
+
     if request.args.get('news'):
-        title_page = 'Nouveaux Client'
+        if request.args.get('news') == "2":
+            title_page = 'Client Abonnement ICI'
+        else:
+            title_page = 'Nouveaux Client'
     else:
         title_page = 'Clients'
 
@@ -65,8 +69,12 @@ def view(client_id):
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def edit(client_id=None):
+
     if request.args.get('news'):
-        title_page = 'Nouveaux Client'
+        if request.args.get('news') == "2":
+            title_page = 'Client Abonnement ICI'
+        else:
+            title_page = 'Nouveaux Client'
     else:
         title_page = 'Clients'
 

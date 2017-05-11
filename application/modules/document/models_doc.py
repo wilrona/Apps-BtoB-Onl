@@ -54,11 +54,10 @@ class Document(db.Document):
 
     def reference(self):
         current_ref = Config_reference.objects().first()
-
-        ref = current_ref.ref_devis+'/'+self.ref
         if not self.devisDoc:
             ref = current_ref.ref_fact+'/'+self.ref
-
+        else:
+            ref = current_ref.ref_devis+'/'+self.ref
         return ref
 
     def reglement_facture(self):
