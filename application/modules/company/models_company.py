@@ -21,6 +21,8 @@ class Company(db.Document):
     typEnt = db.StringField()
     facebook = db.StringField()
     twitter = db.StringField()
+    emailNotification = db.StringField()
+    senderNotification = db.StringField()
 
 
 class Config_reference(db.Document):

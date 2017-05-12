@@ -40,14 +40,14 @@ def view():
         company.facebook = form.facebook.data
         company.twitter = form.twitter.data
         company.quartier = form.quartier.data
+        company.emailNotification = form.emailNotification.data
+        company.senderNotification = form.senderNotification.data
         company.save()
-
 
         flash('Enregistrement reussie avec success', 'success')
         return redirect(url_for('company.view'))
 
     return render_template('company/view.html', **locals())
-
 
 
 prefix_param = Blueprint('parametrage', __name__)

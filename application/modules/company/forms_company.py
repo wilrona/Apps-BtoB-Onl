@@ -22,3 +22,5 @@ class FormCompany(wtf.Form):
     facebook = wtf.StringField(label='Lien facebook :', validators=[validators.Required(message='Champs Obligatoire')])
     twitter = wtf.StringField(label='Lien twitter :', validators=[validators.Required(message='Champs Obligatoire')])
     quartier = wtf.StringField(label='Quartier :', validators=[validators.Required(message='Champs Obligatoire')])
+    emailNotification = wtf.StringField(label='Email Notification :')
+    senderNotification = wtf.StringField(label='Sender Notification :')

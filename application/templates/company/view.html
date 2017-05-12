@@ -182,6 +182,26 @@
                             </div>
                         </div>
 
+                        <div class="uk-margin">
+                            {{ form.emailNotification.label(class_='uk-form-label') }}
+                            <div class="uk-form-controls">
+                                {{ form.emailNotification(class_='uk-input uk-form-small') }}
+                                {% for message in form.emailNotification.errors %}
+                                    <span class="uk-text-danger">{{ message }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="uk-margin">
+                            {{ form.senderNotification.label(class_='uk-form-label') }}
+                            <div class="uk-form-controls">
+                                {{ form.senderNotification(class_='uk-input uk-form-small') }}
+                                {% for message in form.senderNotification.errors %}
+                                    <span class="uk-text-danger">{{ message }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
                     </form>
 
 
