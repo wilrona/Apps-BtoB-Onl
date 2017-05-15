@@ -3,15 +3,13 @@
     <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
         <img src="{{ url_for('client.download_file', filename=saved_file.url) }}" alt="" class="uk-responsive-height uk-position-center">
     </div>
-    <div class="uk-card-body">
-        {{ saved_file.name() }}
-        {% if saved_file.type == 'image' %}
-            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
-        {% elif saved_file.type == 'video' %}
-            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
-        {% endif %}
-    </div>
+
+        <div class="uk-card-badge uk-label uk-label-success icon-une {% if not saved_file.une %} uk-hidden {% endif %}"> <i class="fa fa-star-o"></i></div>
+
     <div class="uk-card-footer uk-text-right">
+
+            <a class="uk-button waves-effect uk-button-default uk-button-small icon-not-une {% if saved_file.une %} uk-hidden {% endif %}" href="{{ url_for('client.une_image', image_id=saved_file.id) }}"><i class="fa fa-star-o"></i></a>
+
         <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ saved_file.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
         <div id="modal-{{ saved_file.id }}" uk-modal="center: true">
             <div class="uk-modal-dialog">

@@ -50,6 +50,8 @@ class Compagnie(db.Document):
     idagent = db.ReferenceField('Users')
     idcontact = db.ListField(db.ReferenceField('Users'))
 
+    slide = db.BooleanField(default=False)
+
     def save(self, *args, **kwargs):
         if not self.createDate:
             self.createDate = datetime.datetime.now()
@@ -132,7 +134,7 @@ class Categorie(db.Document):
 class Claim(db.Document):
     idcompagnie = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
-    statut = db.IntField()
+    statut = db.IntField() # 0 non valid; 1 valid
     dateclaim = db.DateTimeField()
     updateDate = db.DateTimeField()
 
@@ -145,7 +147,7 @@ class Relation(db.Document):
     idagence = db.ReferenceField('Compagnie')
     idparent = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
-    statut = db.IntField()
+    statut = db.IntField() # 0 non valid; 1 valid
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
 

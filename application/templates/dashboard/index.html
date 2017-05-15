@@ -83,6 +83,58 @@
             </div>
         </div>
      </div>
+        <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+            <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-clone"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ count_fact }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">Facture</div>
+
+                </div>
+            </div>
+        </div>
+        <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+            <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-credit-card"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ CA_real }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">CA Réalisé</div>
+
+                </div>
+            </div>
+        </div>
+        {% if current_user.has_roles([('super_admin', 'claim')]) %}
+        <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+            <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-credit-card"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ claim_count }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">Reclamation</div>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if current_user.has_roles([('super_admin', 'relation')]) %}
+            <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+                <div class="info-box">
+                    <div class="icon">
+                        <i class="fa fa-credit-card"></i>
+                    </div>
+                    <div class="content">
+                        <div class="number count-to" data-from="0" data-to="{{ relation_count }}" data-speed="1000" data-fresh-interval="20"></div>
+                        <div class="text">Dem. Relation</div>
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
     </div>
     <div class="uk-grid-small" uk-grid uk-grid-margin>
@@ -94,8 +146,8 @@
                     <ul class="uk-subnav uk-subnav-pill" uk-switcher="connect: #switcher;">
                         <li><a href="#">Activités suivantes</a></li>
                         <li><a href="#">Activités en retard</a></li>
-                        <li><a href="#">Liste des opportunités</a></li>
-                        <li><a href="#">Liste des devis</a></li>
+                        <li><a href="#">Opportunités en cours</a></li>
+                        <li><a href="#">Devis en cours</a></li>
                     </ul>
                  </div>
 
@@ -200,7 +252,7 @@
                                 <thead>
                                 <tr>
                                     <th width="15%">N° de devis</th>
-                                    <th width="15%">Date de la commande</th>
+                                    <th width="15%">Date du devis</th>
                                     <th width="20%">Clients</th>
                                     <th width="20%">Vendeur</th>
                                     <th width="15%">Total</th>
@@ -215,12 +267,12 @@
                                     <td>{{ data.createDate|format_date('%d/%m/%Y') }}</td>
                                     <td>{{ data.client_id.name }}</td>
                                     <td>{{ data.vendeur_id.full_name() }}</td>
-                                    <td>{{ data.montant }}</td>
+                                    <td>{{ data.montant|format_price() }}</td>
                                     <td>
                                         {% if data.status == 0 %} Nouveau {% endif %}
                                         {% if data.status == 1 %} Envoyée {% endif %}
-                                        {% if data.status == 2 %} Bon de commande {% endif %}
-                                        {% if data.status == 3 %} Annulé {% endif %}
+{#                                        {% if data.status == 2 %} Bon de commande {% endif %}#}
+{#                                        {% if data.status == 3 %} Annulé {% endif %}#}
                                     </td>
                                   </tr>
                                 {% endfor %}

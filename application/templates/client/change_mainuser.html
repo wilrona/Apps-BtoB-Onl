@@ -1,0 +1,178 @@
+<button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Liste des administrateurs</h2>
+</div>
+<div class="uk-padding-small">
+
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-1">
+            <div class="uk-margin uk-float-right">
+                <div class="uk-inline">
+                    <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+                    <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox_modal">
+                </div>
+            </div>
+        </div>
+        <div class="uk-width-1-1">
+            <div class="uk-overflow-auto">
+                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable_modal">
+                    <thead>
+                    <tr>
+                        <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                        <th width="50%">Nom</th>
+                        <th width="25%">Courriel</th>
+                        <th width="25%">Telephone</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in client.iduser %}
+                        {% if user.id != client.mainuser.id %}
+                            <tr>
+                                <td><input type="checkbox" value="{{ user.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                <td>{{ user.last_name }} {{ user.first_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.phone }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="uk-modal-footer">
+        <div class="uk-margin uk-float-right">
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-danger uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small uk-modal-close"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-success uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small" id="submit_modal"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Valider</a>
+
+
+        </div>
+    </div>
+
+</div>
+<script>
+
+
+
+    $(".selected").select2({width:'100%'});
+    var table_modal = $('#dataTable_modal').DataTable({
+        'language':{
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+            "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        },
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
+        "info": false,
+        //"searching": false,
+        "iDisplayLength": 25,
+        //dom: 'f',
+        "bLengthChange" : true
+    });
+
+    $('#dataTable_modal').on('click', '.uk-checkbox-all', function(){
+
+        var rows = table_modal.rows({ 'search': 'applied' }).nodes();
+
+
+        var $check = $('input.uk-checkbox-item', rows).prop('checked', this.checked);
+
+        var $parent = $check.parent().parent();
+        if($check.is(':checked')){
+            $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
+        }else{
+            $parent.removeClass('uk-background-primary').attr({'style':''});
+        }
+
+    });
+
+    $('body #dataTable_modal').on('click', 'tbody .uk-checkbox-item', function(e){
+        var $check = $(this);
+        var $parent = $check.parent().parent();
+        if(!$check.is(':checked')){
+            $parent.removeClass('uk-background-primary').attr({'style':''});
+        }else{
+            $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
+        }
+
+    });
+
+
+    $('#dataTable_modal tbody').on('change', 'input.uk-checkbox-item', function(){
+        // If checkbox is not checked
+        var rows = table_modal.rows({ 'search': 'applied' }).nodes();
+        var el = $('input.uk-checkbox-all').get(0);
+
+        if(!this.checked){
+            // If "Select all" control is checked and has 'indeterminate' property
+            if(el && el.checked){
+                // Set visual state of "Select all" control
+                // as 'indeterminate'
+                el.checked = false;
+
+                //el.indeterminate = true;
+            }
+
+            count = 0;
+            $('input.uk-checkbox-item').each(function(){
+                if($(this).is(':checked')){
+                    count++;
+                }
+            });
+        }else{
+            count = 0;
+            $('input.uk-checkbox-item').each(function(){
+                if($(this).is(':checked')){
+                    count++;
+                }
+            });
+            if (rows.length == count){
+                el.checked = true;
+            }
+        }
+    });
+
+
+    $('#submit_modal').on('click', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ url_for('client.change_mainuser', client_id=client_id) }}",
+            data: table_modal.$('input.uk-checkbox-item').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#modal-container .uk-body-custom').html(data);
+            }
+        });
+
+    });
+
+
+    $('#searchbox_modal').on('keyup', function(){
+        table_modal.search($(this).val()).draw() ;
+    });
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('client.edit', client_id=client_id) }}").delay();
+    {% endif %}
+</script>

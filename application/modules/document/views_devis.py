@@ -222,7 +222,8 @@ def edit(devis_id=None):
 
                 # Sauvegarde du contact dans l'entreprise en cours.
                 contact_compagnie = data.client_id.idcontact
-                if contact not in contact_compagnie:
+                user_compagnie = data.client_id.iduser
+                if contact not in contact_compagnie and contact not in user_compagnie:
                     cli = Compagnie.objects.get(id=data.client_id.id)
                     cli.idcontact.append(contact)
                     cli.save()

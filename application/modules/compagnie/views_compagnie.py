@@ -275,11 +275,18 @@ def uploader(client_id):
             os.rename(source, destination)
 
             url_save = data.imagedir+"/"+filename
+
+            nbr_img_une = Media.objects(Q(type='image') & Q(idcompagnie=data.id) & Q(une=True)).count()
+
             media = Media()
             media.url = url_save
             media.idcompagnie = data
             media.type = 'image'
-            media.une = False
+
+            if not nbr_img_une:
+                media.une = True
+            else:
+                media.une = False
 
             saved_file = media.save()
 
@@ -289,14 +296,49 @@ def uploader(client_id):
 @prefix.route('/deleted/image/<objectid:image_id>', methods=['GET'])
 def delete_image(image_id):
 
+    media = Media.objects.get(id=image_id)
+
+    companie_id = media.idcompagnie.id
+    une = media.une
+
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], media.url))
+    media.delete()
+
+    new_une = ""
+    if une:
+        reste_image = Media.objects(Q(type='image') & Q(idcompagnie=companie_id))
+        if reste_image.count():
+            reste_image = reste_image.first()
+            reste_image.une = True
+            reste_image = reste_image.save()
+            new_une = reste_image.id
+
+    data = json.dumps({
+        "image_id": str(image_id),
+        "image_news_une": str(new_une)
+    })
+    return data
+
+
+@prefix.route('/une/image/<objectid:image_id>', methods=['GET'])
+def une_image(image_id):
 
     media = Media.objects.get(id=image_id)
 
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], media.url))
+    reste_image = Media.objects(Q(type='image') & Q(idcompagnie=media.idcompagnie.id) & Q(une=True))
+    prev_une = ""
+    if reste_image.count():
+        reste_image = reste_image.first()
+        reste_image.une = False
+        reste_image = reste_image.save()
+        prev_une = reste_image.id
 
-    media.delete()
+    media.une = True
+    media.save()
+
     data = json.dumps({
-        "image_id": str(image_id)
+        "image_id": str(image_id),
+        "image_prev_act": str(prev_une)
     })
     return data
 
@@ -652,3 +694,103 @@ def all_activated():
             count += 1
 
     return str(count)
+
+
+@prefix.route('/contact/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
+def contact_to_admin(client_id):
+
+    client = Compagnie.objects.get(id=client_id)
+
+    success = False
+    if request.method == 'POST':
+
+        count = 0
+        for item in request.form.getlist('item_id'):
+
+            data = Users.objects.get(id=item)
+
+            client.iduser.append(data)
+
+            index = client.idcontact.index(data)
+
+            client.idcontact.pop(index)
+
+            if not client.mainuser:
+                client.mainuser = data
+
+            client.save()
+
+            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
+            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
+            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/contact_to_admin.html', **locals())
+
+
+@prefix.route('/add/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
+def add_admin(client_id):
+
+    datas = Users.objects(user=0)
+
+    success = False
+    if request.method == 'POST':
+
+        client = Compagnie.objects.get(id=client_id)
+
+        count = 0
+        for item in request.form.getlist('item_id'):
+
+            data = Users.objects.get(id=item)
+
+            if data not in client.iduser:
+                client.iduser.append(data)
+
+            if data in client.idcontact:
+                index = client.idcontact.index(data)
+
+                client.idcontact.pop(index)
+
+            if not client.mainuser:
+                client.mainuser = data
+
+            client.save()
+
+            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
+            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
+            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/add_admin.html', **locals())
+
+
+@prefix.route('/change/maineuser/<objectid:client_id>', methods=['GET', 'POST'])
+def change_mainuser(client_id):
+
+    client = Compagnie.objects.get(id=client_id)
+
+    success = False
+    if request.method == 'POST':
+
+        count = 0
+        for item in request.form.getlist('item_id'):
+
+            data = Users.objects.get(id=item)
+
+            if not client.mainuser:
+                client.mainuser = data
+
+            client.save()
+
+            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
+            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
+            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/change_mainuser.html', **locals())

@@ -303,14 +303,12 @@
                                                     <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
                                                         <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
                                                     </div>
-                                                    <div class="uk-card-body">
-                                                        {% if image.type == 'image' %}
-                                                            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
-                                                        {% elif image.type == 'video' %}
-                                                            <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
-                                                        {% endif %}
-                                                    </div>
+
+                                                    <div class="uk-card-badge uk-label uk-label-warning icon-une {% if not image.une %} uk-hidden {% endif %}"> <i class="fa fa-star"></i></div>
+
                                                     <div class="uk-card-footer uk-text-right">
+
+
                                                         <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ image.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
                                                         <div id="modal-{{ image.id }}" uk-modal="center: true">
                                                             <div class="uk-modal-dialog">
@@ -318,7 +316,6 @@
                                                                 <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </div>

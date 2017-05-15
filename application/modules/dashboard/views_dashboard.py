@@ -4,7 +4,7 @@ __author__ = 'User'
 from ...modules import *
 from ..opportunite.models_opportunite import Opportunite, Suivie
 from ..document.models_doc import Document
-from ..compagnie.models_compagnie import Compagnie
+from ..compagnie.models_compagnie import Compagnie, Claim, Relation
 from ..company.models_company import Config_reference
 
 
@@ -43,14 +43,30 @@ def index():
 
     if current_user.has_roles([('super_admin', 'devis')]):
         count_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=3)).count()
-        list_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=3)).order_by('-createDate')
+        list_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=2)).order_by('-createDate')
+        ca_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=3)).order_by('-createDate')
     else:
         count_devis = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=3)).count()
-        list_devis = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=3)).order_by('-createDate')
+
+        list_devis = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=2)).order_by('-createDate')
+        ca_devis = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=3)).order_by('-createDate')
+
+    # Compte le nombre de facture
+    if current_user.has_roles([('super_admin', 'facture')]):
+        count_fact = Document.objects(Q(devisDoc=False) & Q(status=2)).count()
+        list_fact = Document.objects(Q(devisDoc=False) & Q(status=2))
+    else:
+        count_fact = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status=2)).count()
+        list_fact = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status=2))
+
+    # Calcul du chiffre d'affaire realise en fonction des factures payees de l'utilisateur
+    CA_real = 0
+    for fact in list_fact:
+        CA_real += fact.montant_reglement()
 
     # Calcul du chiffre d'affaire previsionnel en fonction des devis de l'utilisateur
     CA_prev = 0
-    for devis in list_devis:
+    for devis in ca_devis:
        CA_prev += devis.montant
 
     # liste des suivies du jours en cours
@@ -63,8 +79,18 @@ def index():
 
     # liste des opportunites
     if current_user.has_roles([('super_admin', 'opportunite')]):
-        list_opportunite = Opportunite.objects().order_by('-createDate')
+        list_opportunite = Opportunite.objects(etape__ne="win").order_by('-createDate')
     else:
-        list_opportunite = Opportunite.objects(vendeur_id=current_user.id).order_by('-createDate')
+        list_opportunite = Opportunite.objects(Q(vendeur_id=current_user.id) & Q(etape__ne="win")).order_by('-createDate')
+
+    claim_count = 0
+    if current_user.has_roles([('super_admin', 'claim')]):
+        claim_count = Claim.objects(Q(statut=1) | Q(statut=0)).count()
+
+    relation_count = 0
+    if current_user.has_roles([('super_admin', 'relation')]):
+        relation_count = Relation.objects(Q(statut=1) | Q(statut=0)).count()
+
+
 
     return render_template('dashboard/index.html', **locals())

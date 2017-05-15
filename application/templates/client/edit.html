@@ -316,17 +316,18 @@
                                         <div class="uk-width-1-4@l uk-width-1-1@s" id="plupload">
                                             <div class="uk-card uk-padding-remove uk-placeholder" id="droparea">
 
-                                                <div class="uk-card-media-top uk-height-small uk-height-max-small uk-padding uk-text-center uk-text-lead">
+                                                <div class="uk-card-media-top uk-height-small uk-height-max-small uk-padding-small uk-text-center uk-text-lead">
+                                                    <span class="uk-display-block">
+                                                        Deplacer les images ici
+                                                    </span>
 
-                                                    Deplacer les images ici
-
-                                                    <div>
+                                                    <span class="uk-display-block">
                                                         <i class="fa fa-picture-o"></i>
-                                                    </div>
+                                                    </span>
+                                                    <span class="uk-display-block">
+                                                    ou
+                                                    </span>
 
-                                                </div>
-                                                <div class="uk-card-body uk-text-center">
-                                                        ou
                                                 </div>
                                                 <div class="uk-card-footer uk-text-center">
                                                     <a class="uk-button waves-effect uk-button-default uk-button-small uk-text-lowercase" href="" id="browse">Ajouter image</a>
@@ -336,33 +337,95 @@
 
                                         {% for image in data.media() %}
 
-                                        <div class="uk-width-1-4@l uk-width-1-1@s">
-                                            <div class="uk-card uk-card-default uk-card-small" id="{{ image.id }}">
+                                            <div class="uk-width-1-4@l uk-width-1-1@s">
+                                                <div class="uk-card uk-card-default uk-card-small" id="{{ image.id }}">
 
-                                                <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
-                                                    <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
-                                                </div>
-                                                <div class="uk-card-body">
-                                                    {% if image.type == 'image' %}
-                                                    <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-picture-o"></i></div>
-                                                    {% elif image.type == 'video' %}
-                                                    <div class="uk-card-badge uk-label uk-label-danger"> <i class="fa fa-file-video-o"></i></div>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="uk-card-footer uk-text-right">
-                                                    <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ image.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
-                                                    <div id="modal-{{ image.id }}" uk-modal="center: true">
-                                                        <div class="uk-modal-dialog">
-                                                            <button class="uk-modal-close-outside" type="button" uk-close></button>
-                                                            <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
-                                                        </div>
+                                                    <div class="uk-card-media-top uk-cover-container uk-height-small uk-height-max-small">
+                                                        <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-responsive-height uk-position-center">
                                                     </div>
-                                                    <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase delete_image" href="{{ url_for('client.delete_image', image_id=image.id) }}" >Suppr.</a>
+
+                                                        <div class="uk-card-badge uk-label uk-label-warning icon-une {% if not image.une %} uk-hidden {% endif %}"> <i class="fa fa-star"></i></div>
+
+                                                    <div class="uk-card-footer uk-text-right">
+
+                                                            <a class="uk-button waves-effect uk-button-default uk-button-small icon-not-une {% if image.une %} uk-hidden {% endif %}" href="{{ url_for('client.une_image', image_id=image.id) }}"><i class="fa fa-star-o"></i></a>
+
+                                                        <a class="uk-button waves-effect uk-button-default uk-button-small " href="#modal-{{ image.id }}" uk-toggle ><i class="fa fa-search-plus"></i></a>
+                                                        <div id="modal-{{ image.id }}" uk-modal="center: true">
+                                                            <div class="uk-modal-dialog">
+                                                                <button class="uk-modal-close-outside" type="button" uk-close></button>
+                                                                <img src="{{ url_for('client.download_file', filename=image.url) }}" alt="" class="uk-align-center uk-responsive-height uk-margin">
+                                                            </div>
+                                                        </div>
+                                                        <a class="uk-button waves-effect uk-button-link uk-button-small uk-text-small uk-text-lowercase delete_image" href="{{ url_for('client.delete_image', image_id=image.id) }}" >Suppr.</a>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
                                         {% endfor %}
 
+                                    </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Administrateur sur ICI</span></h2>
+
+                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small modal-container" href="{{ url_for('client.add_admin', client_id=client_id) }}" uk-toggle="target:#modal-container; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Administrateur</a>
+                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small modal-container" href="" uk-toggle="target:#modal-container; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-edit"></i></span> Modifier main user</a>
+                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small modal-container" href="" uk-toggle="target:#modal-container; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-minus"></i></span> Enveler comme admin</a><br><br>
+
+                                    <div class="uk-overflow-auto">
+                                        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                            <thead>
+                                            <tr>
+                                                <th width="30%">Nom</th>
+                                                <th width="25%">Courriel</th>
+                                                <th width="25%">Téléphone</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for user in data.iduser %}
+                                                <tr data-link="{{ url_for('user_param.view', user_id=user.id, internaute="1") }}">
+                                                    <td>{{ user.last_name }} {{ user.first_name }} {% if user.id  == data.mainuser.id %}<span class="uk-float-right uk-label uk-label-success uk-text-lowercase ">Main user</span>{% endif %}</td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td>{{ user.phone }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Contact CRM</span></h2>
+                                {% if data.idcontact %}
+                                    <a class="uk-button waves-effect waves-effect uk-button-success uk-button-small modal-container" href="{{ url_for('client.contact_to_admin', client_id=client_id) }}" uk-toggle="target:#modal-container; bg-close:false; stack:true;"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Contact comme administrateur</a><br>
+                                {% endif %}
+
+                                    <div class="uk-overflow-auto">
+                                        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                            <thead>
+                                            <tr>
+                                                <th width="30%">Nom</th>
+                                                <th width="25%">Courriel</th>
+                                                <th width="25%">Telephone</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for user in data.idcontact %}
+                                                <tr data-link="{{ url_for('user_param.view', user_id=user.id, internaute="1") }}">
+                                                    <td>{{ user.last_name }} {{ user.first_name }}</td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td>{{ user.phone }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+
+                                        </table>
                                     </div>
 
                                 </div>
@@ -429,7 +492,6 @@
                 reader.onload = function (e) {
                     $('#image_upload').attr('src', e.target.result).removeClass('uk-hidden');
                     $('#image_upload_input').val('1');
-
                 };
 
                 reader.readAsDataURL(input.files[0]);
@@ -498,23 +560,47 @@
             $(this).addClass('hover');
         }).on('dragleave', function (e) {
             $(this).removeClass('hover');
-        })
+        });
 
         $('body').on('click', '.delete_image', function(e){
             e.preventDefault();
             url = $(this).attr('href');
             if(confirm('Voulez vous supprimer cette image ?')){
-            $.ajax({
+                $.ajax({
                     method: "GET",
                     url: url
                 })
                 .done(function( data ) {
                     data = $.parseJSON(data);
                     $("#"+data['image_id']+"").parent().remove();
+                    if (data['image_news_une'] != ""){
+                        $("#"+data['image_news_une']+"").find('.icon-une').removeClass('uk-hidden');
+                    }
                     return false;
                 });
             }
-        })
+        });
+
+
+        $('body').on('click', '.icon-not-une', function(e){
+            e.preventDefault();
+            $this = $(this);
+            url = $(this).attr('href');
+            if(confirm('Voulez vous mettre cette image a la une ?')){
+                $.ajax({
+                    method: "GET",
+                    url: url
+                })
+                    .done(function( data ) {
+                        data = $.parseJSON(data);
+                        $('.icon-une').addClass('uk-hidden');
+                        $('.icon-not-une').addClass('uk-hidden');
+                        $("#"+data['image_id']+"").find('.icon-une').removeClass('uk-hidden');
+                        $("#"+data['image_prev_act']+"").find('.icon-not-une').removeClass('uk-hidden');
+                        return false;
+                    });
+            }
+        });
 
 
 
