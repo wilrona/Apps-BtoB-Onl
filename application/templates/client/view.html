@@ -23,7 +23,13 @@
                                     <a href="#" class="uk-button waves-effect {% if data.activated %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small uk-display-inline-block">
                                         <span>{% if data.activated %} Activé {% else %} Desactivé {% endif %}</span>
                                     </a>
+                                    {% if not data.verify %}
+                                        <a href="#" class="uk-button uk-button-danger-active waves-effect uk-button-small">
+                                            <span>Refusé la demande</span>
+                                        </a>
+                                    {% endif %}
                                 </div>
+
 
                                 <div class="uk-clearfix"></div>
                             {% endif %}
@@ -322,6 +328,63 @@
                                         {% endfor %}
 
                                     </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Administrateur sur ICI</span></h2>
+
+                                    <div class="uk-overflow-auto">
+                                        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                            <thead>
+                                            <tr>
+                                                <th width="30%">Nom</th>
+                                                <th width="25%">Courriel</th>
+                                                <th width="25%">Téléphone</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for user in data.iduser %}
+                                                <tr data-link="{{ url_for('user_param.view', user_id=user.id, internaute="1") }}">
+                                                    <td>{{ user.last_name }} {{ user.first_name }} {% if user.id  == data.mainuser.id %}<span class="uk-float-right uk-label uk-label-success uk-text-lowercase ">Main user</span>{% endif %}</td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td>{{ user.phone }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
+                                    <br>
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Contact CRM</span></h2>
+
+                                    <div class="uk-overflow-auto">
+                                        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                            <thead>
+                                            <tr>
+                                                <th width="30%">Nom</th>
+                                                <th width="25%">Courriel</th>
+                                                <th width="25%">Telephone</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {% for user in data.idcontact %}
+                                                <tr data-link="{{ url_for('user_param.view', user_id=user.id, internaute="1") }}">
+                                                    <td>{{ user.last_name }} {{ user.first_name }}</td>
+                                                    <td>{{ user.email }}</td>
+                                                    <td>{{ user.phone }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+
 
                                 </div>
 

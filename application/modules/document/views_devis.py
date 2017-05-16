@@ -190,7 +190,7 @@ def edit(devis_id=None):
                     customer.email = form_client.email.data
                     customer.phone = form_client.phone.data
                     customer.activated = False
-                    customer.verify = False
+                    customer.verify = 0
                     customer.source = "devis"
 
                     current_client = customer.save()
@@ -453,14 +453,12 @@ def print_devis(devis_id):
     return response
 
 
-
 @prefix.route('/print2/<objectid:devis_id>', methods=['GET'])
 def print2_devis(devis_id):
 
-    CURRENT_FILE = os.path.abspath(__file__)
-    CURRENT_DIR = os.path.dirname(CURRENT_FILE)
-    PROJECT_DIR = os.path.dirname(CURRENT_DIR)
-    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+    PROJECT_DIR = app.config['FOLDER_APPS']
+
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
 
     image = PROJECT_DIR+'/static/images/logo.jpeg'
 
@@ -492,7 +490,9 @@ def print2_devis(devis_id):
             'header-right': '[page]'
 
 
-        })
+        },
+        configuration=config
+    )
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'

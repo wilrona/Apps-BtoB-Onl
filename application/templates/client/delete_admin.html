@@ -1,6 +1,6 @@
 <button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
 <div class="uk-modal-header">
-    <h2 class="uk-modal-title">Liste des administrateurs</h2>
+    <h2 class="uk-modal-title">Liste des administrateurs du client</h2>
 </div>
 <div class="uk-padding-small">
 
@@ -18,7 +18,7 @@
                 <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable_modal">
                     <thead>
                     <tr>
-                        <th class="no-sort" width="3%"></th>
+                        <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
                         <th width="50%">Nom</th>
                         <th width="25%">Courriel</th>
                         <th width="25%">Telephone</th>
@@ -90,78 +90,74 @@
         "bLengthChange" : true
     });
 
-{#    $('#dataTable_modal').on('click', '.uk-checkbox-all', function(){#}
-{##}
-{#        var rows = table_modal.rows({ 'search': 'applied' }).nodes();#}
-{##}
-{##}
-{#        var $check = $('input.uk-checkbox-item', rows).prop('checked', this.checked);#}
-{##}
-{#        var $parent = $check.parent().parent();#}
-{#        if($check.is(':checked')){#}
-{#            $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});#}
-{#        }else{#}
-{#            $parent.removeClass('uk-background-primary').attr({'style':''});#}
-{#        }#}
-{##}
-{#    });#}
+    $('#dataTable_modal').on('click', '.uk-checkbox-all', function(){
+
+        var rows = table_modal.rows({ 'search': 'applied' }).nodes();
+
+
+        var $check = $('input.uk-checkbox-item', rows).prop('checked', this.checked);
+
+        var $parent = $check.parent().parent();
+        if($check.is(':checked')){
+            $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
+        }else{
+            $parent.removeClass('uk-background-primary').attr({'style':''});
+        }
+
+    });
 
     $('body #dataTable_modal').on('click', 'tbody .uk-checkbox-item', function(e){
         var $check = $(this);
         var $parent = $check.parent().parent();
         if(!$check.is(':checked')){
             $parent.removeClass('uk-background-primary').attr({'style':''});
-            table_modal.$('td .uk-checkbox-item').attr("disabled", false);
         }else{
-            table_modal.$('tr.uk-background-primary').removeClass('uk-background-primary').attr({'style':''});
-            table_modal.$('td .uk-checkbox-item').attr("disabled", true);
             $parent.addClass('uk-background-primary').attr({'style':'color:#fff'});
-            $check.attr("disabled", false)
         }
 
     });
 
 
-{#    $('#dataTable_modal tbody').on('change', 'input.uk-checkbox-item', function(){#}
-{#        // If checkbox is not checked#}
-{#        var rows = table_modal.rows({ 'search': 'applied' }).nodes();#}
-{#        var el = $('input.uk-checkbox-all').get(0);#}
-{##}
-{#        if(!this.checked){#}
-{#            // If "Select all" control is checked and has 'indeterminate' property#}
-{#            if(el && el.checked){#}
-{#                // Set visual state of "Select all" control#}
-{#                // as 'indeterminate'#}
-{#                el.checked = false;#}
-{##}
-{#                //el.indeterminate = true;#}
-{#            }#}
-{##}
-{#            count = 0;#}
-{#            $('input.uk-checkbox-item').each(function(){#}
-{#                if($(this).is(':checked')){#}
-{#                    count++;#}
-{#                }#}
-{#            });#}
-{#        }else{#}
-{#            count = 0;#}
-{#            $('input.uk-checkbox-item').each(function(){#}
-{#                if($(this).is(':checked')){#}
-{#                    count++;#}
-{#                }#}
-{#            });#}
-{#            if (rows.length == count){#}
-{#                el.checked = true;#}
-{#            }#}
-{#        }#}
-{#    });#}
+    $('#dataTable_modal tbody').on('change', 'input.uk-checkbox-item', function(){
+        // If checkbox is not checked
+        var rows = table_modal.rows({ 'search': 'applied' }).nodes();
+        var el = $('input.uk-checkbox-all').get(0);
+
+        if(!this.checked){
+            // If "Select all" control is checked and has 'indeterminate' property
+            if(el && el.checked){
+                // Set visual state of "Select all" control
+                // as 'indeterminate'
+                el.checked = false;
+
+                //el.indeterminate = true;
+            }
+
+            count = 0;
+            $('input.uk-checkbox-item').each(function(){
+                if($(this).is(':checked')){
+                    count++;
+                }
+            });
+        }else{
+            count = 0;
+            $('input.uk-checkbox-item').each(function(){
+                if($(this).is(':checked')){
+                    count++;
+                }
+            });
+            if (rows.length == count){
+                el.checked = true;
+            }
+        }
+    });
 
 
     $('#submit_modal').on('click', function(e) {
         e.preventDefault();
 
         $.ajax({
-            url: "{{ url_for('client.change_mainuser', client_id=client_id) }}",
+            url: "{{ url_for('client.add_admin', client_id=client_id) }}",
             data: table_modal.$('input.uk-checkbox-item').serialize(),
             type: 'POST',
             success: function(data) {

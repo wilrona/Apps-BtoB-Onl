@@ -26,12 +26,14 @@
                     </thead>
                     <tbody>
                     {% for user in datas %}
+                        {% if user not in client.iduser %}
                         <tr>
                             <td><input type="checkbox" value="{{ user.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                             <td>{{ user.last_name }} {{ user.first_name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.phone }}</td>
                         </tr>
+                        {% endif %}
                     {% endfor %}
 
                     </tbody>

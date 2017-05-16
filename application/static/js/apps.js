@@ -67,6 +67,10 @@
             $('#modal-full .uk-body-custom').html('');
         });
 
+        $('#modal-container').on('hide', function () {
+            $('#modal-container .uk-body-custom').html('');
+        });
+
         $('[data-toggle="datepicker"]').datepicker({
             zIndex:2000,
             format: 'dd/mm/yyyy'

@@ -73,18 +73,18 @@ def accepte(claim_id=None):
         flash('Demande Accepte avec success', 'success')
         return redirect(url_for('claim.view', claim_id=claim_id))
     else:
-        data = []
+        datas = []
         element = []
         count = 0
         for item in request.form.getlist('item_id'):
 
-            item_found = Claim.objects().get(id=item)
+            data = Claim.objects().get(id=item)
 
-            item_found.statut = 0
+            data.statut = 0
 
-            compagnie = Compagnie.objects.get(id=item_found.idcompagnie.id)
+            compagnie = Compagnie.objects.get(id=data.idcompagnie.id)
 
-            user = Users.objects.get(id=item_found.iduser.id)
+            user = Users.objects.get(id=data.iduser.id)
 
             compagnie.mainuser = user
             compagnie.save()
@@ -92,15 +92,15 @@ def accepte(claim_id=None):
             html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
 
             msg = Message()
-            msg.recipients = [item_found.iduser.email]
+            msg.recipients = [data.iduser.email]
             msg.subject = 'Reponse a votre reclamation'
             msg.sender = ('ICI.CM service reclamation d\'entreprise', 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
 
-            element.append(str(item_found.id))
-            item_found.save()
+            element.append(str(data.id))
+            data.save()
             count += 1
 
         if count:
@@ -108,11 +108,11 @@ def accepte(claim_id=None):
             info['statut'] = 'OK'
             info['message'] = str(count)+' reclammation(s) ont ete valide avec success'
             info['element'] = element
-            data.append(info)
+            datas.append(info)
 
-        data = json.dumps(data)
+        datas = json.dumps(datas)
 
-        return data
+        return datas
 
 
 @prefix_claim.route('/refuser/<objectid:claim_id>')
@@ -141,27 +141,27 @@ def refuse(claim_id=None):
         flash('Demande Refuse avec success', 'success')
         return redirect(url_for('claim.view', claim_id=claim_id))
     else:
-        data = []
+        datas = []
         element = []
         count = 0
         for item in request.form.getlist('item_id'):
 
-            item_found = Claim.objects().get(id=item)
+            data = Claim.objects().get(id=item)
 
-            item_found.statut = 2
-            element.append(str(item_found.id))
+            data.statut = 2
+            element.append(str(data.id))
 
             html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
 
             msg = Message()
-            msg.recipients = [item_found.iduser.email]
+            msg.recipients = [data.iduser.email]
             msg.subject = 'Reponse a votre reclamation'
             msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
 
-            item_found.save()
+            data.save()
             count += 1
 
         if count:
@@ -169,8 +169,8 @@ def refuse(claim_id=None):
             info['statut'] = 'OK'
             info['message'] = str(count)+' reclamation(s) ont ete refuse avec success'
             info['element'] = element
-            data.append(info)
+            datas.append(info)
 
-        data = json.dumps(data)
+        datas = json.dumps(datas)
 
-        return data
+        return datas

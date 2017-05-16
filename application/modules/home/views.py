@@ -125,3 +125,10 @@ def setting():
             return redirect(url_for('home.index'))
 
         return render_template('company/edit_setting.html', **locals())
+
+
+@prefix.route('/uploads/<path:filename>')
+def download_file(filename):
+    link = app.config['STATIC_APPS']+'/images/'
+    return send_from_directory(link,
+                               filename, as_attachment=True)

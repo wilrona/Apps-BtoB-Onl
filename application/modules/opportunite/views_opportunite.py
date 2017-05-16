@@ -218,7 +218,7 @@ def edit(opportunite_id=None):
                 customer.email = form_client.email.data
                 customer.phone = form_client.phone.data
                 customer.activated = False
-                customer.verify = False
+                customer.verify = 0
                 customer.source = "opportunite"
 
                 customer = customer.save()

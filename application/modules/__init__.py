@@ -172,6 +172,7 @@ global_role = [
          {'titre': 'Traitement des clients ', 'valeur': 'client', 'action': 2},
          {'titre': 'Definir des clients partenaires ', 'valeur': 'client_partenaire', 'action': 0},
          {'titre': 'Definir des clients institutions ', 'valeur': 'client_institution', 'action': 0},
+         {'titre': 'Gestion du slide ', 'valeur': 'client_slide', 'action': 0},
          {'titre': 'Traitement des devis ', 'valeur': 'devis', 'action': 2},
          {'titre': 'Traitement des commande ', 'valeur': 'commande', 'action': 1},
          {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2},

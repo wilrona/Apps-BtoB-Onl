@@ -39,7 +39,7 @@ def index():
         past_activite += 1
 
     # Compte le nombre de client
-    count_client = Compagnie.objects(verify=True).count()
+    count_client = Compagnie.objects(verify=1).count()
 
     if current_user.has_roles([('super_admin', 'devis')]):
         count_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=3)).count()

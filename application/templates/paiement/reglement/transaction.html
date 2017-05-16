@@ -28,7 +28,6 @@
                             <th width="">Client</th>
                             <th width="">Contact</th>
                             <th width="15%">Montant</th>
-                            <th width="10%">Status</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -40,9 +39,6 @@
                                 <td>{{ data.iddocument.client_id.name }}</td>
                                 <td>{{ data.iduser_paid.full_name() }}</td>
                                 <td>{{ data.montant|format_price() }} <small class="uk-float-right uk-label uk-label-success">{{ (data.reste())|format_price() }}</small></td>
-                                <td>
-
-                                </td>
 
 
                             </tr>

@@ -22,7 +22,9 @@
                     <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
                     {% endif %}
                     <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.etat_activated') }}" id="activated" {% endif %}>Activer</a></li>
+                    {% if not news %}
                     <li><a {% if not current_user.has_roles([('super_admin', 'client')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('client.etat_unactivated') }}" id="unactivated" {% endif %}>Désactiver</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -31,10 +33,13 @@
 {% block  button %}
     {% if news != '1' %}
         {% if current_user.has_roles([('super_admin', 'client_partenaire')]) %}
-            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir un partenaire</a>
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Partenaire</a>
         {% endif %}
         {% if current_user.has_roles([('super_admin', 'client_institution')]) %}
-            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Définir une institution</a>
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Institution</a>
+        {% endif %}
+        {% if current_user.has_roles([('super_admin', 'client_slide')]) %}
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.add_slide') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Slide</a>
         {% endif %}
     {% endif %}
 {% endblock %}

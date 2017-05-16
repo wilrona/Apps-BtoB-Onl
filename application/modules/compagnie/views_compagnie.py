@@ -29,7 +29,7 @@ def index():
             newer.partenaire = False
             newer.save()
 
-    datas = Compagnie.objects(verify=True)
+    datas = Compagnie.objects(verify=1)
 
     return render_template('client/index.html', **locals())
 
@@ -40,7 +40,7 @@ def new():
     title_page = 'Nouveaux Clients'
 
     news = '1'
-    datas = Compagnie.objects(verify=False)
+    datas = Compagnie.objects(verify=0)
 
     return render_template('client/index.html', **locals())
 
@@ -143,7 +143,7 @@ def edit(client_id=None):
 
         if not client_id:
             data.source = "creation CRM"
-            data.verify = False
+            data.verify = 0
             data.activated = False
 
         old_categorie = data.idcategorie
@@ -454,7 +454,7 @@ def etat_activated():
         if not item_found.activated:
             item_found.activated = True
             if not item_found.verify:
-                item_found.verify = True
+                item_found.verify = 1
             element.append(str(item_found.id))
             item_found.save()
             count += 1
@@ -519,12 +519,45 @@ def etat(client_id):
     else:
         client.activated = True
         if not client.verify:
-            client.verify = True
+            client.verify = 1
 
     client.save()
 
     flash('Les modifications de l\'etat du client ont ete effectue', 'success')
     return redirect(url_for('client.view', client_id=client_id, news=request.args.get('news')))
+
+@prefix.route('/refuse/<objectid:client_id>', methods=['GET', 'POST'])
+def refuse_client(client_id):
+
+    client = Compagnie.objects.get(id=client_id)
+
+    success = False
+    if request.method == 'POST':
+
+        count = 0
+        for item in request.form.getlist('item_id'):
+
+            data = Users.objects.get(id=item)
+
+            client.iduser.append(data)
+
+            index = client.idcontact.index(data)
+
+            client.idcontact.pop(index)
+
+            if not client.mainuser:
+                client.mainuser = data
+
+            client.save()
+
+            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
+            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
+            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/raison_refus.html', **locals())
 
 
 # @prefix.route('/find/customer/<objectid:customer_id>', methods=['GET','POST'])
@@ -600,10 +633,10 @@ def edit_special():
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
-        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire=0) | Q(partenaire=1) & Q(verify=True) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire=0) | Q(partenaire=1) & Q(verify=1) & Q(activated=True))
         title_page += '- Partenaires'
     else:
-        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire__gte=0) & Q(verify=True) & Q(activated=True))
+        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire__gte=0) & Q(verify=1) & Q(activated=True))
         title_page += '- Institutions'
 
     if request.method == 'POST':
@@ -640,6 +673,72 @@ def edit_special():
         return datas
 
     return render_template('client/edit_exist.html', **locals())
+
+
+@prefix.route('/add/slide', methods=['GET', 'POST'])
+@login_required
+@roles_required([('super_admin', 'client')], ['edit'])
+def add_slide():
+    title_page = 'Clients'
+
+    datas = Compagnie.objects(Q(verify=1) & Q(activated=True))
+
+    if request.method == 'POST':
+
+        if request.form.getlist('item_id'):
+            for id_compagnie in request.form.getlist('item_id'):
+                current = Compagnie.objects.get(id=id_compagnie)
+                current.slide = True
+                current.save()
+
+            flash('Entreprise ajoute sur le slide avec success', 'success')
+
+            datas = json.dumps({
+                'statut': 'OK'
+            })
+
+        else:
+
+            datas = json.dumps({
+                'statut': 'NOK'
+            })
+
+        return datas
+
+    return render_template('client/add_slide.html', **locals())
+
+
+@prefix.route('/remove/slide', methods=['GET', 'POST'])
+@login_required
+@roles_required([('super_admin', 'client')], ['edit'])
+def remove_slide():
+    title_page = 'Clients'
+
+    datas = Compagnie.objects(Q(verify=1) & Q(activated=True))
+
+    if request.method == 'POST':
+
+        if request.form.getlist('item_id'):
+            for id_compagnie in request.form.getlist('item_id'):
+                current = Compagnie.objects.get(id=id_compagnie)
+                current.slide = False
+                current.save()
+
+            flash('Entreprise enleve du slide avec success', 'success')
+
+            datas = json.dumps({
+                'statut': 'OK'
+            })
+
+        else:
+
+            datas = json.dumps({
+                'statut': 'NOK'
+            })
+
+        return datas
+
+    return render_template('client/add_slide.html', **locals())
 
 
 @prefix.route('/remove/special', methods=['POST'])
@@ -684,14 +783,16 @@ def remove_special():
 
 @prefix.route('/all_activated')
 def all_activated():
-    compagnie = Compagnie.objects(uploaded=True)
+    compagnie = Compagnie.objects()
 
     count = 0
     for com in compagnie:
-        if not com.partenaire:
-            com.partenaire = int(0)
-            com.save()
-            count += 1
+        if com.verify:
+            com.verify = True
+        else:
+            com.verify = False
+        com.save()
+        count += 1
 
     return str(count)
 
@@ -735,10 +836,10 @@ def add_admin(client_id):
 
     datas = Users.objects(user=0)
 
+    client = Compagnie.objects.get(id=client_id)
+
     success = False
     if request.method == 'POST':
-
-        client = Compagnie.objects.get(id=client_id)
 
         count = 0
         for item in request.form.getlist('item_id'):
@@ -768,8 +869,8 @@ def add_admin(client_id):
     return render_template('client/add_admin.html', **locals())
 
 
-@prefix.route('/change/maineuser/<objectid:client_id>', methods=['GET', 'POST'])
-def change_mainuser(client_id):
+@prefix.route('/delete/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
+def delete_admin(client_id):
 
     client = Compagnie.objects.get(id=client_id)
 
@@ -781,14 +882,43 @@ def change_mainuser(client_id):
 
             data = Users.objects.get(id=item)
 
-            if not client.mainuser:
-                client.mainuser = data
+            if data in client.iduser:
+                index = client.iduser.index(data)
+
+                client.iduser.pop(index)
+
+            if data not in client.idcontact:
+                client.idcontact.append(data)
 
             client.save()
 
-            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
-            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
-            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+            # Envoyer un email au main user que certain utilisateur ont ete enleve comme administrateur
+            # Envoyer un email au utilisateur qu'ils ont ete enleve comme administrateur
+
+        flash('Enregistement effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/delete_admin.html', **locals())
+
+
+@prefix.route('/change/maineuser/<objectid:client_id>', methods=['GET', 'POST'])
+def change_mainuser(client_id):
+
+    client = Compagnie.objects.get(id=client_id)
+
+    success = False
+    if request.method == 'POST' and request.form['item_id']:
+
+        item = request.form['item_id']
+        data = Users.objects.get(id=item)
+
+        if not client.mainuser:
+            client.mainuser = data
+
+        client.save()
+
+        # Envoyer un emails au nouveau main user que c'est lui maintenant
+        # Envoyer un email a l'ancien main user qu'il ne l'est plus
 
         flash('Enregistement effectue avec succes', 'success')
         success = True

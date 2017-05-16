@@ -1,0 +1,46 @@
+<button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Raison du refus de la validation de l'entreprise</h2>
+</div>
+<div class="uk-padding-small">
+
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-1">
+            <div class="uk-margin">
+                <div class="uk-inline">
+                    <form action="" id="send_raison">
+                        <textarea name="raison" id="" cols="30" rows="10" class="uk-textarea uk-width-xlarge" placeholder="Saisir votre raison.."></textarea>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="uk-modal-footer">
+        <div class="uk-margin uk-float-right">
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-danger uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small uk-modal-close"><span class="uk-margin-small-right"><i class="fa fa-times"></i></span>Annuler</a>
+            <a class="uk-button waves-effect uk-display-inline-block uk-button-success uk-margin-small-bottom uk-width-auto@l uk-width-1-1@s uk-button-small" id="submit_modal"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Valider</a>
+
+
+        </div>
+    </div>
+
+</div>
+<script>
+    $('#submit_modal').on('click', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "{{ url_for('client.refuse_client', client_id=client_id) }}",
+            data: $('#send_raison').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#modal-id .uk-body-custom').html(data);
+            }
+        });
+
+    });
+
+    {% if success %}
+        window.location.replace(window.location.origin+"{{ url_for('client.edit', client_id=client_id) }}").delay();
+    {% endif %}
+</script>

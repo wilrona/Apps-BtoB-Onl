@@ -2,6 +2,7 @@ from ...modules import *
 from models_compagnie import Relation, Compagnie
 from ..user.models_user import Users
 from forms_compagnie import FormClient
+from ..company.models_company import Company
 
 
 prefix_relation = Blueprint('relation', __name__)
@@ -45,6 +46,8 @@ def view(relation_id):
 @roles_required([('super_admin', 'relation')], ['edit'])
 def accepte(relation_id=None):
 
+    info = Company.objects.first()
+
     if relation_id:
         data = Relation.objects.get(id=relation_id)
 
@@ -60,8 +63,9 @@ def accepte(relation_id=None):
 
         msg = Message()
         msg.recipients = [data.iduser.email]
-        msg.subject = 'Reponse a votre demande de relation'
-        msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
+        msg.add_recipient(info.emailNotification)
+        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html
         mail.send(msg)
@@ -71,14 +75,14 @@ def accepte(relation_id=None):
         flash('Demande Accepte avec success', 'success')
         return redirect(url_for('relation.view', relation_id=relation_id))
     else:
-        data = []
+        datas = []
         element = []
         count = 0
         for item in request.form.getlist('item_id'):
 
-            item_found = Relation.objects().get(id=item)
+            data = Relation.objects().get(id=item)
 
-            item_found.statut = 0
+            data.statut = 0
 
             agence = Compagnie.objects.get(id=data.idagence.id)
 
@@ -89,15 +93,16 @@ def accepte(relation_id=None):
             html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
 
             msg = Message()
-            msg.recipients = [item_found.iduser.email]
-            msg.subject = 'Reponse a votre demande de relation'
-            msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
+            msg.recipients = [data.iduser.email]
+            msg.add_recipient(info.emailNotification)
+            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
 
-            element.append(str(item_found.id))
-            item_found.save()
+            element.append(str(data.id))
+            data.save()
             count += 1
 
         if count:
@@ -105,11 +110,11 @@ def accepte(relation_id=None):
             info['statut'] = 'OK'
             info['message'] = str(count)+' demande(s) de relation ont ete valide avec success'
             info['element'] = element
-            data.append(info)
+            datas.append(info)
 
-        data = json.dumps(data)
+        datas = json.dumps(datas)
 
-        return data
+        return datas
 
 
 @prefix_relation.route('/refuser/<objectid:relation_id>')
@@ -117,6 +122,8 @@ def accepte(relation_id=None):
 @login_required
 @roles_required([('super_admin', 'relation')], ['edit'])
 def refuse(relation_id=None):
+
+    info = Company.objects.first()
 
     if relation_id:
         data = Relation.objects.get(id=relation_id)
@@ -127,8 +134,9 @@ def refuse(relation_id=None):
 
         msg = Message()
         msg.recipients = [data.iduser.email]
-        msg.subject = 'Reponse a votre demande de relation'
-        msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
+        msg.add_recipient(info.emailNotification)
+        msg.subject = 'Refus de la mise en relation avec l\'entreprise'
+        msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html
         mail.send(msg)
@@ -139,27 +147,28 @@ def refuse(relation_id=None):
         return redirect(url_for('claim.view', relation_id=relation_id))
 
     else:
-        data = []
+        datas = []
         element = []
         count = 0
         for item in request.form.getlist('item_id'):
 
-            item_found = Relation.objects().get(id=item)
+            data = Relation.objects().get(id=item)
 
-            item_found.statut = 2
-            element.append(str(item_found.id))
+            data.statut = 2
+            element.append(str(data.id))
 
             html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
 
             msg = Message()
-            msg.recipients = [item_found.iduser.email]
-            msg.subject = 'Reponse a votre demande de relation'
-            msg.sender = ('ICI.CM service client', 'no_reply@ici.cm')
+            msg.recipients = [data.iduser.email]
+            msg.add_recipient(info.emailNotification)
+            msg.subject = 'Refus de la mise en relation avec l\'entreprise'
+            msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
 
-            item_found.save()
+            data.save()
             count += 1
 
         if count:
@@ -167,8 +176,8 @@ def refuse(relation_id=None):
             info['statut'] = 'OK'
             info['message'] = str(count)+' demande(s) de relation ont ete refuse avec success'
             info['element'] = element
-            data.append(info)
+            datas.append(info)
 
-        data = json.dumps(data)
+        datas = json.dumps(datas)
 
-        return data
+        return datas

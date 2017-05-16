@@ -211,7 +211,7 @@ def edit(facture_id=None):
                     customer.phone = form_client.phone.data
                     customer.activated = False
                     customer.source = "facture"
-                    customer.verify = False
+                    customer.verify = 0
 
                     current_client = customer.save()
 

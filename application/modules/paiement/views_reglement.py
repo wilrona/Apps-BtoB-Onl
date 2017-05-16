@@ -95,6 +95,16 @@ def valide():
             user = Users.objects.get(id=current_user.id)
             item_found.iduser_valid = user
 
+            html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+
+            msg = Message()
+            msg.recipients = [item_found.iduser_paid]
+            msg.subject = 'Votre paiement est validee'
+            msg.sender = ('ICI.CM service validation de paiement', 'no_reply@ici.cm')
+
+            msg.html = html
+            mail.send(msg)
+
             item_found.save()
 
             element.append(str(item_found.id))

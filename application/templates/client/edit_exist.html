@@ -71,7 +71,7 @@
 
                 msg = $.parseJSON(msg);
                 if(msg['statut'] == 'OK'){
-                    window.location.replace(window.location.origin+"{{ url_for('client.index') }}").delay()
+                    window.location.replace(window.location.origin+"{{ url_for('client.edit_special', partenaire=request.args.get('partenaire')) }}").delay()
                 }else{
                     UIkit.modal.alert('Aucune entreprise n\'a été selectionnée.').then(function() {
 

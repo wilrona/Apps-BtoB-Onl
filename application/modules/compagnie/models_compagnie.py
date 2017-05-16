@@ -23,7 +23,9 @@ class Compagnie(db.Document):
 
     postal_code = db.StringField()
     activated = db.BooleanField()
-    verify = db.BooleanField()
+    verify = db.IntField() # 0 a verifier; 1 accepter; 2 refuse
+    raisonrefus = db.StringField()
+    user_reply = db.ReferenceField('Users')
     source = db.StringField()
 
     imagedir = db.StringField()
@@ -134,7 +136,9 @@ class Categorie(db.Document):
 class Claim(db.Document):
     idcompagnie = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
-    statut = db.IntField() # 0 non valid; 1 valid
+    statut = db.IntField() # 0 non valid; 1 valid; 2 refuse
+    raisonrefus = db.StringField()
+    user_reply = db.ReferenceField('Users')
     dateclaim = db.DateTimeField()
     updateDate = db.DateTimeField()
 
@@ -147,7 +151,9 @@ class Relation(db.Document):
     idagence = db.ReferenceField('Compagnie')
     idparent = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
-    statut = db.IntField() # 0 non valid; 1 valid
+    statut = db.IntField() # 0 non valid; 1 valid; 2 refuse
+    raisonrefus = db.StringField()
+    user_reply = db.ReferenceField('Users')
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
 
