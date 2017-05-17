@@ -59,7 +59,7 @@ def accepte(relation_id=None):
         agence.parent_idcompagnie = parent
         agence.save()
 
-        html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
+        html = render_template('template_mail/compagnie/accept_relation.html', **locals())
 
         msg = Message()
         msg.recipients = [data.iduser.email]
@@ -90,7 +90,7 @@ def accepte(relation_id=None):
             agence.parent_idcompagnie = parent
             agence.save()
 
-            html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
+            html = render_template('template_mail/compagnie/accept_relation.html', **locals())
 
             msg = Message()
             msg.recipients = [data.iduser.email]
@@ -117,6 +117,57 @@ def accepte(relation_id=None):
         return datas
 
 
+@prefix_relation.route('/refuser/<objectid:relation_id>', methods=['GET', 'POST'])
+def refuser(relation_id):
+
+    from ..company.models_company import Company
+    from ..compagnie.models_compagnie import Raison
+
+    info = Company.objects.first()
+
+    client = Relation.objects.get(id=relation_id)
+
+    success = False
+    if request.method == 'POST' and request.form['raison']:
+
+        prev_raison = Raison.objects(Q(status=True) & Q(name_entity="relation") & Q(id_entity=str(client.id))).first()
+        if prev_raison:
+            prev_raison.status = False
+            prev_raison.save()
+
+        next_raison = Raison()
+        next_raison.status = True
+        next_raison.name_entity = "relation"
+        next_raison.id_entity = str(client.id)
+        next_raison.raison = request.form['raison']
+
+        user = Users.objects.get(id=current_user.id)
+        next_raison.user_reply = user
+
+        next_raison.save()
+
+        client.verify = 2
+        client.save()
+
+        html = render_template('template_mail/compagnie/refus_relation.html', **locals())
+
+        msg = Message()
+        msg.recipients = [client.mainuser.email]
+        msg.add_recipient(info.emailNotification)
+        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+        msg.html = html
+        mail.send(msg)
+
+        # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
+
+        flash('Refus de la demande de relation effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/relation/raison_refus.html', **locals())
+
+
 @prefix_relation.route('/refuser/<objectid:relation_id>')
 @prefix_relation.route('/refuser')
 @login_required
@@ -130,7 +181,7 @@ def refuse(relation_id=None):
 
         data.statut = 2
 
-        html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
+        html = render_template('template_mail/compagnie/refus_relation.html', **locals())
 
         msg = Message()
         msg.recipients = [data.iduser.email]
@@ -157,7 +208,7 @@ def refuse(relation_id=None):
             data.statut = 2
             element.append(str(data.id))
 
-            html = render_template('template_mail/compagnie/reponse_relation.html', **locals())
+            html = render_template('template_mail/compagnie/refus_relation.html', **locals())
 
             msg = Message()
             msg.recipients = [data.iduser.email]

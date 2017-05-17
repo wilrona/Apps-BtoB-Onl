@@ -20,12 +20,12 @@
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
                             {% if client_id %}
                                 <div class="uk-float-right uk-flex uk-flex-right uk-grid-small uk-child-width-auto" uk-grid>
-                                    <a href="#" class="uk-button waves-effect {% if data.activated %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small uk-display-inline-block">
+                                    <a href="{% if current_user.has_roles([('super_admin', 'client')], ['edit']) %} {{ url_for('client.etat', client_id=client_id, news=request.args.get('news')) }} {% endif %}" class="uk-button waves-effect {% if data.activated %} uk-button-success-active {% else %} uk-button-danger-active {% endif %} uk-button-small uk-display-inline-block">
                                         <span>{% if data.activated %} Activé {% else %} Desactivé {% endif %}</span>
                                     </a>
-                                    {% if not data.verify %}
-                                        <a href="#" class="uk-button uk-button-danger-active waves-effect uk-button-small">
-                                            <span>Refusé la demande</span>
+                                    {% if not data.verify and current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+                                        <a href="{{ url_for('client.refuse_client', client_id=client_id) }}" class="uk-button uk-button-danger-active waves-effect uk-button-small modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;">
+                                            Refusé la validation
                                         </a>
                                     {% endif %}
                                 </div>

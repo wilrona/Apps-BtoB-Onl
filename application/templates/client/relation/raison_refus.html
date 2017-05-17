@@ -1,6 +1,6 @@
 <button class="uk-modal-close-outside" type="button" uk-close id="closing"></button>
 <div class="uk-modal-header">
-    <h2 class="uk-modal-title">Raison du refus de la validation de l'entreprise</h2>
+    <h2 class="uk-modal-title">Raison du refus de la demande de relation</h2>
 </div>
 <div class="uk-padding-small">
 
@@ -30,7 +30,7 @@
         e.preventDefault();
 
         $.ajax({
-            url: "{{ url_for('client.refuse_client', client_id=client_id) }}",
+            url: "{{ url_for('relation.refuser', relation_id=relation_id) }}",
             data: $('#send_raison').serialize(),
             type: 'POST',
             success: function(data) {
@@ -41,6 +41,6 @@
     });
 
     {% if success %}
-        window.location.replace(window.location.origin+"{{ url_for('client.view', client_id=client_id) }}").delay();
+        window.location.replace(window.location.origin+"{{ url_for('relation.view', relation_id=relation_id) }}").delay();
     {% endif %}
 </script>

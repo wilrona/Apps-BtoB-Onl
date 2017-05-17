@@ -2,7 +2,7 @@ __author__ = 'User'
 
 from ...modules import *
 from forms_compagnie import FormClient
-from models_compagnie import Compagnie, Categorie, Media
+from models_compagnie import Compagnie, Categorie, Media, Raison
 from ..user.models_user import Users
 
 prefix = Blueprint('client', __name__)
@@ -440,6 +440,11 @@ def reload_categorie():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat_activated():
+
+    from ..company.models_company import Company
+
+    infos = Company.objects.first()
+
     data = []
     element = []
     count = 0
@@ -455,6 +460,18 @@ def etat_activated():
             item_found.activated = True
             if not item_found.verify:
                 item_found.verify = 1
+
+                html = render_template('template_mail/compagnie/accept_info.html', **locals())
+
+                msg = Message()
+                msg.recipients = [item_found.mainuser.email]
+                msg.add_recipient(infos.emailNotification)
+                msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+                msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
             element.append(str(item_found.id))
             item_found.save()
             count += 1
@@ -512,6 +529,10 @@ def etat_unactivated():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat(client_id):
+    from ..company.models_company import Company
+
+    info = Company.objects.first()
+
     client = Compagnie.objects.get(id=client_id)
 
     if client.activated:
@@ -521,40 +542,68 @@ def etat(client_id):
         if not client.verify:
             client.verify = 1
 
+            html = render_template('template_mail/compagnie/accept_info.html', **locals())
+
+            msg = Message()
+            msg.recipients = [client.mainuser.email]
+            msg.add_recipient(info.emailNotification)
+            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+            msg.html = html
+            mail.send(msg)
+
     client.save()
 
     flash('Les modifications de l\'etat du client ont ete effectue', 'success')
     return redirect(url_for('client.view', client_id=client_id, news=request.args.get('news')))
 
+
 @prefix.route('/refuse/<objectid:client_id>', methods=['GET', 'POST'])
 def refuse_client(client_id):
+
+    from ..company.models_company import Company
+
+    info = Company.objects.first()
 
     client = Compagnie.objects.get(id=client_id)
 
     success = False
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form['raison']:
 
-        count = 0
-        for item in request.form.getlist('item_id'):
+        prev_raison = Raison.objects(Q(status=True) & Q(name_entity="client") & Q(id_entity=str(client.id))).first()
+        if prev_raison:
+            prev_raison.status = False
+            prev_raison.save()
 
-            data = Users.objects.get(id=item)
+        next_raison = Raison()
+        next_raison.status = True
+        next_raison.name_entity = "client"
+        next_raison.id_entity = str(client.id)
+        next_raison.raison = request.form['raison']
 
-            client.iduser.append(data)
+        user = Users.objects.get(id=current_user.id)
+        next_raison.user_reply = user
 
-            index = client.idcontact.index(data)
+        next_raison.save()
 
-            client.idcontact.pop(index)
+        client.verify = 2
+        client.save()
 
-            if not client.mainuser:
-                client.mainuser = data
+        html = render_template('template_mail/compagnie/refus_info.html', **locals())
 
-            client.save()
+        msg = Message()
+        msg.recipients = [client.mainuser.email]
+        msg.add_recipient(info.emailNotification)
+        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
-            # Envoyer un emails au main user existant qu'un nouvel utilisateur est ajoute
-            # Envoyer un mail au nouveau main user s'il y'en avait pas qu'il est un nouveau main user
-            # Envoyer un email a l'utilisateur qui vient d'etre ajoute comme administrateur de la page.
+        msg.html = html
+        mail.send(msg)
 
-        flash('Enregistement effectue avec succes', 'success')
+        # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
+
+        flash('Refus de validation effectue avec succes', 'success')
         success = True
 
     return render_template('client/raison_refus.html', **locals())

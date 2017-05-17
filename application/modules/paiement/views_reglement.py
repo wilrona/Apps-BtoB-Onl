@@ -78,6 +78,11 @@ def edit():
 @login_required
 @roles_required([('super_admin', 'reglement')], ['delete'])
 def valide():
+
+    from ..company.models_company import Company
+
+    infos = Company.objects.first()
+
     data = []
     element = []
     count = 0
@@ -95,12 +100,13 @@ def valide():
             user = Users.objects.get(id=current_user.id)
             item_found.iduser_valid = user
 
-            html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+            html = render_template('template_mail/compagnie/accept_reglement.html', **locals())
 
             msg = Message()
-            msg.recipients = [item_found.iduser_paid]
-            msg.subject = 'Votre paiement est validee'
-            msg.sender = ('ICI.CM service validation de paiement', 'no_reply@ici.cm')
+            msg.recipients = [item_found.iduser_paid.email]
+            msg.add_recipient(infos.emailNotification)
+            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)

@@ -19,10 +19,10 @@
                         <div class="uk-card uk-card-default uk-card-small uk-card-body">
                             {% if current_user.has_roles([('super_admin', 'relation')], ['edit']) %}
                                 <div class="uk-position-top-right uk-padding-small uk-width-1-3@s uk-flex uk-flex-right">
-                                        <a href="{{ url_for('claim.accepte', relation_id=relation_id) }}" class="uk-button uk-button-success-active waves-effect uk-button-small {% if relation.statut != 1 %} uk-disabled {% endif %}">
+                                    <a href="{{ url_for('relation.accepte', relation_id=relation_id) }}" class="uk-button uk-button-success-active waves-effect uk-button-small {% if relation.statut != 1 %} uk-disabled {% endif %}">
                                         <span>Accepter</span>
                                     </a>
-                                    <a href="{{ url_for('claim.refuse', relation_id=relation_id) }}" class="uk-button waves-effect uk-button-danger-active uk-button-small {% if relation.statut != 1 %} uk-disabled {% endif %}">
+                                    <a href="{{ url_for('relation.refuser', relation_id=relation_id) }}" class="uk-button waves-effect uk-button-danger-active uk-button-small {% if relation.statut != 1 %} uk-disabled {% endif %} modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;">
                                         <span>Refuser</span>
                                     </a>
                                 </div>

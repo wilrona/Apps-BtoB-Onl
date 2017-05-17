@@ -9,11 +9,11 @@
 {#    <link href="{{ url_for('static', filename='css/pdf.css', _external=True) }}" rel="stylesheet" />#}
     <title>
             {% if data.devisDoc %}
-                {% if data.status == 2 %} Bon de commande {% else %} Devis {% endif %}
+                Devis
             {% else %}
                 Facture
             {% endif %}
-            {{ data.ref }}
+            {{ data.reference() }}
     </title>
 </head>
 <body>
@@ -25,14 +25,14 @@
         <td style="width: 45%" class="title">
             <span class="uk-h1">
                 {% if data.devisDoc %}
-                    {% if data.status == 2 %} Bon de commande {% else %} Devis {% endif %}
+                    Devis
                 {% else %}
                     Facture
                 {% endif %}
             </span>
         </td>
         <td style="width: 45%" rowspan="2">
-            <img src="{{ image }}" class="uk-display-block image" alt=""/>
+            <img src="{{ image }}" class="uk-display-block" alt=""/>
             <div class="uk-text-right" style="font-size: 12px">
                 Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>Phone: {{ compagnie.phone }}<br/>
                 RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
@@ -44,8 +44,8 @@
     <tr>
         <td style="width: 5%"></td>
         <td style="width: 45%">
-            <div class="subtitle"><span class="uk-text-bold">No </span>:   {{ data.ref }}</div>
-            <div class="subtitle"><span class="uk-text-bold">Date </span>: {% if data.devisDoc %} {{ data.createDateDevis|format_date('%d/%m/%Y') }} {% else %}  {{ data.createDateFact|format_date('%d/%m/%Y') }} {% endif %}</div>
+            <div class="subtitle"><span class="uk-text-bold">No </span>:   {{ data.reference() }}</div>
+            <div class="subtitle"><span class="uk-text-bold">Date </span>: {% if data.devisDoc %} {{ data.createDate|format_date('%d/%m/%Y') }} {% else %}  {{ data.createDate|format_date('%d/%m/%Y') }} {% endif %}</div>
             <div class="subtitle"><span class="uk-text-bold">Cam </span>: {{ data.vendeur_id.full_name() }}</div>
         </td>
         <td style="width: 5%"></td>
@@ -64,7 +64,7 @@
         </td>
         <td>
             <div class="uk-text-bold title">Contact</div>
-            {% if data.contact_id %}{{ data.contact_id.civilite.name }}{% endif %} {{ data.contact_id.first_name }} {{ data.contact_id.last_name }} <br/>
+            {{ data.contact_id.first_name }} {{ data.contact_id.last_name }} <br/>
             {% if data.contact_id.telephone %} Tel: {{ data.contact_id.telephone }} {% endif %}
             {% if data.contact_id.mobile %} Mobile: {{ data.contact_id.mobile }} {% endif %} <br/>
             {% if data.contact_id.email %} Email: {{ data.contact_id.email }} {% endif %}
@@ -81,10 +81,10 @@
 
         </td>
         <td>
-            <div class="uk-text-bold title">Support utlisé</div>
-            {{ data.support_id.name }} <br/>
-            <div class="uk-text-bold title">Le client n'a pas de support ?</div>
-            {% if data.have_support %} Oui {% else %} Non {% endif %} <br/>
+{#            <div class="uk-text-bold title">Support utlisé</div>#}
+{#            {{ data.support_id.name }} <br/>#}
+{#            <div class="uk-text-bold title">Le client n'a pas de support ?</div>#}
+{#            {% if data.have_support %} Oui {% else %} Non {% endif %} <br/>#}
         </td>
         <td style="width: 5%"></td>
     </tr>
@@ -93,43 +93,112 @@
     <tr>
         <td style="width: 5%"></td>
         <td>
-            <table class="uk-table uk-table-bordered uk-table-small uk-table-middle uk-table-striped" >
+            <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
                 <thead>
-                    <tr>
-                        <th style="width: 35%;">Produits</th>
-                        <th class="uk-text-center">Nbre passage</th>
-                        <th class="uk-text-center">Prix Unitaire</th>
-                        <th class="uk-text-center">Sous Total</th>
-                    </tr>
+                <tr>
+                    <th width="20%">Service</th>
+                    <th width="20%">Produit</th>
+                    <th width="16%">Quantite</th>
+                    <th width="16%">Prix unitaires</th>
+                    <th width="16%">Sous total</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for item in data.lignedocs() %}
-                            {% set loop_pack = loop.index - 1 %}
-                            <tr class="uk-background-blue-grey">
-                                <td colspan="4">
-                                    {{ item['name'] }} x {{ item['qte'] }} = <span id="passage_total">{{ item['total'] }}</span> Passages
-                                </td>
-                            </tr>
-                            {% set nbreville = item['ville']|length %}
-                            {% for ville in item['ville'] %}
-                                {% set loop_ville = loop.index - 1 %}
-                                {% for site in ville['site'] %}
-                                    <tr>
-                                        <td>{{ site['ref'] }} <br/> {{ site['name'] }}
-                                        </td>
-                                        <td class="uk-text-center">
-                                            {{ site['qte'] }}
+                {% if data.devisDoc %}
+                    {% for pack in data.lignedoc_devis() %}
+                        <tr>
+                            <td>
+                                <div class="uk-form-controls uk-form-service">
 
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        {% for service in services %}
+                                            {% if service.sigle == pack.idpackage.idligneService %}
+                                                <li class="uk-active">{{ service.name }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
 
-                                        </td>
-                                        <td class="uk-text-center">{{ site['prix']|format_price() }}</td>
-                                        <td class="uk-text-center">{{ site['total']|format_price() }}</td>
+                                </div>
+                            </td>
+                            <td>
 
-                                    </tr>
-                                {% endfor %}
-                            {% endfor %}
+                                <div class="uk-form-controls uk-form-package">
+
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        <li class="uk-active">{{ pack.idpackage.name }}</li>
+                                    </ul>
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte">
+
+                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-prix">
+                                    <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st">
+                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                </div>
+                            </td>
+                        </tr>
                     {% endfor %}
+                {% else %}
+                    {% for pack in data.lignedoc_facture() %}
+                        <tr>
+                            <td>
+                                <div class="uk-form-controls uk-form-service">
+
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        {% for service in services %}
+                                            {% if service.sigle == pack.idpackage.idligneService %}
+                                                <li class="uk-active">{{ service.name }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+
+                                </div>
+                            </td>
+                            <td>
+
+                                <div class="uk-form-controls uk-form-package">
+
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        <li class="uk-active">{{ pack.idpackage.name }}</li>
+                                    </ul>
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte">
+
+                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-prix">
+                                    <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st">
+                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
                 </tbody>
+
             </table>
         </td>
         <td style="width: 5%"></td>
@@ -151,14 +220,14 @@
                 <tr>
                     <td style="width: 61%;" colspan="2" class="no-border"></td>
 
-                    <td class="uk-h4 no-border" style="width: 20%">TVA {% if data.tva_apply %}({{ current_ref.taux_tva }}%) {% else %} (0%) {% endif %}</td>
-                    <td class="uk-text-center">{% if data.tva_apply %} {{ ((data.montant * data.tva_apply)/100)|format_price() }} {% else %} 0 {% endif %}{% set tva = ((data.montant * data.tva_apply)/100) %}</td>
+                    <td class="uk-h4 no-border" style="width: 20%">TVA(0%)</td>
+                    <td class="uk-text-center">0</td>
                 </tr>
                 <tr>
                     <td style="width: 61%;" class="no-border" colspan="2"></td>
 
                     <td class="uk-h4 no-border" style="width: 20%">Total TTC</td>
-                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ (tva + data.montant)|format_price() }}</td>
+                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant)|format_price() }}</td>
                 </tr>
             </tbody>
         </table>

@@ -409,7 +409,7 @@ def print_devis(devis_id):
 
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
 
-    image = PROJECT_DIR+'/static/images/logo.jpeg'
+    image = PROJECT_DIR+'/static/images/icicm.png'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
@@ -434,7 +434,7 @@ def print_devis(devis_id):
             'margin-right': '0',
             'margin-left': '0',
             'margin-bottom': '0',
-            'zoom': '0.8',
+            'zoom': '1.2',
             'encoding': "UTF-8",
 
         },

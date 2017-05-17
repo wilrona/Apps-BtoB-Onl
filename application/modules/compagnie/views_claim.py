@@ -52,13 +52,14 @@ def accepte(claim_id=None):
         user = Users.objects.get(id=data.iduser.id)
 
         compagnie.mainuser = user
+        compagnie.claimDate = datetime.datetime.now()
         compagnie = compagnie.save()
 
         if compagnie.id not in user.idcompagnie:
             user.idcompagnie.append(compagnie)
             user.save()
 
-        html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+        html = render_template('template_mail/compagnie/accept_reclamation.html', **locals())
 
         msg = Message()
         msg.recipients = [data.iduser.email]
@@ -87,9 +88,14 @@ def accepte(claim_id=None):
             user = Users.objects.get(id=data.iduser.id)
 
             compagnie.mainuser = user
+            compagnie.claimDate = datetime.datetime.now()
             compagnie.save()
 
-            html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+            if compagnie.id not in user.idcompagnie:
+                user.idcompagnie.append(compagnie)
+                user.save()
+
+            html = render_template('template_mail/compagnie/accept_reclamation.html', **locals())
 
             msg = Message()
             msg.recipients = [data.iduser.email]
@@ -115,6 +121,57 @@ def accepte(claim_id=None):
         return datas
 
 
+@prefix_claim.route('/refuser/<objectid:claim_id>', methods=['GET', 'POST'])
+def refuser(claim_id):
+
+    from ..company.models_company import Company
+    from ..compagnie.models_compagnie import Raison
+
+    info = Company.objects.first()
+
+    client = Claim.objects.get(id=claim_id)
+
+    success = False
+    if request.method == 'POST' and request.form['raison']:
+
+        prev_raison = Raison.objects(Q(status=True) & Q(name_entity="claim") & Q(id_entity=str(client.id))).first()
+        if prev_raison:
+            prev_raison.status = False
+            prev_raison.save()
+
+        next_raison = Raison()
+        next_raison.status = True
+        next_raison.name_entity = "claim"
+        next_raison.id_entity = str(client.id)
+        next_raison.raison = request.form['raison']
+
+        user = Users.objects.get(id=current_user.id)
+        next_raison.user_reply = user
+
+        next_raison.save()
+
+        client.verify = 2
+        client.save()
+
+        html = render_template('template_mail/compagnie/refus_reclamation.html', **locals())
+
+        msg = Message()
+        msg.recipients = [client.mainuser.email]
+        msg.add_recipient(info.emailNotification)
+        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+        msg.html = html
+        mail.send(msg)
+
+        # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
+
+        flash('Refus de la demande de relation effectue avec succes', 'success')
+        success = True
+
+    return render_template('client/claim/raison_refus.html', **locals())
+
+
 @prefix_claim.route('/refuser/<objectid:claim_id>')
 @prefix_claim.route('/refuser')
 @login_required
@@ -126,7 +183,7 @@ def refuse(claim_id=None):
 
         data.statut = 2
 
-        html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+        html = render_template('template_mail/compagnie/refus_reclamation.html', **locals())
 
         msg = Message()
         msg.recipients = [data.iduser.email]
@@ -151,7 +208,7 @@ def refuse(claim_id=None):
             data.statut = 2
             element.append(str(data.id))
 
-            html = render_template('template_mail/compagnie/reponse_reclamation.html', **locals())
+            html = render_template('template_mail/compagnie/refus_reclamation.html', **locals())
 
             msg = Message()
             msg.recipients = [data.iduser.email]

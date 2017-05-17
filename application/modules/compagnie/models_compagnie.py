@@ -24,8 +24,6 @@ class Compagnie(db.Document):
     postal_code = db.StringField()
     activated = db.BooleanField()
     verify = db.IntField() # 0 a verifier; 1 accepter; 2 refuse
-    raisonrefus = db.StringField()
-    user_reply = db.ReferenceField('Users')
     source = db.StringField()
 
     imagedir = db.StringField()
@@ -43,6 +41,7 @@ class Compagnie(db.Document):
 
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
+    claimDate = db.DateTimeField()
 
     etat_souscription = db.IntField() #0 non paye; 1 paye; 2 expiree
     uploaded = db.BooleanField()
@@ -137,8 +136,6 @@ class Claim(db.Document):
     idcompagnie = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
     statut = db.IntField() # 0 non valid; 1 valid; 2 refuse
-    raisonrefus = db.StringField()
-    user_reply = db.ReferenceField('Users')
     dateclaim = db.DateTimeField()
     updateDate = db.DateTimeField()
 
@@ -152,8 +149,6 @@ class Relation(db.Document):
     idparent = db.ReferenceField('Compagnie')
     iduser = db.ReferenceField('Users')
     statut = db.IntField() # 0 non valid; 1 valid; 2 refuse
-    raisonrefus = db.StringField()
-    user_reply = db.ReferenceField('Users')
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
 
@@ -162,3 +157,18 @@ class Relation(db.Document):
             self.createDate = datetime.datetime.now()
         self.updateDate = datetime.datetime.now()
         return super(Relation, self).save(*args, **kwargs)
+
+
+class Raison(db.Document):
+    raison = db.StringField()
+    user_reply = db.ReferenceField('Users')
+    status = db.BooleanField()
+    name_entity = db.StringField() # client; claim; relation;
+    id_entity = db.StringField()
+    createDate = db.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.createDate:
+            self.createDate = datetime.datetime.now()
+        return super(Raison, self).save(*args, **kwargs)
+

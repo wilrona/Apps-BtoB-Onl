@@ -18,7 +18,7 @@
             <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
                         <li><a {% if not current_user.has_roles([('super_admin', 'claim')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('claim.accepte') }}" id="accept" {% endif %}>Accepter</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'claim')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('claim.refuse') }}" id="refuse" {% endif %}>Refuser</a></li>
+{#                        <li><a {% if not current_user.has_roles([('super_admin', 'claim')], ['edit']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('claim.refuse') }}" id="refuse" {% endif %}>Refuser</a></li>#}
                 </ul>
             </div>
         </div>
