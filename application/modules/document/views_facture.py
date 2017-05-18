@@ -471,26 +471,27 @@ def print_facture(facture_id):
 
     data = Document.objects.get(id=facture_id)
 
-    CURRENT_FILE = os.path.abspath(__file__)
-    CURRENT_DIR = os.path.dirname(CURRENT_FILE)
-    PROJECT_DIR = os.path.dirname(CURRENT_DIR)
-    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+    services = LigneService.objects()
 
-    image = PROJECT_DIR+'/static/images/logo.jpeg'
+    PROJECT_DIR = app.config['FOLDER_APPS']
+
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
+    image = PROJECT_DIR+'/static/images/icicm.png'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
     twitter = PROJECT_DIR+'/static/images/icon/tweeter.png'
 
+
+    css = [
+        PROJECT_DIR+'/static/css/uikit-new.css',
+        PROJECT_DIR+'/static/css/lato-font.css',
+        PROJECT_DIR+'/static/css/apps.css',
+        PROJECT_DIR+'/static/css/pdf.css',
+        ]
+
     rendered = render_template('document/document.html', **locals())
-    css = [
-        PROJECT_DIR+'/static/css/uikit-new.css',
-        PROJECT_DIR+'/static/css/lato-font.css',
-        PROJECT_DIR+'/static/css/roboto.css',
-        PROJECT_DIR+'/static/css/material-icon.css',
-        PROJECT_DIR+'/static/css/apps.css',
-        PROJECT_DIR+'/static/css/pdf.css',
-        ]
 
     pdfs = pdfkit.from_string(
         rendered, False,
@@ -501,66 +502,68 @@ def print_facture(facture_id):
             'margin-right': '0',
             'margin-left': '0',
             'margin-bottom': '0',
-            'zoom': '0.8',
+            'zoom': '2',
             'encoding': "UTF-8",
 
-        })
+        },
+        configuration=config
+    )
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'
-    response.headers['Content-Disposition'] = 'inline; filename='+data.ref+'.pdf'
+    response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
     # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
 
-    if data.status == 0:
-        data.status = 1
-        data.save()
+    # if data.status == 0:
+    #     data.status = 1
+    #     data.save()
 
     return response
 
 
-@prefix.route('/print2/<objectid:facture_id>', methods=['GET'])
-def print2_facture(facture_id):
-
-    CURRENT_FILE = os.path.abspath(__file__)
-    CURRENT_DIR = os.path.dirname(CURRENT_FILE)
-    PROJECT_DIR = os.path.dirname(CURRENT_DIR)
-    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-
-    image = PROJECT_DIR+'/static/images/logo.jpeg'
-
-    word = PROJECT_DIR+'/static/images/icon/word.png'
-    facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
-    tweeter = PROJECT_DIR+'/static/images/icon/tweeter.png'
-
-    rendered = render_template('document/document2.html', **locals())
-    css = [
-        PROJECT_DIR+'/static/css/uikit-new.css',
-        PROJECT_DIR+'/static/css/lato-font.css',
-        PROJECT_DIR+'/static/css/roboto.css',
-        PROJECT_DIR+'/static/css/material-icon.css',
-        PROJECT_DIR+'/static/css/apps.css',
-        PROJECT_DIR+'/static/css/pdf.css',
-        ]
-    # # pdf = pdfkit.from_file(rendered, 'output.pdf')
-    pdfs = pdfkit.from_string(
-        rendered, False,
-        css=css,
-        options={
-            'page-size': 'A4',
-            # 'margin-top': '0',
-            'margin-right': '0',
-            'margin-left': '0',
-            'margin-bottom': '0',
-            # 'zoom': '1.2',
-            'encoding': "UTF-8",
-            'header-right': '[page]'
-
-
-        })
-
-    response = make_response(pdfs)
-    response.headers['Content-Type'] = 'application.pdf'
-    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-    # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
-
-    return response
+# @prefix.route('/print2/<objectid:facture_id>', methods=['GET'])
+# def print2_facture(facture_id):
+#
+#     CURRENT_FILE = os.path.abspath(__file__)
+#     CURRENT_DIR = os.path.dirname(CURRENT_FILE)
+#     PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+#     PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+#
+#     image = PROJECT_DIR+'/static/images/logo.jpeg'
+#
+#     word = PROJECT_DIR+'/static/images/icon/word.png'
+#     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
+#     tweeter = PROJECT_DIR+'/static/images/icon/tweeter.png'
+#
+#     rendered = render_template('document/document2.html', **locals())
+#     css = [
+#         PROJECT_DIR+'/static/css/uikit-new.css',
+#         PROJECT_DIR+'/static/css/lato-font.css',
+#         PROJECT_DIR+'/static/css/roboto.css',
+#         PROJECT_DIR+'/static/css/material-icon.css',
+#         PROJECT_DIR+'/static/css/apps.css',
+#         PROJECT_DIR+'/static/css/pdf.css',
+#         ]
+#     # # pdf = pdfkit.from_file(rendered, 'output.pdf')
+#     pdfs = pdfkit.from_string(
+#         rendered, False,
+#         css=css,
+#         options={
+#             'page-size': 'A4',
+#             # 'margin-top': '0',
+#             'margin-right': '0',
+#             'margin-left': '0',
+#             'margin-bottom': '0',
+#             # 'zoom': '1.2',
+#             'encoding': "UTF-8",
+#             'header-right': '[page]'
+#
+#
+#         })
+#
+#     response = make_response(pdfs)
+#     response.headers['Content-Type'] = 'application.pdf'
+#     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+#     # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
+#
+#     return response

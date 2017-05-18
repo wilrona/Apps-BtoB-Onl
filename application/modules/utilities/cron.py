@@ -27,7 +27,7 @@ class Config(object):
 def active_company_ici():
     from ..document.models_doc import Document
 
-    factures = Document.objects(Q(DevisDoc=False) & Q(ckeched_ici_cm__exists=0) | Q(ckeched_ici_cm=False))
+    factures = Document.objects(Q(DevisDoc=False) & Q(exe_ici_cm__exists=0) | Q(exe_ici_cm=0) | Q(exe_ici_cm=2))
 
     enterprise = []
 
@@ -47,11 +47,13 @@ def active_company_ici():
                     ici_cm.etat = 1
                     ici_cm.save()
 
-                facture.ckeched_ici_cm = True
+                facture.exe_ici_cm = 1
                 facture.save()
 
-            if facture.is_partiel() and facture.montant_reglement() > 0: # verifie si le paiement n'est pas pas complet et qu'il y'a un versement qui existe
-                if facture.montant >= facture.montant_package_ici_cm(): # verifie que le montant existant est superieur a la valeur du package ici achete
+            if facture.is_partiel() and facture.montant_reglement() > 0: # verifie si le paiement n'est pas pas
+                # complet et qu'il y'a un versement qui existe
+                if facture.montant >= facture.montant_package_ici_cm(): # verifie que le montant existant est
+                    # superieur a la valeur du package ici achete
                     for ici_cm in facture.package_ici_cm():
                         enterprise.append(ici_cm.idcompagnie)
 
@@ -64,6 +66,8 @@ def active_company_ici():
 
                         ici_cm.etat = 1
                         ici_cm.save()
+                    facture.exe_ici_cm = 2
+                    facture.save()
 
     for entreprise in enterprise:
         entreprise.etat_souscription = 1
@@ -72,7 +76,7 @@ def active_company_ici():
     print('activation reussi')
 
 
-# Execution tous les jours a 01:00 du matin.
+# Execution tous les jours a 07:00 du matin.
 def verify_expired_company():
 
     from ..compagnie.models_compagnie import Compagnie
@@ -107,10 +111,11 @@ def verify_expired_company():
     print('Entreprise expiree traite')
 
 
-# Excution tout les jours a 01:30
+# Execution tous les jours a 07:30
 def send_mail_expired_company():
 
     from ..compagnie.models_compagnie import Compagnie
+    from ..company.models_company import Company
     import time
 
     time_zones = tzlocal()
@@ -118,26 +123,96 @@ def send_mail_expired_company():
 
     current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
 
-    entreprises = Compagnie.objects(activated=True)
+    entreprises = Compagnie.objects(Q(activated=True) & Q(verify=1))
+    info = Company.objects().first()
 
     count = 0
     sleep = 1
     for enterprise in entreprises:
 
-        if enterprise.dateExpired().dateFin == function.datetime_convert(current_date):
+        # Envoie email de rappel d'expiration pour les entreprises
+        if not enterprise.uploaded and enterprise.etat_souscription == 1 and not enterprise.partenaire:
 
-            html = render_template('template_mail/user/activate.html', **locals())
+            if enterprise.remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration du package
+                if enterprise.remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration du package
+                    if enterprise.remaind_day(days=15): # si le temps restant est <= 15 jours avant expiration du
+                        # package
+                        if enterprise.remaind_day(days=7): # si le temps restant est <= 7 jours avant expiration du
+                            # package
+                            if enterprise.remaind_day(days=3): # si le temps restant est <= 3 jours avant expiration
+                                # du package
+                                # envoie de l'email
+                                pass
+                            else:
+                                # envoie de l'email
+                                pass
+                        else:
+                            # envoie de l'email
+                            pass
+                    else:
+                        # envoie de l'email
+                        pass
+                else:
+                    # envoie de l'email
+                    pass
 
-            msg = Message()
-            msg.recipients = [enterprise.mainuser.email]
-            msg.subject = 'Votre abonnement de l\'entreprise '+str(enterprise.name)+' est arrive a expiration.'
-            msg.sender = ('ICI.CM CRM Abonnement Expire', 'no_reply@ici.cm')
+        # Envoie email de rappel d'expiration pour les entreprises reclammees
+        if enterprise.uploaded and enterprise.claimDate:
 
-            msg.html = html
-            mail.send(msg)
-            count += 1
-            if count >= (20 * sleep):
-                time.sleep(600)
-                sleep += 1
+            if enterprise.claim_remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration des 3
+                # mois fournis
+                if enterprise.claim_remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration des
+                    # 3 mois fournis
+                    if enterprise.claim_remaind_day(days=15): # si le temps restant est <= 15 jours avant expiration
+                        # des 3 mois fournis
+                        if enterprise.claim_remaind_day(days=7): # si le temps restant est <= 7 jours avant
+                            # expiration des 3 mois fournis
+                            if enterprise.claim_remaind_day(days=3): # si le temps restant est <= 3 jours avant
+                                # expiration des 3 mois fournis
+                                if enterprise.claim_remaind_day(days=0): # s'il n'existe plus de temps restant,
+                                    # on reinitialise
+                                    enterprise.etat_souscription = 2
+                                    enterprise = enterprise.save()
+                                else:
+                                    # envoie de l'email
+                                    pass
+                            else:
+                                # envoie de l'email
+                                pass
+                        else:
+                            # envoie de l'email
+                            pass
+                    else:
+                        # envoie de l'email
+                        pass
+                else:
+                    # envoie de l'email
+                    pass
+
+        # Envoie des emails au entreprise qui ont leur package expiree
+        if enterprise.etat_souscription == 2:
+
+            if enterprise.dateExpired().dateFin == function.datetime_convert(current_date) and not enterprise.uploaded:
+
+                html = render_template('template_mail/compagnie/expired_mail.html', **locals())
+
+                msg = Message()
+                msg.recipients = [enterprise.mainuser.email]
+                msg.subject = 'Votre abonnement de l\'entreprise '+str(enterprise.name)+' est arrive a expiration.'
+                msg.sender = ('ICI.CM CRM Abonnement Expire', 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+            if enterprise.uploaded and enterprise.etat_souscription == 2:
+                enterprise.uploaded = False
+                enterprise = enterprise.save()
+
+                # envoie de l'email
+
+        count += 1
+        if count >= (20 * sleep):
+            time.sleep(600)
+            sleep += 1
 
     print('Email envoye')

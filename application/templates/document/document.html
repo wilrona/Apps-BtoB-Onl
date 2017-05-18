@@ -31,11 +31,13 @@
                 {% endif %}
             </span>
         </td>
-        <td style="width: 45%" rowspan="2">
-            <img src="{{ image }}" class="uk-display-block" alt=""/>
-            <div class="uk-text-right" style="font-size: 12px">
-                Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>Phone: {{ compagnie.phone }}<br/>
-                RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
+        <td style="width: 45%" rowspan="2" class="uk-clearfix">
+            <div class="uk-float-right uk-margin-small-bottom">
+                <img src="{{ image }}" class="uk-display-block image" alt=""/>
+            </div>
+            <div class="uk-clearfix"></div>
+            <div class="uk-text-right uk-text-bold" style="font-size: 20px; padding-right: 15px; color: #f44336;">
+                Everything is here
             </div>
 
         </td>
@@ -46,7 +48,7 @@
         <td style="width: 45%">
             <div class="subtitle"><span class="uk-text-bold">No </span>:   {{ data.reference() }}</div>
             <div class="subtitle"><span class="uk-text-bold">Date </span>: {% if data.devisDoc %} {{ data.createDate|format_date('%d/%m/%Y') }} {% else %}  {{ data.createDate|format_date('%d/%m/%Y') }} {% endif %}</div>
-            <div class="subtitle"><span class="uk-text-bold">Cam </span>: {{ data.vendeur_id.full_name() }}</div>
+            {% if data.devisDoc %} <div class="subtitle"><span class="uk-text-bold">Cam </span>: {{ data.vendeur_id.full_name() }}</div> {% endif %}
         </td>
         <td style="width: 5%"></td>
     </tr>
@@ -134,7 +136,7 @@
                             <td>
                                 <div class="uk-form-controls uk-form-qte">
 
-                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-width-auto uk-form-blank"/>
 
                                 </div>
                             </td>
@@ -145,7 +147,7 @@
                             </td>
                             <td>
                                 <div class="uk-form-controls uk-form-st">
-                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-width-auto uk-form-blank">
                                 </div>
                             </td>
                         </tr>
@@ -180,7 +182,7 @@
                             <td>
                                 <div class="uk-form-controls uk-form-qte">
 
-                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+                                    <input type="text" value="{{ pack.qte }}" name="qte" class=" uk-width-auto uk-form-blank"/>
 
                                 </div>
                             </td>
@@ -191,7 +193,7 @@
                             </td>
                             <td>
                                 <div class="uk-form-controls uk-form-st">
-                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                    <input type="text" value="{{ pack.prix }}" name="st" class=" uk-width-auto uk-form-blank">
                                 </div>
                             </td>
                         </tr>
@@ -239,9 +241,8 @@
 <table class="uk-table uk-table-small footer" border="0">
     <tr>
         <td style="width: 5%"></td>
-        <td>
-            <span class="uk-text-bold uk-text-left"> Pascal THEZE</span> <br/>
-            <span class="uk-text-bold uk-text-left"> Directrice Commerciale et de l'exploitation</span>
+        <td style="width: 50%">
+            <span class="uk-text-bold uk-text-left"> La Direction</span>
 
         </td>
         <td><span class="uk-text-bold">La devise est le Franc CFA</span></td>
@@ -254,15 +255,11 @@
                 <td class="zone title" ></td>
                 <td class="title">
                     <blockquote cite="#" style="font-size: 11px; font-style: italic">
-                        <p class="uk-text-break" style="font-style: italic"><strong>Règlement à l’ordre d’Accent Média :</strong> <br/>
-                        100% à la réception de la présente facture par chèque libellé « ACCENT MEDIA S.A »  ou par virement au compte : <br/> ACCENT MEDIA S.A
-                    -
-                        Code Banque 10005 -
-                        Code guichet 00002 -
-                        N° Compte 04 92 78 11 00 1 -
-                        Clé 04 -
-                        Code SWIFT CCEICMCX -
-                        IBAN CM 21
+                        <p class="uk-text-break" style="font-style: italic"><strong>Information Légale :</strong> <br/>
+                            <strong>ICI.CM</strong> est un produit de l'entreprise {{ compagnie.name }} <br>
+                            Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>
+                            Phone: {{ compagnie.phone }} - Email : {{ compagnie.email }}<br/>
+                            RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
                         </p>
                     </blockquote>
                 </td>

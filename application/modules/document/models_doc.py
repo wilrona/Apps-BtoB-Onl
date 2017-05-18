@@ -21,7 +21,7 @@ class Document(db.Document):
     opportunite_id = db.ReferenceField('Opportunite')
     note = db.StringField()
 
-    ckeched_ici_cm = db.BooleanField() # verifier si une facture a deja ete traite
+    exe_ici_cm = db.IntField() # verifier si une facture a deja ete traite, 0 non traite; 1 Traite; 2 Traite partiel
 
     def save(self, *args, **kwargs):
         if not self.createDate:

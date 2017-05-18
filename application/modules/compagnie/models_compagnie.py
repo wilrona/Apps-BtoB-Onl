@@ -96,7 +96,22 @@ class Compagnie(db.Document):
         response = False
         if self.dateExpired():
             remaind = self.dateExpired().dateFin - to_day
-            if remaind < datetime.timedelta(days=days):
+            if remaind <= datetime.timedelta(days=days):
+                response = True
+
+        return response
+
+    def claim_remaind_day(self, days):
+
+        time_zones = tzlocal()
+        date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
+
+        to_day = function.datetime_convert(date_auto_nows)
+
+        response = False
+        if self.claimDate:
+            remaind = self.claimDate - to_day
+            if remaind <= datetime.timedelta(days=days):
                 response = True
 
         return response

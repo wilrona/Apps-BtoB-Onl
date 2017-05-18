@@ -1,6 +1,12 @@
+
+
 html, body{
     background-color: #fff;
     width:100%;
+    color: #000;
+    font-size: 20px;
+    line-height: 1.42857143;
+    /*transition: all 0.5s;*/
 }
 
 /*html, body {*/
@@ -36,7 +42,7 @@ tr { page-break-inside: avoid; }
 }
 
 td.zone, table.uk-info-zone{
-    background-color: #d32f2f;
+    background-color: #f44336;
     color: #fff;
 }
 
@@ -61,8 +67,10 @@ td.title{
 
 
 .image{
-    margin-left: 210px;
-    margin-top: -60px;
+    margin-right: 50px;
+    /*margin-top: -60px;*/
+    width: 100px;
+    height: 100px;
 
 }
 
@@ -78,7 +86,7 @@ td.title{
 
 
 .uk-background-custom{
-    background-color: #d32f2f !important;
+    background-color: #f44336 !important;
     color: #fff;
     border: none !important;
 }

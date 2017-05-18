@@ -405,6 +405,8 @@ def print_devis(devis_id):
 
     data = Document.objects.get(id=devis_id)
 
+    services = LigneService.objects()
+
     PROJECT_DIR = app.config['FOLDER_APPS']
 
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
@@ -415,15 +417,15 @@ def print_devis(devis_id):
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
     twitter = PROJECT_DIR+'/static/images/icon/tweeter.png'
 
-    rendered = render_template('document/document.html', **locals())
+
     css = [
         PROJECT_DIR+'/static/css/uikit-new.css',
         PROJECT_DIR+'/static/css/lato-font.css',
-        PROJECT_DIR+'/static/css/roboto.css',
-        PROJECT_DIR+'/static/css/material-icon.css',
         PROJECT_DIR+'/static/css/apps.css',
         PROJECT_DIR+'/static/css/pdf.css',
     ]
+
+    rendered = render_template('document/document.html', **locals())
 
     pdfs = pdfkit.from_string(
         rendered, False,
@@ -434,7 +436,7 @@ def print_devis(devis_id):
             'margin-right': '0',
             'margin-left': '0',
             'margin-bottom': '0',
-            'zoom': '1.2',
+            'zoom': '2',
             'encoding': "UTF-8",
 
         },
@@ -443,7 +445,7 @@ def print_devis(devis_id):
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'
-    response.headers['Content-Disposition'] = 'inline; filename='+data.ref+'.pdf'
+    response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
     # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
 
     if data.status == 0:
@@ -453,53 +455,53 @@ def print_devis(devis_id):
     return response
 
 
-@prefix.route('/print2/<objectid:devis_id>', methods=['GET'])
-def print2_devis(devis_id):
-
-    PROJECT_DIR = app.config['FOLDER_APPS']
-
-    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
-
-    image = PROJECT_DIR+'/static/images/logo.jpeg'
-
-    word = PROJECT_DIR+'/static/images/icon/word.png'
-    facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
-    tweeter = PROJECT_DIR+'/static/images/icon/tweeter.png'
-
-    rendered = render_template('document/document2.html', **locals())
-    css = [
-        PROJECT_DIR+'/static/css/uikit-new.css',
-        PROJECT_DIR+'/static/css/lato-font.css',
-        PROJECT_DIR+'/static/css/roboto.css',
-        PROJECT_DIR+'/static/css/material-icon.css',
-        PROJECT_DIR+'/static/css/apps.css',
-        PROJECT_DIR+'/static/css/pdf.css',
-    ]
-    # # pdf = pdfkit.from_file(rendered, 'output.pdf')
-    pdfs = pdfkit.from_string(
-        rendered, False,
-        css=css,
-        options={
-            'page-size': 'A4',
-            # 'margin-top': '0',
-            'margin-right': '0',
-            'margin-left': '0',
-            'margin-bottom': '0',
-            # 'zoom': '1.2',
-            'encoding': "UTF-8",
-            'header-right': '[page]'
-
-
-        },
-        configuration=config
-    )
-
-    response = make_response(pdfs)
-    response.headers['Content-Type'] = 'application.pdf'
-    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
-    # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
-
-    return response
+# @prefix.route('/print2/<objectid:devis_id>', methods=['GET'])
+# def print2_devis(devis_id):
+#
+#     PROJECT_DIR = app.config['FOLDER_APPS']
+#
+#     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+#
+#     image = PROJECT_DIR+'/static/images/logo.jpeg'
+#
+#     word = PROJECT_DIR+'/static/images/icon/word.png'
+#     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
+#     tweeter = PROJECT_DIR+'/static/images/icon/tweeter.png'
+#
+#     rendered = render_template('document/document2.html', **locals())
+#     css = [
+#         PROJECT_DIR+'/static/css/uikit-new.css',
+#         PROJECT_DIR+'/static/css/lato-font.css',
+#         PROJECT_DIR+'/static/css/roboto.css',
+#         PROJECT_DIR+'/static/css/material-icon.css',
+#         PROJECT_DIR+'/static/css/apps.css',
+#         PROJECT_DIR+'/static/css/pdf.css',
+#     ]
+#     # # pdf = pdfkit.from_file(rendered, 'output.pdf')
+#     pdfs = pdfkit.from_string(
+#         rendered, False,
+#         css=css,
+#         options={
+#             'page-size': 'A4',
+#             # 'margin-top': '0',
+#             'margin-right': '0',
+#             'margin-left': '0',
+#             'margin-bottom': '0',
+#             # 'zoom': '1.2',
+#             'encoding': "UTF-8",
+#             'header-right': '[page]'
+#
+#
+#         },
+#         configuration=config
+#     )
+#
+#     response = make_response(pdfs)
+#     response.headers['Content-Type'] = 'application.pdf'
+#     response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+#     # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
+#
+#     return response
 
 
 
