@@ -396,6 +396,11 @@ def deleted():
             info['message'] = 'Le Client "' + item_found.name + '" ne peut pas etre supprime car il n\'a pas ete ajoute' \
                                                                 'manuellement '
 
+        if not item_found.mainuser:
+            info['statut'] = 'NOK'
+            info['message'] = 'Le Client "' + item_found.name + '" ne peut pas etre supprime car il est gere par un ' \
+                                                                'utilisateur '
+
         if not opportunite and not exit_suivie and item_found.uploaded:
             item_found.delete()
             element.append(str(item_found.id))
@@ -461,12 +466,13 @@ def etat_activated():
             if not item_found.verify:
                 item_found.verify = 1
 
+                url_presence = "#"
                 html = render_template('template_mail/compagnie/accept_info.html', **locals())
 
                 msg = Message()
                 msg.recipients = [item_found.mainuser.email]
                 msg.add_recipient(infos.emailNotification)
-                msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+                msg.subject = 'Statut demande d\'enregistrement de votre entreprise'
                 msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
@@ -542,12 +548,13 @@ def etat(client_id):
         if not client.verify:
             client.verify = 1
 
+            url_presence = "#"
             html = render_template('template_mail/compagnie/accept_info.html', **locals())
 
             msg = Message()
             msg.recipients = [client.mainuser.email]
             msg.add_recipient(info.emailNotification)
-            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.subject = 'Statut demande d\'enregistrement de votre entreprise'
             msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
@@ -585,17 +592,19 @@ def refuse_client(client_id):
         user = Users.objects.get(id=current_user.id)
         next_raison.user_reply = user
 
-        next_raison.save()
+        next_raison = next_raison.save()
 
         client.verify = 2
         client.save()
+
+        numero_call_center = "+237 600 00 00 00"
 
         html = render_template('template_mail/compagnie/refus_info.html', **locals())
 
         msg = Message()
         msg.recipients = [client.mainuser.email]
         msg.add_recipient(info.emailNotification)
-        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.subject = 'Statut demande d\'enregistrement de votre commande'
         msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html

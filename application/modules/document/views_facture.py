@@ -463,6 +463,7 @@ def canceled():
     return data
 
 
+# @prefix.route('/print/<objectid:facture_id>/<attach>', methods=['GET'])
 @prefix.route('/print/<objectid:facture_id>', methods=['GET'])
 def print_facture(facture_id):
 
@@ -511,8 +512,10 @@ def print_facture(facture_id):
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'
+    # if not attach:
     response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
-    # response.headers['Content-Disposition'] = 'attach; filename=output.pdf'
+    # else:
+    #     response.headers['Content-Disposition'] = 'attach; filename='+data.reference()+'.pdf'
 
     # if data.status == 0:
     #     data.status = 1

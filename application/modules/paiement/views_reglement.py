@@ -105,7 +105,8 @@ def valide():
             msg = Message()
             msg.recipients = [item_found.iduser_paid.email]
             msg.add_recipient(infos.emailNotification)
-            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.subject = 'Confirmation de paiement'
+            msg.attach()
             msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html

@@ -170,7 +170,10 @@ def choice_soldier():
 @prefix_param.route('/edit/password/<objectid:user_id>')
 def edit_password(user_id):
 
+    from ..company.models_company import Company
+
     user = Users.objects.get(id=user_id)
+    info = Company.objects.first()
 
     flash('Un mail avec votre mot de passe genere a ete envoye.', 'success')
     password = id_generator(size=7)
@@ -180,8 +183,8 @@ def edit_password(user_id):
 
     msg = Message()
     msg.recipients = [user.email]
-    msg.subject = 'Votre nouveau mot de passe sur ici.cm'
-    msg.sender = ('ICI.CM CRM', 'no_reply@ici.cm')
+    msg.subject = 'Confirmation de la reinitialisation de votre mot de passe'
+    msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
     msg.html = html
     mail.send(msg)
@@ -322,14 +325,19 @@ def edit(user_id=None):
 
         if not user_id:
 
+            from ..company.models_company import Company
+
+            info = Company.objects.first()
+
             token = generate_confirmation_token(data.email)
             confirm_url = url_for('user_param.confirm_email', user_id=data.id, token=token, _external=True)
             html = render_template('template_mail/user/activate.html', **locals())
 
             msg = Message()
             msg.recipients = [data.email]
-            msg.subject = 'Confirmation de votre compte email'
-            msg.sender = ('ICI.CM CRM', 'no_reply@ici.cm')
+            msg.add_recipient(info.senderNotification)
+            msg.subject = data.full_name()+', veuillez confirmer votre adresse e-mail'
+            msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
@@ -575,8 +583,11 @@ def etat(user_id):
 @prefix_param.route('/confirm/<objectid:user_id>/<token>')
 def confirm_email(user_id, token):
 
+    from ..company.models_company import Company
+
     token_email = confirm_token(token)
     user = Users.objects.get(id=user_id)
+    info = Company.objects.first()
 
     if user.activated:
         flash('Votre compte est deja confirme. SVP connectez vous.', 'success')
@@ -594,8 +605,9 @@ def confirm_email(user_id, token):
 
                 msg = Message()
                 msg.recipients = [user.email]
-                msg.subject = 'Votre mot de passe sur ici.cm'
-                msg.sender = ('ICI.CM CRM', 'no_reply@ici.cm')
+                # msg.add_recipient(info.emailNotification)
+                msg.subject = user.full_name()+', bienvenue sur ICI.cm'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
                 mail.send(msg)
@@ -626,13 +638,17 @@ def resend_confirmation():
 
     token = generate_confirmation_token(current_user.email)
     reset = True
+    from ..company.models_company import Company
+
+    info = Company.objects.first()
     confirm_url = url_for('user_param.confirm_email', user_id=current_user.id, token=token, _external=True)
     html = render_template('template_mail/user/activate.html', **locals())
 
     msg = Message()
     msg.recipients = [current_user.email]
-    msg.subject = 'Confirmation de votre compte email'
-    msg.sender = ('ICI.CM CRM confirmer votre compte', 'no_reply@ici.cm')
+    msg.add_recipient(info.senderNotification)
+    msg.subject = current_user.full_name()+', veuillez confirmer votre adresse e-mail'
+    msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
     msg.html = html
     mail.send(msg)

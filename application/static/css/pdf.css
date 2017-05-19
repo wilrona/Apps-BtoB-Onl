@@ -85,6 +85,8 @@ td.title{
 }
 
 
+
+
 .uk-background-custom{
     background-color: #f44336 !important;
     color: #fff;
@@ -100,7 +102,7 @@ td.title{
 .price{
     position:fixed;
     /*height:70px;*/
-    bottom:250px;
+    bottom:300px;
     left:0px;
     right:0px;
     margin-bottom:0px;

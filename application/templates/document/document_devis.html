@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-{#    <link href="{{ url_for('static', filename='css/uikit.min.css', _external=True) }}" rel="stylesheet" />#}
-{#    <link href="{{ url_for('static', filename='css/lato-font.css', _external=True) }}" rel="stylesheet" />#}
-{#    <link href="{{ url_for('static', filename='css/roboto.css', _external=True) }}" rel="stylesheet" />#}
-{#    <link href="{{ url_for('static', filename='css/material-icon.css', _external=True) }}" rel="stylesheet" />#}
-{#    <link href="{{ url_for('static', filename='css/apps.css', _external=True) }}" rel="stylesheet" />#}
-{#    <link href="{{ url_for('static', filename='css/pdf.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/uikit.min.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/lato-font.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/roboto.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/material-icon.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/apps.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/pdf.css', _external=True) }}" rel="stylesheet" />#}
     <title>
-            {% if data.devisDoc %}
-                Devis
-            {% else %}
-                Facture
-            {% endif %}
-            {{ data.reference() }}
+        {% if data.devisDoc %}
+            Devis
+        {% else %}
+            Facture
+        {% endif %}
+        {{ data.reference() }}
     </title>
 </head>
 <body>
@@ -83,10 +83,10 @@
 
         </td>
         <td>
-{#            <div class="uk-text-bold title">Support utlisé</div>#}
-{#            {{ data.support_id.name }} <br/>#}
-{#            <div class="uk-text-bold title">Le client n'a pas de support ?</div>#}
-{#            {% if data.have_support %} Oui {% else %} Non {% endif %} <br/>#}
+            {#            <div class="uk-text-bold title">Support utlisé</div>#}
+            {#            {{ data.support_id.name }} <br/>#}
+            {#            <div class="uk-text-bold title">Le client n'a pas de support ?</div>#}
+            {#            {% if data.have_support %} Oui {% else %} Non {% endif %} <br/>#}
         </td>
         <td style="width: 5%"></td>
     </tr>
@@ -207,7 +207,6 @@
     </tr>
 </table>
 
-{% if not data.devisDoc %}
 <table class="uk-table price">
     <tr>
         <td style="width: 5%"></td>
@@ -249,20 +248,20 @@
                     <td style="width: 61%;" colspan="2" rowspan="3" class="no-border-first-child">
                         <table class="uk-table uk-table-bordered uk-table-small uk-table-middle uk-table-striped" border="0">
                             <tbody>
-                                <tr>
-                                    <td class="uk-h4 no-border" style="width: 50%">Total :</td>
-                                    <td class="uk-text-center">{{ data.montant|format_price() }}</td>
-                                </tr>
-                                <tr>
+                            <tr>
+                                <td class="uk-h4 no-border" style="width: 50%">Total :</td>
+                                <td class="uk-text-center">{{ data.montant|format_price() }}</td>
+                            </tr>
+                            <tr>
 
-                                    <td class="uk-h4 no-border" style="width: 50%">Accompte :</td>
-                                    <td class="uk-text-center">{{ data.montant_reglement()|format_price() }}</td>
-                                </tr>
-                                <tr>
+                                <td class="uk-h4 no-border" style="width: 50%">Accompte :</td>
+                                <td class="uk-text-center">{{ data.montant_reglement()|format_price() }}</td>
+                            </tr>
+                            <tr>
 
-                                    <td class="uk-h4 no-border" style="width: 50%">A regler :</td>
-                                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant - data.montant_reglement())|format_price() }}</td>
-                                </tr>
+                                <td class="uk-h4 no-border" style="width: 50%">A regler :</td>
+                                <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant - data.montant_reglement())|format_price() }}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </td>
@@ -274,40 +273,7 @@
     </tr>
 </table>
 
-{% else %}
 
-    <table class="uk-table price">
-        <tr>
-            <td style="width: 5%"></td>
-            <td>
-                <table class="uk-table uk-table-bordered uk-table-small uk-table-middle uk-table-striped" border="0">
-                    <tbody>
-                    <tr>
-                        <td style="width: 61%;" colspan="2" class="no-border no-border-first-child"></td>
-
-                        <td class="uk-h4 no-border no-border-first-child" style="width: 20%">Total HT</td>
-                        <td class="uk-text-center">{{ data.montant|format_price() }}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 61%;" colspan="2" class="no-border"></td>
-
-                        <td class="uk-h4 no-border" style="width: 20%">TVA(0%)</td>
-                        <td class="uk-text-center">0</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 61%;" class="no-border" colspan="2"></td>
-
-                        <td class="uk-h4 no-border" style="width: 20%">Total TTC</td>
-                        <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant)|format_price() }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-            <td style="width: 5%"></td>
-        </tr>
-    </table>
-
-{% endif %}
 
 <table class="uk-table uk-table-small footer" border="0">
     <tr>
