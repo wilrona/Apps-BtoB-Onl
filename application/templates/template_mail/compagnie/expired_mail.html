@@ -29,7 +29,7 @@
                                                                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#333333; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; font-weight:600; letter-spacing:6px; line-height:26px; text-transform:uppercase;">
-                                                                            <multiline>Confirmation de revendication</multiline>
+                                                                            <multiline>Suspension de vos services</multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -41,11 +41,46 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
-                                                                            <multiline>X, <br>Vous avez revendiqué  de l’entreprise X sur notre site et nous vous en remercions.  <br>Votre demande a été validée par nos équipes. <br>Nous vous remercions de votre confiance. </multiline>
+                                                                            <multiline>{{ user_mail.full_name() }},
+                                                                                <br>Votre entreprise {{ enterprise.name }} est actuellement enregistrée sur notre site.
+
+                                                                                <br><br>
+                                                                                    Notre système de facturation a détecté que ce service est expiré, non renouvelé malgré les relances que nous avons envoyées.
+
+                                                                                <br><br> Votre entreprise a donc été suspendu.
+
+                                                                                <br>
+                                                                                <br>
+                                                                                <br>
+                                                                                Pour le réactiver, il vous suffit de vous rendre sur notre site en cliquant sur le lien suivante :
+                                                                            </multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
                                                                         <td height="30"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center" class="button-width">
+                                                                            <table align="center" bgcolor="#e74c3c" border="0" cellpadding="0" cellspacing="0" class="display-button" style="border-radius:3px;">
+                                                                                <tr>
+                                                                                    <td align="center" class="MsoNormal" style="color:#ffffff; font-family:Segoe UI, Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-weight:600; padding:7px 12px; text-transform:uppercase; font-size:12px; letter-spacing:1px;">
+                                                                                        <multiline>
+                                                                                            <a target="_blank" href="{{ lien_reactivation }}" style="color:#ffffff; text-decoration:none;">Renouvellement</a>
+                                                                                        </multiline>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="20"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
+                                                                            <multiline>
+                                                                                Nous vous remercions de votre confiance.
+                                                                            </multiline>
+                                                                        </td>
                                                                     </tr>
 
                                                                 </table>

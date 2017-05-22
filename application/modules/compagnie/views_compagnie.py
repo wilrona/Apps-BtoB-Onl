@@ -604,7 +604,7 @@ def refuse_client(client_id):
         msg = Message()
         msg.recipients = [client.mainuser.email]
         msg.add_recipient(info.emailNotification)
-        msg.subject = 'Statut demande d\'enregistrement de votre commande'
+        msg.subject = 'Statut demande d\'enregistrement de votre entreprise'
         msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html

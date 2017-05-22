@@ -91,6 +91,4 @@ def index():
     if current_user.has_roles([('super_admin', 'relation')]):
         relation_count = Relation.objects(Q(statut=1) | Q(statut=0)).count()
 
-
-
     return render_template('dashboard/index.html', **locals())

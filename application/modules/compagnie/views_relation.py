@@ -64,7 +64,7 @@ def accepte(relation_id=None):
         msg = Message()
         msg.recipients = [data.iduser.email]
         msg.add_recipient(info.emailNotification)
-        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.subject = 'Statut demande de mise en relation'
         msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html
@@ -95,7 +95,7 @@ def accepte(relation_id=None):
             msg = Message()
             msg.recipients = [data.iduser.email]
             msg.add_recipient(info.emailNotification)
-            msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+            msg.subject = 'Statut demande de mise en relation'
             msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
@@ -144,17 +144,18 @@ def refuser(relation_id):
         user = Users.objects.get(id=current_user.id)
         next_raison.user_reply = user
 
-        next_raison.save()
+        next_raison = next_raison.save()
 
         client.verify = 2
         client.save()
 
+        numero_call_center = "+237 600 00 00 00"
         html = render_template('template_mail/compagnie/refus_relation.html', **locals())
 
         msg = Message()
         msg.recipients = [client.mainuser.email]
         msg.add_recipient(info.emailNotification)
-        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.subject = 'Statut demande de mise en relation'
         msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html

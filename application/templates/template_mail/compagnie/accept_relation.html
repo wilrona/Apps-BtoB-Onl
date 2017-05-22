@@ -29,7 +29,7 @@
                                                                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#333333; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; font-weight:600; letter-spacing:6px; line-height:26px; text-transform:uppercase;">
-                                                                            <multiline>{% if data.statut == 0 %} Confirmation {% else %} Refus {% endif %}de la mise en relation avec l’entreprise</multiline>
+                                                                            <multiline>Validation de la demande de mise en relation</multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -41,7 +41,17 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
-                                                                            <multiline>{{ data.iduser.full_name() }}, <br> Vous avez demandé la mise en relation de l’entreprise {{ data.idagence.name }} avec l’entreprise {{ data.idparent.name }} sur notre site et {% if data.statut == 0 %} nous vous en remercions{% else %} nous sommes désolé de devoir refuser cette mise en relation car la demande n'est pas conforme{% endif %}.  <br><br>Votre demande a été {% if data.statut == 0 %} validée {% else %} refusée {% endif %}par nos équipes</multiline>
+                                                                            <multiline>{{ data.iduser.full_name() }},
+                                                                                <br>
+                                                                                Vous avez demandé la mise en relation de l’entreprise {{ data.idagence.name }} avec l’entreprise {{ data.idparent.name }} sur notre site Internet.
+                                                                                <br><br>
+                                                                                Nous avons le plaisir de vous confirmer la validation de votre demande.
+
+                                                                                <br><br>
+                                                                                Nous vous remercions de votre confiance.
+
+
+                                                                            </multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>

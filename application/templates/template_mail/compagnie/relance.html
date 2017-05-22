@@ -29,7 +29,7 @@
                                                                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#333333; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; font-weight:600; letter-spacing:6px; line-height:26px; text-transform:uppercase;">
-                                                                            <multiline>Validation de la demande de revendication à envoyer</multiline>
+                                                                            <multiline>Refus de demande de mise en relation</multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -41,43 +41,20 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
-                                                                            <multiline>{{ data.iduser.full_name() }},
-                                                                                <br>Vous avez revendiqué  de l’entreprise {{ compagnie.name }} sur notre site et nous vous en remercions.
-                                                                                <br>Nous avons le plaisir de confirmer la validation de votre demande.
-                                                                                <br><br>
-                                                                                Activez votre présence sur ICI en cliquant sur le lien suivant.
+                                                                            <multiline>Bonjour {{ user_mail.full_name() }},
+                                                                                <br>
+                                                                                Nous vous informons sur l'évolution de vos services ICI.cm.
+                                                                                <br>
+
+                                                                                Votre souscription pour l’entreprise {{ enterprise.name }}  expire dans {{ days }} jours soit le {{ enterprise.dateExpired().dataFin|format_date("%d/%m/%Y") }}.
+
+
+                                                                                <br>Nous vous remercions de votre confiance.
                                                                             </multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
                                                                         <td height="30"></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td align="center" class="button-width">
-                                                                            <table align="center" bgcolor="#e74c3c" border="0" cellpadding="0" cellspacing="0" class="display-button" style="border-radius:3px;">
-                                                                                <tr>
-                                                                                    <td align="center" class="MsoNormal" style="color:#ffffff; font-family:Segoe UI, Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-weight:600; padding:7px 12px; text-transform:uppercase; font-size:12px; letter-spacing:1px;">
-                                                                                        <multiline>
-                                                                                            <a target="_blank" href="{{ url_presence }}" style="color:#ffffff; text-decoration:none;">Activez votre entreprise</a>
-                                                                                        </multiline>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td height="20"></td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td height="20"></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
-                                                                            <multiline>
-                                                                                Nous vous remercions de votre confiance.
-                                                                            </multiline>
-                                                                        </td>
                                                                     </tr>
 
                                                                 </table>

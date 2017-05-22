@@ -29,7 +29,7 @@
                                                                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#333333; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; font-weight:600; letter-spacing:6px; line-height:26px; text-transform:uppercase;">
-                                                                            <multiline>Confirmation de revendication</multiline>
+                                                                            <multiline>Refus de demande de revendication</multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -41,7 +41,28 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
-                                                                            <multiline>X, <br>Vous avez revendiqué  de l’entreprise X sur notre site et nous vous en remercions.  <br>Votre demande a été validée par nos équipes. <br>Nous vous remercions de votre confiance. </multiline>
+                                                                            <multiline>{{ data.iduser.full_name() }},
+                                                                                <br>Vous avez effectué le {{ client.dateclaim|format_date("%d/%m/%Y") }} une demande de revendication pour l’entreprise {{ client.idcompagnie.name }} sur notre site Internet.
+
+                                                                                <br>
+                                                                                Nous vous informons que votre demande n’a pas été validé pour les raisons suivantes :
+                                                                            </multiline>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td height="20"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
+                                                                            <multiline>
+                                                                                <strong>Raison</strong> <br>
+                                                                                {{ next_raison.raison }}
+                                                                                <br><br>
+                                                                                Merci de nous contacter au besoin au numéro suivant : {{ numero_call_center }}
+                                                                                <br><br>
+                                                                                Nous vous remercions de votre confiance.
+
+                                                                            </multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>

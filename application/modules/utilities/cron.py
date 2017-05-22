@@ -133,6 +133,7 @@ def send_mail_expired_company():
         # Envoie email de rappel d'expiration pour les entreprises
         if not enterprise.uploaded and enterprise.etat_souscription == 1 and not enterprise.partenaire:
 
+            days = None
             if enterprise.remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration du package
                 if enterprise.remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration du package
                     if enterprise.remaind_day(days=15): # si le temps restant est <= 15 jours avant expiration du
@@ -142,23 +143,49 @@ def send_mail_expired_company():
                             if enterprise.remaind_day(days=3): # si le temps restant est <= 3 jours avant expiration
                                 # du package
                                 # envoie de l'email
-                                pass
+                                days = 3
                             else:
                                 # envoie de l'email
-                                pass
+                                days = 7
                         else:
                             # envoie de l'email
-                            pass
+                            days = 15
                     else:
                         # envoie de l'email
-                        pass
+                        days = 30
                 else:
                     # envoie de l'email
-                    pass
+                    days = 60
+
+            if days:
+
+                user_mail = enterprise.mainuser
+
+                msg = Message()
+                msg.recipients = [enterprise.mainuser.email]
+                html = render_template('template_mail/compagnie/relance.html', **locals())
+                msg.subject = 'Renouvellement de vos services'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+                for user in enterprise.iduser:
+
+                    user_mail = user
+                    msg = Message()
+                    msg.recipients = [user.email]
+                    html = render_template('template_mail/compagnie/relance.html', **locals())
+                    msg.subject = 'Renouvellement de vos services'
+                    msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                    msg.html = html
+                    mail.send(msg)
 
         # Envoie email de rappel d'expiration pour les entreprises reclammees
         if enterprise.uploaded and enterprise.claimDate:
 
+            days = None
             if enterprise.claim_remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration des 3
                 # mois fournis
                 if enterprise.claim_remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration des
@@ -175,38 +202,87 @@ def send_mail_expired_company():
                                     enterprise = enterprise.save()
                                 else:
                                     # envoie de l'email
-                                    pass
+                                    days = 3
                             else:
                                 # envoie de l'email
-                                pass
+                                days = 7
                         else:
                             # envoie de l'email
-                            pass
+                            days = 15
                     else:
                         # envoie de l'email
-                        pass
+                        days = 30
                 else:
                     # envoie de l'email
-                    pass
+                    days = 60
 
-        # Envoie des emails au entreprise qui ont leur package expiree
-        if enterprise.etat_souscription == 2:
+            if days:
 
-            if enterprise.dateExpired().dateFin == function.datetime_convert(current_date) and not enterprise.uploaded:
-
-                html = render_template('template_mail/compagnie/expired_mail.html', **locals())
+                user_mail = enterprise.mainuser
 
                 msg = Message()
                 msg.recipients = [enterprise.mainuser.email]
-                msg.subject = 'Votre abonnement de l\'entreprise '+str(enterprise.name)+' est arrive a expiration.'
-                msg.sender = ('ICI.CM CRM Abonnement Expire', 'no_reply@ici.cm')
+                html = render_template('template_mail/compagnie/relance.html', **locals())
+                msg.subject = 'Renouvellement de vos services'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
                 mail.send(msg)
 
+                for user in enterprise.iduser:
+
+                    user_mail = user
+                    msg = Message()
+                    msg.recipients = [user.email]
+                    html = render_template('template_mail/compagnie/relance.html', **locals())
+                    msg.subject = 'Renouvellement de vos services'
+                    msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                    msg.html = html
+                    mail.send(msg)
+
+
+        # Envoie des emails au entreprise qui ont leur package expiree
+        if enterprise.etat_souscription == 2:
+
+            send = False
+
+            if enterprise.dateExpired().dateFin == function.datetime_convert(current_date) and not enterprise.uploaded:
+
+                send = True
+
             if enterprise.uploaded and enterprise.etat_souscription == 2:
                 enterprise.uploaded = False
                 enterprise = enterprise.save()
+                send = True
+
+            if send:
+
+                lien_reactivation = "#"
+
+                user_mail = enterprise.mainuser
+                html = render_template('template_mail/compagnie/expired_mail.html', **locals())
+
+                msg = Message()
+                msg.recipients = [enterprise.mainuser.email]
+                msg.subject = 'Suspension de notre service.'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+                for user in enterprise.iduser:
+
+                    user_mail = user
+                    html = render_template('template_mail/compagnie/expired_mail.html', **locals())
+
+                    msg = Message()
+                    msg.recipients = [user.email]
+                    msg.subject = 'Suspension de notre service.'
+                    msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                    msg.html = html
+                    mail.send(msg)
 
                 # envoie de l'email
 

@@ -22,7 +22,7 @@
                                     <a href="{{ url_for('claim.accepte', claim_id=claim_id) }}" class="uk-button uk-button-success-active waves-effect uk-button-small {% if claim.statut != 1 %} uk-disabled {% endif %}">
                                         <span>Accepter</span>
                                     </a>
-                                    <a href="{{ url_for('claim.refuse', claim_id=claim_id) }}" class="uk-button waves-effect uk-button-danger-active uk-button-small {% if claim.statut != 1 %} uk-disabled {% endif %}">
+                                    <a href="{{ url_for('claim.refuser', claim_id=claim_id) }}" class="uk-button waves-effect uk-button-danger-active uk-button-small {% if claim.statut != 1 %} uk-disabled {% endif %} modal" uk-toggle="target:#modal-id; bg-close:false; stack:true;">
                                         <span>Refuser</span>
                                     </a>
                                 </div>

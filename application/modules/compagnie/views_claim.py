@@ -42,6 +42,9 @@ def view(claim_id):
 @roles_required([('super_admin', 'claim')], ['edit'])
 def accepte(claim_id=None):
 
+    from ..company.models_company import Company
+    infos = Company.objects.first()
+
     if claim_id:
         data = Claim.objects.get(id=claim_id)
 
@@ -63,8 +66,9 @@ def accepte(claim_id=None):
 
         msg = Message()
         msg.recipients = [data.iduser.email]
-        msg.subject = 'Reponse a votre reclamation'
-        msg.sender = ('ICI.CM service reclamation d\'entreprise', 'no_reply@ici.cm')
+        msg.add_recipient(infos.emailNotification)
+        msg.subject = 'Statut demande de revendication'
+        msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html
         mail.send(msg)
@@ -95,12 +99,14 @@ def accepte(claim_id=None):
                 user.idcompagnie.append(compagnie)
                 user.save()
 
+            url_presence = "#"
             html = render_template('template_mail/compagnie/accept_reclamation.html', **locals())
 
             msg = Message()
             msg.recipients = [data.iduser.email]
-            msg.subject = 'Reponse a votre reclamation'
-            msg.sender = ('ICI.CM service reclamation d\'entreprise', 'no_reply@ici.cm')
+            msg.add_recipient(infos.emailNotification)
+            msg.subject = 'Statut demande de revendication'
+            msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
             msg.html = html
             mail.send(msg)
@@ -148,17 +154,18 @@ def refuser(claim_id):
         user = Users.objects.get(id=current_user.id)
         next_raison.user_reply = user
 
-        next_raison.save()
+        next_raison = next_raison.save()
 
         client.verify = 2
         client.save()
 
+        numero_call_center = "+237 600 00 00 00"
         html = render_template('template_mail/compagnie/refus_reclamation.html', **locals())
 
         msg = Message()
         msg.recipients = [client.mainuser.email]
         msg.add_recipient(info.emailNotification)
-        msg.subject = 'Confirmation de la mise en relation avec l\'entreprise'
+        msg.subject = 'Statut demande de revendication'
         msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
         msg.html = html
