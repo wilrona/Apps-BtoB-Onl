@@ -8,3 +8,7 @@ class Cron(db.Document):
     datePassage = db.DateTimeField()
     etat = db.IntField()
     repeat = db.IntField()
+
+
+class Import_excel(db.Document):
+    data = db.DictField()

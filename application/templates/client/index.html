@@ -32,15 +32,23 @@
 
 {% block  button %}
     {% if news != '1' %}
-        {% if current_user.has_roles([('super_admin', 'client_partenaire')]) %}
-            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special', partenaire='1') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Partenaire</a>
-        {% endif %}
-        {% if current_user.has_roles([('super_admin', 'client_institution')]) %}
-            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.edit_special') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Institution</a>
-        {% endif %}
-        {% if current_user.has_roles([('super_admin', 'client_slide')]) %}
-            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('client.add_slide') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Slide</a>
-        {% endif %}
+        <button class="uk-button waves-effect uk-button-success uk-button-small" type="button"> Attribution <span uk-icon="icon:  triangle-down"></span></button>
+        <div uk-dropdown="mode: click; pos: bottom-justify; boundary: .boundary-align; boundary-align: true" class="uk-padding-remove">
+            <ul class="uk-nav uk-dropdown-nav">
+                {% if current_user.has_roles([('super_admin', 'client_partenaire')]) %}
+                    <li><a href="{{ url_for('client.edit_special', partenaire='1') }}">Partenaire</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'client_institution')]) %}
+                    <li><a href="{{ url_for('client.edit_special') }}">Institution</a></li>
+                {% endif %}
+                {% if current_user.has_roles([('super_admin', 'client_slide')]) %}
+                    <li><a href="{{ url_for('client.add_slide') }}">Slide</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <a href="{{ url_for('client.import_excel') }}" class="uk-button waves-effect uk-button-secondary uk-button-small"><span uk-icon="icon: upload" class="uk-margin-small-right"></span>Importer (Excel)</a>
+
     {% endif %}
 {% endblock %}
 

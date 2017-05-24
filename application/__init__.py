@@ -2,6 +2,8 @@
 Initialize Flask app
 
 """
+#coding=utf-8
+
 from flask import Flask
 import os
 from datetime import timedelta

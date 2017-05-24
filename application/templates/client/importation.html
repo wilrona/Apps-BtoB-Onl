@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+
+{% block  button %}
+    {% if current_user.has_roles([('super_admin', 'client')], ['edit']) %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" id="submit" href="#"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span> Enreg.</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="#" id="annuler"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Annuler</a>
+    {% endif %}
+{% endblock %}
+
+
+{% block layout_content %}
+
+    <div class=" uk-margin">
+        {% include 'includes/flash_message.html' %}
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                <div class="uk-card uk-card-default uk-card-small uk-card-body">
+                    <div class="uk-flex-center" uk-grid uk-margin>
+                        <form class="uk-inline" method="post" enctype="multipart/form-data">
+                            <div class="uk-margin" uk-margin>
+                                <div uk-form-custom="target: true">
+                                    <input type="file" name="file">
+                                    <input class="uk-input uk-form-width-medium" type="text" placeholder="Ajouter un fichier xsl, xsls" disabled>
+                                </div>
+                                <button class="uk-button uk-button-success-active uk-button-small">Importer</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="uk-overflow-auto">
+
+                        <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                            <thead>
+                            <tr>
+                                <th class="no-sort" width="3%"></th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Categorie</th>
+                                <th>Adresse</th>
+                                <th>Reperage</th>
+                                <th>Site web</th>
+                                <th>Facebook</th>
+                                <th>Image a la une</th>
+                                <th>Logo</th>
+                                <th>Dossier</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for data in datas %}
+                                <tr>
+                                    <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                    <td>{{ data.nom }}</td>
+                                    <td>{{ data.email }}</td>
+                                    <td>{{ data.phone }}</td>
+                                    <td>{{ data.categorie }}</td>
+                                    <td>{{ data.region }}, {{ data.ville }}, {{ data.quartier }}<br>{{ data.rue }}, {{ data.bp }}</td>
+                                    <td>{{ data.reperage }}</td>
+                                    <td>{{ data.website }}</td>
+                                    <td>{{ data.facebook }}</td>
+                                    <td>{{ data.image }}</td>
+                                    <td>{{ data.logo }}</td>
+                                    <td>{{ data.dossier }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block footer_script %}
+
+    <script>
+        $('body').on('click', '#submit', function(e){
+            e.preventDefault();
+            var url = '{{ url_for('client.traitement_import') }}';
+            $.ajax({
+                method: "POST",
+                url: url
+            }).done(function( msg ) {
+
+                msg = $.parseJSON(msg);
+                if(msg['statut'] == 'OK'){
+                    window.location.replace(window.location.origin+"{{ url_for('client.index') }}").delay()
+                }else{
+                    UIkit.modal.alert('Aucune donnee a traiter.').then(function() {
+
+                    });
+                }
+
+
+            })
+        });
+
+        $('body').on('click', '#annuler', function(e){
+            e.preventDefault();
+            var url = '{{ url_for('client.annuler_import') }}';
+            $.ajax({
+                method: "POST",
+                url: url
+            }).done(function( msg ) {
+                window.location.replace(window.location.origin+"{{ url_for('client.index') }}").delay()
+            })
+        });
+    </script>
+
+{% endblock %}

@@ -1,5 +1,7 @@
 __author__ = 'wilrona'
 
+#coding=utf-8
+
 from flask import request, render_template, flash, url_for, redirect, session, make_response, Response, jsonify, \
     Blueprint, send_from_directory
 
@@ -62,6 +64,9 @@ from mongoengine.queryset.visitor import Q
 from mongoengine import NULLIFY
 
 import pdfkit
+
+import flask_excel as excel
+import xlrd
 
 global_etape = [
     'new',

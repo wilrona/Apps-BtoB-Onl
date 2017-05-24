@@ -44,6 +44,56 @@ def index():
     return render_template('user/login.html', **locals())
 
 
+@app.route("/upload", methods=['GET', 'POST'])
+def upload_file():
+
+    from ..utilities.imports import ExcelParser
+    from ..utilities.model_cron import Import_excel
+
+    if request.method == "POST":
+        file = request.files['file']
+        if file:
+            excel_parser = ExcelParser()
+
+            filename = secure_filename(file.filename)
+            source_save = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+            file.save(source_save)
+
+            items = excel_parser.read_excel(source_save)
+            os.remove(source_save)
+
+            for item in items:
+                data = Import_excel()
+                data.data = item
+                data.save()
+
+            return str(items)
+
+    return '''
+    <!doctype html>
+    <title>Upload an excel file</title>
+    <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
+    <form action="" method="post" enctype="multipart/form-data"><p>
+    <input type=file name=file><input type=submit value=Upload>
+    </form>
+    '''
+
+
+@app.route("/upload2", methods=['GET', 'POST'])
+def upload_file2():
+    if request.method == 'POST':
+        a = jsonify({"result": request.get_array(field_name='file')})
+        return a
+    return '''
+    <!doctype html>
+    <title>Upload an excel file</title>
+    <h1>Excel file upload (csv, tsv, csvz, tsvz only)</h1>
+    <form action="" method="post" enctype="multipart/form-data"><p>
+    <input type=file name=file><input type=submit value=Upload>
+    </form>
+    '''
+
+
 @prefix.route('/config', methods=['GET', 'POST'])
 def setting():
 

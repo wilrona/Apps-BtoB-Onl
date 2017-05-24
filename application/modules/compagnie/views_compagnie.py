@@ -733,6 +733,99 @@ def edit_special():
     return render_template('client/edit_exist.html', **locals())
 
 
+@prefix.route('/import/excel', methods=['GET', 'POST'])
+@login_required
+@roles_required([('super_admin', 'client')], ['edit'])
+def import_excel():
+
+    title_page = 'Clients - Import'
+
+    from ..utilities.imports import ExcelParser
+    from ..utilities.model_cron import Import_excel
+
+    importation = Import_excel.objects()
+
+    datas = []
+
+    for import_e in importation:
+        datas.append(import_e.data)
+
+    if request.method == "POST":
+        file = request.files['file']
+        if file:
+            excel_parser = ExcelParser()
+
+            filename = secure_filename(file.filename)
+            source_save = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+            file.save(source_save)
+
+            items = excel_parser.read_excel(source_save)
+            os.remove(source_save)
+
+            for item in items:
+                data = Import_excel()
+                data.data = item
+                data.save()
+
+            flash('Traitement des donnees reussis', 'success')
+            return redirect(url_for('client.import_excel'))
+
+    return render_template('client/importation.html', **locals())
+
+
+@prefix.route('/traitement/import', methods=['POST'])
+@login_required
+def traitement_import():
+
+    from ..utilities.model_cron import Import_excel
+
+    importation = Import_excel.objects()
+
+    if importation:
+
+        for importa in importation:
+            data = importa.data
+
+            if data.categorie:
+
+                categorie = Categorie.objects(name=data.categorie).first()
+
+                if categorie:
+
+                    entreprise = Compagnie()
+                    entreprise.name = data.nom
+                    entreprise.uploaded = True
+                    entreprise.email = data.email
+                    entreprise.phone = data.phone
+                    entreprise.region = data.region
+                    entreprise.activated = True
+                    entreprise.verify = True
+                    entreprise.repere = data.reperage
+                    entreprise.ville = data.ville
+                    entreprise.quartier = data.quartier
+                    entreprise.urlsite = data.website
+                    entreprise.imagedir = data.dossier
+                    entreprise.logo = data.logo
+                    entreprise.adresse = data.rue
+                    entreprise.description = data.description
+                    entreprise.facebook = data.facebook
+                    entreprise.maincategorie = categorie
+                    entreprise.idcategorie.append(categorie)
+                    entreprise.save()
+
+        datas = json.dumps({
+            'statut': 'OK'
+        })
+
+    else:
+
+        datas = json.dumps({
+            'statut': 'NOK'
+        })
+
+    return datas
+
+
 @prefix.route('/add/slide', methods=['GET', 'POST'])
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
@@ -841,16 +934,12 @@ def remove_special():
 
 @prefix.route('/all_activated')
 def all_activated():
-    compagnie = Compagnie.objects()
+
+    compagnie = Compagnie.objects(uploaded=True).update(verify=1)
 
     count = 0
-    for com in compagnie:
-        if com.verify:
-            com.verify = True
-        else:
-            com.verify = False
-        com.save()
-        count += 1
+    # for com in compagnie:
+    #     count += 1
 
     return str(count)
 
