@@ -68,6 +68,7 @@ def active_partenaire_facture(current):
         partenaire.etat_souscription = 1
 
         if not partenaire.activated:
+            partenaire.verify = True
             partenaire.activated = True
 
         partenaire.save()

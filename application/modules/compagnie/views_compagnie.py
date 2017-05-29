@@ -786,32 +786,79 @@ def traitement_import():
         for importa in importation:
             data = importa.data
 
-            if data.categorie:
+            if data['categorie'] and data['nom']:
 
-                categorie = Categorie.objects(name=data.categorie).first()
+                catego = Categorie.objects(name=data['categorie']).first()
 
-                if categorie:
+                if catego:
 
                     entreprise = Compagnie()
-                    entreprise.name = data.nom
+                    entreprise.name = data['nom']
+
+                    entreprise.email = data['email']
+                    entreprise.phone = data['phone']
+                    entreprise.description = data['description']
+
+                    entreprise.region = data['region']
+                    entreprise.repere = data['reperage']
+                    entreprise.ville = data['ville']
+                    entreprise.quartier = data['quartier']
+                    entreprise.adresse = data['rue']
+                    entreprise.postal_code = data['bp']
+
                     entreprise.uploaded = True
-                    entreprise.email = data.email
-                    entreprise.phone = data.phone
-                    entreprise.region = data.region
                     entreprise.activated = True
                     entreprise.verify = True
-                    entreprise.repere = data.reperage
-                    entreprise.ville = data.ville
-                    entreprise.quartier = data.quartier
-                    entreprise.urlsite = data.website
-                    entreprise.imagedir = data.dossier
-                    entreprise.logo = data.logo
-                    entreprise.adresse = data.rue
-                    entreprise.description = data.description
-                    entreprise.facebook = data.facebook
-                    entreprise.maincategorie = categorie
-                    entreprise.idcategorie.append(categorie)
-                    entreprise.save()
+
+                    entreprise.urlsite = data['website']
+                    entreprise.imagedir = data['dossier']
+                    entreprise.logo = data['logo']
+
+                    entreprise.facebook = data['facebook']
+                    entreprise.maincategorie = catego
+                    entreprise.idcategorie.append(catego)
+
+                    entreprise.latitude = data['latitude']
+                    entreprise.longitude = data['longitude']
+
+                    entreprise = entreprise.save()
+
+                    media = Media()
+                    media.type = 'image'
+                    media.une = True
+                    media.idcompagnie = entreprise
+                    media.url = data['image']
+                    media.save()
+
+            importa.delete()
+
+        flash('Validation des donnees reussis', 'success')
+
+        datas = json.dumps({
+            'statut': 'OK'
+        })
+
+    else:
+
+        datas = json.dumps({
+            'statut': 'NOK'
+        })
+
+    return datas
+
+
+@prefix.route('/sortie/import', methods=['POST'])
+@login_required
+def annuler_import():
+
+    from ..utilities.model_cron import Import_excel
+
+    importation = Import_excel.objects()
+
+    if importation:
+
+        for importa in importation:
+            importa.delete()
 
         datas = json.dumps({
             'statut': 'OK'
