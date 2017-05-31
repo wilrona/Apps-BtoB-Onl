@@ -68,6 +68,11 @@ import pdfkit
 import flask_excel as excel
 import xlrd
 
+from mailchimp3 import MailChimp
+
+client = MailChimp('yoomeeonline', '763e59a2e65985350eed2a7d076acae8-us16')
+
+
 global_etape = [
     'new',
     'qualified',

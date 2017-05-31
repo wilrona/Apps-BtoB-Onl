@@ -90,7 +90,7 @@ def logout():
 def index():
     title_page = 'Internautes'
 
-    internaute = '1'
+    internaute = True
 
     admin_role = Roles.objects(valeur='super_admin').first()
 
@@ -165,6 +165,59 @@ def choice():
 @prefix_param.route('/choice/soldier')
 def choice_soldier():
     return render_template('user/choice_soldier.html', **locals())
+
+
+@prefix_param.route('/import/mailcimp')
+def import_mailchimp():
+
+    listing = client.lists.all(get_all=True, fields="lists.name,lists.id")
+
+    return render_template('user/import_mailchimp.html', **locals())
+
+
+@prefix_param.route('/send_import/mailchimp/<id_list>', methods=['POST'])
+def send_import_mailchimp(id_list):
+
+    data = []
+    element = []
+    count = 0
+    for item in request.form.getlist('item_id'):
+        info = {}
+        item_found = Users.objects().get(id=item)
+
+        if str(id_list) in item_found.list_id:
+            info['statut'] = 'NOK'
+            info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" est deja dans cette liste.'
+            data.append(info)
+        else:
+            try:
+                client.lists.members.create(str(id_list), {
+                    'email_address': item_found.email,
+                    'status': 'subscribed',
+                    'merge_fields': {
+                        'FNAME': item_found.first_name,
+                        'LNAME': item_found.last_name,
+                    }
+                })
+                item_found.list_id.append(str(id_list))
+                element.append(str(item_found.id))
+                count += 1
+                item_found.save()
+            except requests.exceptions.HTTPError:
+                info['statut'] = 'NOK'
+                info['message'] = 'L\'utilisateur "'+item_found.full_name()+'" a une adresse email non valid.'
+                data.append(info)
+
+    if count:
+        info = {}
+        info['statut'] = 'OK'
+        info['message'] = str(count)+' utilisateur(s) ajoutee dans la mailling List avec success'
+        info['element'] = element
+        data.append(info)
+
+    data = json.dumps(data)
+
+    return data
 
 
 @prefix_param.route('/edit/password/<objectid:user_id>')
@@ -405,6 +458,7 @@ def deleted():
 
     from ..opportunite.models_opportunite import Opportunite
     from ..document.models_doc import Document
+    from ..compagnie.models_compagnie import Compagnie
 
     data = []
     element = []
@@ -413,6 +467,7 @@ def deleted():
         info = {}
         item_found = Users.objects().get(id=item)
         opportunite = Opportunite.objects(vendeur_id=item_found)
+        comp_user = Compagnie.objects(Q(iduser__in=item_found) | Q(mainuser=item_found))
 
         if opportunite:
             info['statut'] = 'NOK'
@@ -423,7 +478,11 @@ def deleted():
             info['statut'] = 'NOK'
             info['message'] = 'L\'utilisateur "'+item_found.name+'" est utilise par '+str(exit_document.count())+' autre(s) Documents(s)'
 
-        if not opportunite and not exit_document:
+        if comp_user:
+            info['statut'] = 'NOK'
+            info['message'] = 'L\'utilisateur "'+item_found.name+'" est utilise par '+str(exit_document.count())+' est administrateur d\'une entreprise'
+
+        if not opportunite and not exit_document and not comp_user:
             item_found.delete()
             element.append(str(item_found.id))
             count += 1

@@ -1,0 +1,72 @@
+<button class="uk-modal-close-default" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Liste de diffusion Mailchimp</h2>
+</div>
+<div class="uk-modal-body">
+    <ul class="uk-list uk-list-large uk-list-divider uk-list-striped">
+        {% for list in listing.lists %}
+            <li><a href="{{ url_for('user_param.send_import_mailchimp', id_list=list.id) }}" class="sender">{{ list.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+</div>
+
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-danger uk-modal-close" type="button">Fermer</button>
+</div>
+
+<script>
+
+    $('.sender').on('click', function(e){
+        e.preventDefault();
+        var url =  $(this).attr('href');
+        $.ajax({
+            method: "POST",
+            data: table.$('input.uk-checkbox-item').serialize(),
+            url: url
+        }).done(function( msg ) {
+
+            msg = $.parseJSON(msg);
+            var document = $("<p/>").addClass('uk-modal-body');
+            $.each(msg, function(i, item){
+                if(item['statut'] == 'OK'){
+
+                    for(var x=0; x<item['element'].length; x++){
+                        $input = $('input[value='+item['element'][x]+']');
+                        $parent = $input.parent().parent();
+                        table.row($parent).remove().draw( false );
+                    };
+
+                    document.append(
+                        $("<br/>"),
+                        $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
+                            $('<p/>').html(item['message'])
+                        )
+                    );
+                    // activer la reactualisation de la page en cours
+                    if(item['reload'] == 1){
+                        reload = true;
+                        reloading();
+                    }
+
+                }
+                if(item['statut'] == 'NOK'){
+                    document.append(
+                        $("<br/>"),
+                        $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(
+                            $('<p/>').html(item['message'])
+                        )
+                    )
+                }
+            });
+
+
+            UIkit.modal.dialog('<div class="uk-body-custom"></div>');
+            document.appendTo('.uk-body-custom');
+            $('.uk-div').addClass('uk-hidden');
+            $('.uk-checkbox-all').prop('checked', false);
+
+        });
+
+    });
+</script>

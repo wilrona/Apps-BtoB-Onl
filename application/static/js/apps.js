@@ -189,7 +189,7 @@
                 $link = $(this).data('link');
                 if($link){
                     var exist_paged = $link.split("?");
-                    console.log(exist_paged);
+                    // console.log(exist_paged);
                     if (exist_paged.length >= 2){
                         paged = '?paged='+table.page.info().page;
                         $url = exist_paged[0]+paged;

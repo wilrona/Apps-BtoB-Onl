@@ -16,10 +16,15 @@
             <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
             <div uk-dropdown="boundary: ! .uk-div; boundary-align: true;">
                 <ul class="uk-nav uk-dropdown-nav">
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed') }}" id="removed" {% endif %}>Enlever comme field soldier</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_cam') }}" id="removed_cam" {% endif %}>Enlever comme commercial</a></li>
-                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete']) %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_admin') }}" id="removed_admin" {% endif %}>Enlever comme administrateur</a></li>
+                    {% if not internaute %}
+{#                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete'])  %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.deleted') }}" id="deleted" {% endif %}>Supprimer</a></li>#}
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete'])  %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed') }}" id="removed" {% endif %}>Enlever comme field soldier</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete'])  %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_cam') }}" id="removed_cam" {% endif %}>Enlever comme commercial</a></li>
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['delete'])  %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.removed_admin') }}" id="removed_admin" {% endif %}>Enlever comme administrateur</a></li>
+                    {% else %}
+                        <li><a {% if not current_user.has_roles([('super_admin', 'user')], ['edit'])  %} class="uk-disabled uk-text-danger" {% else %} href="{{ url_for('user_param.import_mailchimp') }}" class="modal" uk-toggle="target: #modal-id" {% endif %}>Import Mailchimp</a></li>
+                    {% endif %}
+
                 </ul>
             </div>
         </div>
@@ -112,8 +117,7 @@
                             };
 
                             document.append(
-                                $('<br/>')
-                            ).append(
+                                $("<br/>"),
                                 $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-success').append(
                                     $('<p/>').html(item['message'])
                                 )
@@ -127,8 +131,7 @@
                         }
                         if(item['statut'] == 'NOK'){
                             document.append(
-                                $('<br/>')
-                            ).append(
+                                $("<br/>"),
                                 $('<div uk-alert style="margin:0;"/>').addClass('uk-alert-warning').append(
                                     $('<p/>').html(item['message'])
                                 )

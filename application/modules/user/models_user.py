@@ -32,6 +32,7 @@ class Users(db.Document):
     note = db.StringField()
 
     source = db.StringField()
+    list_id = db.ListField(db.StringField())
 
     roles = db.ListField(db.EmbeddedDocumentField(UserRole))
     idcompagnie = db.ListField(db.ReferenceField('Compagnie'))
