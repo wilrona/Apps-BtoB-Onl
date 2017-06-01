@@ -1,8 +1,9 @@
-
+# coding=utf-8
 from ...modules import *
 from model_cron import Cron
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.triggers.cron import CronTrigger
+from model_cron import Notification
 
 
 
@@ -182,6 +183,12 @@ def send_mail_expired_company():
                     msg.html = html
                     mail.send(msg)
 
+                notification = Notification()
+                notification.title = 'Renouvellement de vos services'
+                notification.message = "Votre souscription pour l'entreprise " + enterprise.name + " expire dans" + days + " jours soit le " + function.format_date(enterprise.dateExpired().dataFin, "%d/%m/%Y") + "."
+                notification.id_compagnie = enterprise
+                notification.save()
+
         # Envoie email de rappel d'expiration pour les entreprises reclammees
         if enterprise.uploaded and enterprise.claimDate:
 
@@ -241,6 +248,12 @@ def send_mail_expired_company():
                     msg.html = html
                     mail.send(msg)
 
+                notification = Notification()
+                notification.title = 'Renouvellement de vos services'
+                notification.message = "Votre souscription pour l'entreprise " + enterprise.name + " expire dans" + str(days) + " jours soit le " + function.format_date(enterprise.dateExpired().dataFin, "%d/%m/%Y") + "."
+                notification.id_compagnie = enterprise
+                notification.save()
+
 
         # Envoie des emails au entreprise qui ont leur package expiree
         if enterprise.etat_souscription == 2:
@@ -283,6 +296,13 @@ def send_mail_expired_company():
 
                     msg.html = html
                     mail.send(msg)
+
+                notification = Notification()
+                notification.title = 'Suspension de notre service.'
+                notification.message = 'Notre système de facturation a détecté que ce service est expiré, ' \
+                                       'non renouvelé malgré les relances que nous avons envoyées. '
+                notification.id_compagnie = enterprise
+                notification.save()
 
                 # envoie de l'email
 

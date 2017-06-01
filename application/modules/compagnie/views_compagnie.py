@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'User'
 
 from ...modules import *
@@ -447,6 +448,7 @@ def reload_categorie():
 def etat_activated():
 
     from ..company.models_company import Company
+    from ..utilities.model_cron import Notification
 
     infos = Company.objects.first()
 
@@ -477,6 +479,13 @@ def etat_activated():
 
                 msg.html = html
                 mail.send(msg)
+
+                notification = Notification()
+                notification.title = 'Statut demande d\'enregistrement de votre entreprise'
+                notification.message = 'Nous avons le plaisir de confirmer la validation des informations de votre ' \
+                                       'entreprise. '
+                notification.id_compagnie = item_found
+                notification.save()
 
             element.append(str(item_found.id))
             item_found.save()
@@ -536,6 +545,7 @@ def etat_unactivated():
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat(client_id):
     from ..company.models_company import Company
+    from ..utilities.model_cron import Notification
 
     info = Company.objects.first()
 
@@ -560,6 +570,12 @@ def etat(client_id):
             msg.html = html
             mail.send(msg)
 
+            notification = Notification()
+            notification.title = 'Statut demande d\'enregistrement de votre entreprise'
+            notification.message = 'Nous avons le plaisir de confirmer la validation des informations de votre entreprise.'
+            notification.id_compagnie = client
+            notification.save()
+
     client.save()
 
     flash('Les modifications de l\'etat du client ont ete effectue', 'success')
@@ -570,6 +586,7 @@ def etat(client_id):
 def refuse_client(client_id):
 
     from ..company.models_company import Company
+    from ..utilities.model_cron import Notification
 
     info = Company.objects.first()
 
@@ -609,6 +626,12 @@ def refuse_client(client_id):
 
         msg.html = html
         mail.send(msg)
+
+        notification = Notification()
+        notification.title = 'Statut demande d\'enregistrement de votre entreprise'
+        notification.message = 'Nous vous informons que votre demande d’enregistrement n’a pas été validé'
+        notification.id_compagnie = client
+        notification.save()
 
         # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
 

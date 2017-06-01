@@ -12,3 +12,16 @@ class Cron(db.Document):
 
 class Import_excel(db.Document):
     data = db.DictField()
+
+
+class Notification(db.Document):
+    title = db.StringField()
+    message = db.StringField()
+    lu = db.ListField(db.ReferenceField('Users'))
+    createDate = db.DateTimeField()
+    id_compagnie = db.ReferenceField('Compagnie')
+
+    def save(self, *args, **kwargs):
+        if not self.createDate:
+            self.createDate = datetime.datetime.now()
+        return super(Notification, self).save(*args, **kwargs)

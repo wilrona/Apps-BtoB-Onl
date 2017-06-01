@@ -51,6 +51,10 @@ class Paiement(db.Document):
 
         return reste
 
+    def compagnie(self):
+
+        return self.iddocument.client_id
+
 
 
 class Moyen_paiement(db.Document):

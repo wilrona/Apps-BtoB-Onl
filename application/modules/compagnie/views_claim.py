@@ -1,4 +1,4 @@
-
+# coding=utf-8
 from ...modules import *
 from models_compagnie import Claim, Compagnie
 from ..user.models_user import Users
@@ -43,6 +43,7 @@ def view(claim_id):
 def accepte(claim_id=None):
 
     from ..company.models_company import Company
+    from ..utilities.model_cron import Notification
     infos = Company.objects.first()
 
     if claim_id:
@@ -73,9 +74,15 @@ def accepte(claim_id=None):
         msg.html = html
         mail.send(msg)
 
+        notification = Notification()
+        notification.title = 'Statut demande de revendication'
+        notification.message = 'Nous avons le plaisir de confirmer la validation de votre demande de revendication.'
+        notification.id_compagnie = data.idcompagnie
+        notification.save()
+
         data.save()
 
-        flash('Demande Accepte avec success', 'success')
+        flash('Demande accepté avec success', 'success')
         return redirect(url_for('claim.view', claim_id=claim_id))
     else:
         datas = []
@@ -111,6 +118,13 @@ def accepte(claim_id=None):
             msg.html = html
             mail.send(msg)
 
+            notification = Notification()
+            notification.title = 'Statut demande de revendication'
+            notification.message = 'Nous avons le plaisir de confirmer la validation de votre demande de ' \
+                                   'revendication. '
+            notification.id_compagnie = data.idcompagnie
+            notification.save()
+
             element.append(str(data.id))
             data.save()
             count += 1
@@ -118,7 +132,7 @@ def accepte(claim_id=None):
         if count:
             info = {}
             info['statut'] = 'OK'
-            info['message'] = str(count)+' reclammation(s) ont ete valide avec success'
+            info['message'] = str(count)+' reclammation(s) ont ete validé avec success'
             info['element'] = element
             datas.append(info)
 
@@ -132,6 +146,7 @@ def refuser(claim_id):
 
     from ..company.models_company import Company
     from ..compagnie.models_compagnie import Raison
+    from ..utilities.model_cron import Notification
 
     info = Company.objects.first()
 
@@ -171,9 +186,15 @@ def refuser(claim_id):
         msg.html = html
         mail.send(msg)
 
+        notification = Notification()
+        notification.title = 'Statut demande de revendication'
+        notification.message = 'Nous vous informons que votre demande n’a pas été validé.'
+        notification.id_compagnie = client.idcompagnie
+        notification.save()
+
         # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
 
-        flash('Refus de la demande de relation effectue avec succes', 'success')
+        flash('Refus de la demande de relation effectué avec succes', 'success')
         success = True
 
     return render_template('client/claim/raison_refus.html', **locals())

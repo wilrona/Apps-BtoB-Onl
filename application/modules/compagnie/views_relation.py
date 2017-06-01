@@ -1,3 +1,4 @@
+# coding=utf-8
 from ...modules import *
 from models_compagnie import Relation, Compagnie
 from ..user.models_user import Users
@@ -46,6 +47,8 @@ def view(relation_id):
 @roles_required([('super_admin', 'relation')], ['edit'])
 def accepte(relation_id=None):
 
+    from ..utilities.model_cron import Notification
+
     info = Company.objects.first()
 
     if relation_id:
@@ -69,6 +72,13 @@ def accepte(relation_id=None):
 
         msg.html = html
         mail.send(msg)
+
+        notification = Notification()
+        notification.title = 'Statut demande de mise en relation'
+        notification.message = 'Nous avons le plaisir de vous confirmer la validation de votre demande de mise en ' \
+                               'relation avec l\'entreprise '+str(parent.name)
+        notification.id_compagnie = agence
+        notification.save()
 
         data.save()
 
@@ -101,6 +111,13 @@ def accepte(relation_id=None):
             msg.html = html
             mail.send(msg)
 
+            notification = Notification()
+            notification.title = 'Statut demande de mise en relation'
+            notification.message = 'Nous avons le plaisir de vous confirmer la validation de votre demande de mise en ' \
+                                   'relation avec l\'entreprise '+str(parent.name)
+            notification.id_compagnie = agence
+            notification.save()
+
             element.append(str(data.id))
             data.save()
             count += 1
@@ -122,6 +139,7 @@ def refuser(relation_id):
 
     from ..company.models_company import Company
     from ..compagnie.models_compagnie import Raison
+    from ..utilities.model_cron import Notification
 
     info = Company.objects.first()
 
@@ -160,6 +178,12 @@ def refuser(relation_id):
 
         msg.html = html
         mail.send(msg)
+
+        notification = Notification()
+        notification.title = 'Statut demande de mise en relation'
+        notification.message = 'Nous vous informons que votre demande de mise en relation avec l\'entreprise '+str(client.idparent.name)+' n\'a pas été validé.'
+        notification.id_compagnie = client.idagence.name
+        notification.save()
 
         # Envoyer un email au mainuser du client que son entreprise n'a pas ete valide
 

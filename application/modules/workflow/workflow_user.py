@@ -4,14 +4,6 @@ import random
 
 from itsdangerous import URLSafeTimedSerializer
 
-# msg = Message()
-# msg.recipients = ["ronald@accentcom-cm.com"]
-# msg.subject = 'Notification FDT'
-# msg.sender = ('Application FDT', 'no_reply@accentcom.agency')
-#
-# msg.html = render_template('mail/notification_mail.html')
-# mail.send(msg)
-
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])

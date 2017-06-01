@@ -1,3 +1,4 @@
+# coding=utf-8
 from ...modules import *
 from models_paiement import Paiement
 from ..document.models_doc import Document
@@ -68,7 +69,7 @@ def edit():
 
             reglement.save()
 
-        flash('Enregistement effectue avec succes', 'success')
+        flash('Enregistement effectué avec succes', 'success')
         success = True
 
     return render_template('paiement/reglement/edit.html', **locals())
@@ -80,6 +81,7 @@ def edit():
 def valide():
 
     from ..company.models_company import Company
+    from ..utilities.model_cron import Notification
 
     infos = Company.objects.first()
 
@@ -112,6 +114,13 @@ def valide():
             msg.html = html
             mail.send(msg)
 
+            notification = Notification()
+            notification.title = 'Confirmation de paiement'
+            notification.message = 'Votre paiement a été validé avec succes. Vous pouvez consulter les informations ' \
+                                   'de votre entreprise sur ICI. '
+            notification.id_compagnie = item_found.compagnie
+            notification.save()
+
             item_found.save()
 
             element.append(str(item_found.id))
@@ -120,7 +129,7 @@ def valide():
 
             info['statut'] = 'NOK'
             info['message'] = 'La facture No: "' + item_found.iddocument.reference() + '" ne contient pas de souche ' \
-                                                                                       'renseigne. '
+                                                                                       'renseigné. '
             data.append(info)
 
         item_index += 1
@@ -128,7 +137,7 @@ def valide():
     if count:
         info = {}
         info['statut'] = 'OK'
-        info['message'] = str(count) + ' element(s) ont ete valide avec success.'
+        info['message'] = str(count) + ' élément(s) ont été validé avec success.'
         info['element'] = element
         data.append(info)
 
