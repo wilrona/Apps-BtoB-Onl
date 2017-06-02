@@ -312,7 +312,28 @@
                                 <ul class="uk-switcher uk-margin">
                                     <li>
                                     {% if not devis_id %}
-                                        <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
+                                        <div class="uk-inline first-button">
+                                            <button class="uk-button waves-effect uk-button-success uk-button-small" type="button"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Pachages</button>
+                                            <div uk-dropdown="mode: click; pos: bottom-justify;" class="uk-padding-remove">
+                                                <ul class="uk-nav uk-dropdown-nav">
+                                                    <li><a href="#" id="addRow">ICI.CM</a></li>
+                                                    <li class="uk-nav-divider"></li>
+                                                    <li><a href="#">HOSTING</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="uk-inline second-button">
+                                            <button class="uk-button waves-effect uk-button-success uk-button-small" type="button"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Modules/Apps</button>
+                                            <div uk-dropdown="mode: click; pos: bottom-justify;" class="uk-padding-remove">
+                                                <ul class="uk-nav uk-dropdown-nav">
+                                                    <li><a href="#" id="">Inserer un module</a></li>
+                                                    <li class="uk-nav-divider"></li>
+                                                    <li><a href="#">Creer un module</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Site web </a>
                                     {% endif %}
                                         <div class="uk-overflow-auto">
                                             <input type="hidden" name="ici_cm" id="ici_cm" value="{{ session.get('package')['exist_ici']|string }}">
@@ -597,7 +618,7 @@
         });
 
         $('#addRow').on( 'click', function (e) {
-            e.preventDefault();
+{#            e.preventDefault();#}
 
             $select = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-service').append(
@@ -606,7 +627,7 @@
                     }).append(
                         $('<option value="">Choisir un service</option>'),
                         {% for service in services %}
-                            $('<option value="{{ service.sigle }}">{{ service.name }}</option>'),
+                            $('<option value="{{ service.sigle }}">{{ service.name }}</option>')
                         {% endfor %}
                     )
                 )
