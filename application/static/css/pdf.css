@@ -4,7 +4,7 @@ html, body{
     background-color: #fff;
     height:100%;
     color: #000;
-    font-size: 20px;
+    font-size: 12px;
     line-height: 1.42857143;
     /*transition: all 0.5s;*/
 }
@@ -72,10 +72,11 @@ td.title{
 
 
 .image{
-    margin-right: 50px;
+    margin-right: 35px;
     /*margin-top: -60px;*/
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
+    background-color: #fff;
 
 }
 

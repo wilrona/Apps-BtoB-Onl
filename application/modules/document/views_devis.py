@@ -436,8 +436,9 @@ def print_devis(devis_id):
             'margin-right': '0',
             'margin-left': '0',
             'margin-bottom': '0',
-            'zoom': '2',
-            'encoding': "UTF-8",
+            'zoom': '0.65',
+            'dpi': '400',
+            'encoding': "UTF-8"
 
         },
         configuration=config

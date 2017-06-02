@@ -478,7 +478,7 @@ def print_facture(facture_id):
 
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
 
-    image = PROJECT_DIR+'/static/images/icicm.png'
+    image = PROJECT_DIR+'/static/images/icicm.jpg'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
@@ -503,8 +503,9 @@ def print_facture(facture_id):
             'margin-right': '0',
             'margin-left': '0',
             'margin-bottom': '0',
-            'zoom': '2',
-            'encoding': "UTF-8",
+            'zoom': '0.65',
+            'dpi': '400',
+            'encoding': "UTF-8"
 
         },
         configuration=config
