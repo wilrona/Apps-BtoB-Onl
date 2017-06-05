@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'User'
 
 from ...modules import *
@@ -122,11 +123,12 @@ def edit(devis_id=None):
             if cont not in contact_list:
                 contact_list.append(cont)
 
-    services = LigneService.objects()
+    package_ici = Package.objects(idligneService='ici_cm')
+    package_hosting = Package.objects(idligneService='hosting')
 
     if 'package' not in session:
         session['package'] = []
-
+    # session.pop('package')
     current_client = None
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
 
@@ -255,6 +257,7 @@ def edit(devis_id=None):
                 ligne.iddevis = data
                 ligne.prix = float(item['st'])
                 ligne.qte = item['qte']
+                ligne.desc = item['desc']
 
                 ligne.idcompagnie = current_client
                 package = Package.objects.get(id=item['package'])
@@ -279,21 +282,22 @@ def edit(devis_id=None):
 @prefix.route('/ligne/commande', methods=['POST'])
 def ligne_commande():
 
-    from ..package.models_package import Package
+    from ..package.models_package import Package, Attribut
 
     session['package'] = []
 
     data = []
-
-    services = request.form.getlist('services')
-    package = request.form.getlist('package')
+    packages = request.form.getlist('package')
     qte = request.form.getlist('qte')
     st = request.form.getlist('st')
     prix = request.form.getlist('prix')
-    exist_ici = ''
-    size = len(services)
-    if size:
-        packs = Package.objects(idligneService=services[0])
+
+    count_pack = 0
+    for package in packages:
+
+        pack = Package.objects.get(id=package)
+        packs = Package.objects(idligneService=pack.idligneService)
+
         similaire = []
         for pack in packs:
             ligsimilaire = {}
@@ -301,28 +305,46 @@ def ligne_commande():
             ligsimilaire['name'] = pack.name
             similaire.append(ligsimilaire)
 
-        for x in range(0, size):
-            if services[0]:
-                ligne = {}
-                if services[0] == 'ici_cm':
-                    exist_ici = '1'
-                ligne['service'] = services[0]
-                ligne['package'] = str(package[0])
-                ligne['similaire'] = similaire
-                ligne['qte'] = int(qte[0])
-                ligne['prix'] = float(prix[0])
-                ligne['st'] = float(st[0])
+        desc = 'Element du package : \n'
+        count = 0
+        for elem in pack.attribut:
 
-                data.append(ligne)
+            if count >= 1:
+                desc += ','
+            attribut = Attribut.objects(name=elem).first()
+            desc += attribut.libelle
+            count += 1
+
+        ligne = {}
+        ligne['service'] = pack.idligneService
+        ligne['package'] = package
+        ligne['similaire'] = similaire
+        ligne['desc'] = desc
+        ligne['qte'] = int(qte[count_pack])
+        ligne['prix'] = float(prix[count_pack])
+        ligne['st'] = float(st[count_pack])
+
+        data.append(ligne)
+        count_pack += 1
 
     session['package'] = {
-        'exist_ici': exist_ici,
         'data': data
     }
 
     data = json.dumps(data)
 
     return data
+
+
+@prefix.route('/add/site')
+def add_website():
+    from ..package.models_package import Attribut, Package
+
+    package_website = Package.objects(idligneService='website')
+
+    attribut = Attribut.objects(idligneService='website')
+
+    return render_template('devis/add_website.html', **locals())
 
 
 @prefix.route('/change/<objectid:devis_id>/<int:status>', methods=['GET'])

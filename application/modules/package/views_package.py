@@ -1,4 +1,4 @@
-
+# coding=utf-8
 from ...modules import *
 from models_package import Package, LigneService, Attribut
 from form_package import FormPackage
@@ -100,9 +100,10 @@ def edit(package_id=None):
             data.level = (count + 1)
             data.hight = True
 
-            prev = Package.objects(Q(idligneService=form.idligneService.data) & Q(level=count) & Q(sale=0)).get()
-            prev.hight = False
-            prev.save()
+            prev = Package.objects(Q(idligneService=form.idligneService.data) & Q(level=count) & Q(sale=0)).first()
+            if prev:
+                prev.hight = False
+                prev.save()
 
 
         data.attribut = []
@@ -137,13 +138,13 @@ def etat(package_id):
     if pack.status:
         pack.status = False
         if pack.hight:
-            prev = Package.objects(Q(idligneService=pack.idligneService) & Q(level=(pack.level - 1)) & Q(sale=0)).get()
+            prev = Package.objects(Q(idligneService=pack.idligneService) & Q(level=(pack.level - 1)) & Q(sale=0)).first()
             prev.hight = True
             prev.save()
     else:
         pack.status = True
         if pack.level == pack.similar().count():
-            prev = Package.objects(hight=True).get()
+            prev = Package.objects(hight=True).first()
             prev.hight = False
             prev.save()
 
@@ -162,7 +163,7 @@ def up(package_id):
     current_etape = Package.objects.get(id=package_id)
 
     prev = current_etape.level - 1
-    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
+    precedent = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).first()
     if precedent:
 
         hight_current = current_etape.hight
@@ -188,7 +189,7 @@ def down(package_id):
     current_etape = Package.objects.get(id=package_id)
 
     prev = current_etape.level + 1
-    next = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).get()
+    next = Package.objects(Q(level=prev) & Q(idligneService=current_etape.idligneService)).first()
     if next:
         hight_current = next.hight
 
@@ -240,9 +241,23 @@ def find_single_package():
     if pack.promo:
         prix = pack.prix_promo
 
+    desc = 'Element du package : \n'
+
+    count = 0
+    for elem in pack.attribut:
+
+        if count >= 1:
+            desc += ','
+
+        attribut = Attribut.objects(name=elem).first()
+
+        desc += attribut.libelle
+        count += 1
+
     data = json.dumps({
         'id': str(pack.id),
         'qte': pack.duree,
+        'desc': desc,
         'prix': prix,
         'statut': 'OK'
     })

@@ -1,0 +1,90 @@
+<button class="uk-modal-close-outside" type="button" uk-close></button>
+<div class="uk-modal-header">
+    <h2 class="uk-modal-title">Ajouter une offre site web</h2>
+</div>
+
+<div class="uk-modal-body">
+    <div class="uk-form-horizontal uk-margin-small">
+
+        <div class="uk-margin">
+            <label class="uk-form-label" for="form-horizontal-select">Offre Site web prédéfini :</label>
+            <div class="uk-form-controls">
+                <select class="uk-select" id="form-horizontal-select">
+                    <option value="">Selectionne une offre</option>
+                    {% for package in package_website %}
+                        <option value="{{ package.id }}">{{ package.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <hr>
+    <div class="uk-inline uk-width-1-1">
+        <span class="uk-form-icon uk-form-icon-flip uk-icon" uk-icon="icon: search"></span>
+        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche un composant" id="searchbox_modal">
+    </div>
+    <hr>
+    <table class="uk-table uk-table-small uk-table-middle uk-table-striped" id="dataTable_modal">
+        <thead>
+        <tr>
+            <th width="80%">Composants</th>
+            <th width="20%">Selection</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for composant in attribut %}
+        <tr>
+            <td>
+                {{ composant.libelle }}
+            </td>
+            <td>
+                <input class="uk-checkbox" type="checkbox" name="composant" id="{{ composant.id }}">
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<div class="uk-modal-footer uk-text-right">
+    <button class="uk-button waves-effect uk-button-danger uk-modal-close uk-button-small" type="button">Fermer</button>
+    <button type="button" id="submit_modal" class="uk-button waves-effect uk-button-success uk-button-small"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</button>
+</div>
+<script>
+    var table_modal = $('#dataTable_modal').DataTable({
+        'language':{
+            "sProcessing":     "Traitement en cours...",
+            "sSearch":         "Rechercher&nbsp;:",
+            "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
+            "sInfo":           "Affichage de  _START_ &agrave; _END_ sur _TOTAL_ ",
+            "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 ",
+            "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+            "sInfoPostFix":    "",
+            "sLoadingRecords": "Chargement en cours...",
+            "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
+            "sEmptyTable":     "Aucune donn&eacute;e disponible",
+            "oPaginate": {
+                "sFirst":      "Premier",
+                "sPrevious":   "Pr&eacute;c&eacute;dent",
+                "sNext":       "Suivant",
+                "sLast":       "Dernier"
+            },
+            "oAria": {
+                "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+            }
+        },
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
+        "info": false,
+        //"searching": false,
+        "iDisplayLength": 25,
+        //dom: 'f',
+        "bLengthChange" : true
+    });
+
+    $('#searchbox_modal').on('keyup', function(){
+        table_modal.search($(this).val()).draw() ;
+    });
+</script>

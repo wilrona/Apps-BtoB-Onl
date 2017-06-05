@@ -122,6 +122,7 @@ class LigneDoc(db.Document):
     etat = db.IntField(default=0) # 1 : ligne document active
     idcompagnie = db.ReferenceField('Compagnie')
     idpackage = db.ReferenceField('Package')
+    desc = db.StringField()
 
 
 
