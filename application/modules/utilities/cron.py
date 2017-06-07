@@ -38,10 +38,19 @@ def active_company_ici():
                 for ici_cm in facture.package_ici_cm():
                     enterprise.append(ici_cm.idcompagnie)
 
-                    time_zones = tzlocal()
-                    date_auto_nows = datetime.datetime.now(time_zones).strftime("%m/%d/%y")
+                    if ici_cm.idcompagnie.dateExpired():
+                        date_auto_nows = ici_cm.idcompagnie.dateExpired().dateFin.strftime("%m/%d/%y")
+                        current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
 
-                    current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
+                        old_subcription = ici_cm.idcompagnie.dateExpired()
+                        old_subcription.etat = 2
+                        old_subcription.save()
+
+                    else:
+                        time_zones = tzlocal()
+                        date_auto_nows = datetime.datetime.now(time_zones).strftime("%m/%d/%y")
+                        current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
+
                     ici_cm.dateDebut = function.datetime_convert(current_date)
                     ici_cm.dateFin = current_date + relativedelta(months=int(ici_cm.qte))
 
@@ -51,17 +60,26 @@ def active_company_ici():
                 facture.exe_ici_cm = 1
                 facture.save()
 
-            if facture.is_partiel() and facture.montant_reglement() > 0: # verifie si le paiement n'est pas pas
+            if facture.is_partiel() and facture.montant_reglement(True) > 0: # verifie si le paiement n'est pas pas
                 # complet et qu'il y'a un versement qui existe
                 if facture.montant >= facture.montant_package_ici_cm(): # verifie que le montant existant est
                     # superieur a la valeur du package ici achete
                     for ici_cm in facture.package_ici_cm():
                         enterprise.append(ici_cm.idcompagnie)
 
-                        time_zones = tzlocal()
-                        date_auto_nows = datetime.datetime.now(time_zones).strftime("%m/%d/%y")
+                        if ici_cm.idcompagnie.dateExpired():
+                            date_auto_nows = ici_cm.idcompagnie.dateExpired().dateFin.strftime("%m/%d/%y")
+                            current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
+                            
+                            old_subcription = ici_cm.idcompagnie.dateExpired()
+                            old_subcription.etat = 2
+                            old_subcription.save()
 
-                        current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
+                        else:
+                            time_zones = tzlocal()
+                            date_auto_nows = datetime.datetime.now(time_zones).strftime("%m/%d/%y")
+                            current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
+
                         ici_cm.dateDebut = function.datetime_convert(current_date)
                         ici_cm.dateFin = current_date + relativedelta(months=int(ici_cm.qte))
 
@@ -77,7 +95,7 @@ def active_company_ici():
     print('activation reussi')
 
 
-# Execution tous les jours a 07:00 du matin.
+# Execution tous les jours a 01:00 du matin.
 def verify_expired_company():
 
     from ..compagnie.models_compagnie import Compagnie
@@ -106,13 +124,13 @@ def verify_expired_company():
 
             if no_part:
                 ligne = enterprise.dateExpired()
-                ligne.etat = 0
+                ligne.etat = 2
                 ligne.save()
 
     print('Entreprise expiree traite')
 
 
-# Execution tous les jours a 07:30
+# Execution tous les jours a 06:30
 def send_mail_expired_company():
 
     from ..compagnie.models_compagnie import Compagnie

@@ -94,7 +94,7 @@ def index():
 
     admin_role = Roles.objects(valeur='super_admin').first()
 
-    datas = Users.objects(Q(user=0) & Q(roles__role_id__ne=admin_role))
+    datas = Users.objects(Q(roles__role_id__ne=admin_role))
 
     return render_template('user/index.html', **locals())
 

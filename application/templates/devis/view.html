@@ -217,32 +217,20 @@
                                 <ul class="uk-clearfix uk-switcher uk-margin">
                                     <li>
                                         <div class="uk-overflow-auto" >
-                                            <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
+                                            <table class="uk-table uk-table-small uk-table-middle uk-table-divider" id="dataTable_produit">
                                                 <thead>
-                                                    <tr>
-                                                        <th width="20%">Service</th>
-                                                        <th width="20%">Produit</th>
-                                                        <th width="16%">Quantite</th>
-                                                        <th width="16%">Prix unitaires</th>
-                                                        <th width="16%">Sous total</th>
-                                                    </tr>
+                                                        <tr>
+                                                            {#<th width="20%">Service</th>#}
+                                                            <th width="15%">Produit</th>
+                                                            <th width="30%">Description</th>
+                                                            <th width="10%">Quantité / Période</th>
+                                                            <th width="10%">Prix unitaire</th >
+                                                            <th width="10%">Sous total</th>
+                                                        </tr>
                                                 </thead>
                                                 <tbody>
-                                                {% for pack in ligne_doc %}
+                                                {% for pack in data.lignedoc_devis() %}
                                                     <tr>
-                                                        <td>
-                                                            <div class="uk-form-controls uk-form-service">
-
-                                                                <ul class="uk-subnav uk-margin-remove-bottom">
-                                                                    {% for service in services %}
-                                                                        {% if service.sigle == pack.idpackage.idligneService %}
-                                                                            <li class="uk-active">{{ service.name }}</li>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </ul>
-
-                                                            </div>
-                                                        </td>
                                                         <td>
 
                                                             <div class="uk-form-controls uk-form-package">
@@ -255,20 +243,21 @@
 
                                                         </td>
                                                         <td>
-                                                            <div class="uk-form-controls uk-form-qte">
-
-                                                                <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank"/>
+                                                            <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="uk-form-controls uk-form-qte uk-text-center">{{ pack.qte }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
 
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div class="uk-form-controls uk-form-prix">
-                                                                <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                                                <div class="uk-width-auto uk-text-center">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div class="uk-form-controls uk-form-st">
-                                                                <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank">
+                                                            <div class="uk-form-controls uk-form-st change_st uk-text-center">
+                                                                {{ pack.prix }}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -304,7 +293,7 @@
 
 
                                      <div class="uk-float-left uk-width-1-2@s">
-                                         <table class="uk-table uk-table-small uk-table-middle">
+                                         <table class="uk-table uk-table-small uk-table-middle uk-table-divider">
                                              <tbody>
                                              <tr>
                                                  <td><strong>Information vendeur</strong></td>
@@ -393,7 +382,7 @@
             total = 0;
 
             $('#dataTable_produit tbody .change_st').each(function(){
-                total = total + parseFloat($(this).val());
+                total = total + parseFloat($(this).text());
             });
 
             console.log(total);

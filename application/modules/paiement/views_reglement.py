@@ -33,7 +33,7 @@ def transaction():
 @login_required
 def edit():
 
-    factures = Document.objects(devisDoc=False)
+    factures = Document.objects(Q(devisDoc=False) & Q(status__ne=3))
 
     datas = []
 
@@ -118,7 +118,7 @@ def valide():
             notification.title = 'Confirmation de paiement'
             notification.message = 'Votre paiement a été validé avec succes. Vous pouvez consulter les informations ' \
                                    'de votre entreprise sur ICI. '
-            notification.id_compagnie = item_found.compagnie
+            notification.id_compagnie = item_found.iddocument.client_id
             notification.save()
 
             item_found.save()

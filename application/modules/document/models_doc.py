@@ -60,16 +60,23 @@ class Document(db.Document):
             ref = current_ref.ref_devis+'/'+self.ref
         return ref
 
-    def reglement_facture(self):
+    def reglement_facture(self, status=False):
 
         from ..paiement.models_paiement import Paiement
-        paiement = Paiement.objects(iddocument=self.id)
-        return paiement
+        if status:
+            paiements = Paiement.objects(Q(iddocument=self.id) & Q(status=1))
+        else:
+            paiements = Paiement.objects(iddocument=self.id)
+        return paiements
 
-    def montant_reglement(self):
+    def montant_reglement(self, status=False):
 
         from ..paiement.models_paiement import Paiement
-        paiements = Paiement.objects(iddocument=self.id)
+        if status:
+            paiements = Paiement.objects(Q(iddocument=self.id) & Q(status=1))
+        else:
+            paiements = Paiement.objects(iddocument=self.id)
+
         montant = 0
         for paiement in paiements:
             montant += paiement.montant
@@ -78,13 +85,13 @@ class Document(db.Document):
     def is_partiel(self):
 
         from ..paiement.models_paiement import Paiement
-        paiements = Paiement.objects(iddocument=self.id)
+        paiements = Paiement.objects(Q(iddocument=self.id) & Q(status=1))
         montant = 0
         for paiement in paiements:
             montant += paiement.montant
 
         partiel = False
-        if montant < self.montant:
+        if montant and montant < self.montant:
             partiel = True
 
         return partiel
@@ -123,6 +130,7 @@ class LigneDoc(db.Document):
     idcompagnie = db.ReferenceField('Compagnie')
     idpackage = db.ReferenceField('Package')
     desc = db.StringField()
+    free = db.IntField(default=0)
 
 
 

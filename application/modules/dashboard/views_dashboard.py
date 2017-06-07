@@ -6,6 +6,7 @@ from ..opportunite.models_opportunite import Opportunite, Suivie
 from ..document.models_doc import Document
 from ..compagnie.models_compagnie import Compagnie, Claim, Relation
 from ..company.models_company import Config_reference
+from ..user.models_user import Users, Roles
 
 
 prefix = Blueprint('dashboard', __name__)
@@ -40,6 +41,10 @@ def index():
 
     # Compte le nombre de client
     count_client = Compagnie.objects(verify=1).count()
+
+    # Compte le nombre d'internaute d'ici
+    admin_role = Roles.objects(valeur='super_admin').first()
+    count_internaute = Users.objects(Q(roles__role_id__ne=admin_role)).count()
 
     if current_user.has_roles([('super_admin', 'devis')]):
         count_devis = Document.objects(Q(devisDoc=True) & Q(status__lt=3)).count()

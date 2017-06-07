@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'User'
 
 
@@ -16,7 +17,7 @@ class FormPackage(wtf.Form):
     id = wtf.HiddenField()
     name = wtf.StringField(label='Nom du package :', validators=[validators.Required(message='Champ obligatoire')])
     description = wtf.TextAreaField(label='Description :')
-    duree = wtf.StringField(label='Duree/Periode :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
+    duree = wtf.StringField(label=u'Durée/Période :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
     prix = wtf.StringField(label='Prix :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
     prix_promo = wtf.StringField(label='Prix promotionnel :', widget=NumberInput(), validators=[valid_promo])
     promo = wtf.BooleanField()
@@ -30,11 +31,11 @@ def unique_code_validator(form, field):
     ).count()
     if code_unique:
         if not form.id.data:
-            raise wtf.ValidationError('Ce sigle est deja utilise.')
+            raise wtf.ValidationError(u'Ce sigle est déja utilisé')
         else:
             code = LigneService.objects.get(id=form.id.data)
             if code.sigle != field.data:
-                raise wtf.ValidationError('Ce sigle est deja utilise.')
+                raise wtf.ValidationError(u'Ce sigle est déja utilisé.')
 
 
 class FormService(wtf.Form):
@@ -42,6 +43,7 @@ class FormService(wtf.Form):
     name = wtf.StringField(label='Nom du service :', validators=[validators.Required(message='Champ obligatoire')])
     package = wtf.BooleanField()
     sigle = wtf.StringField(label='Sigle :', validators=[unique_code_validator])
+    unite = wtf.StringField(label=u'Unité des offres/packages :')
 
 
 def unique_code_validator_attr(form, field):
@@ -50,11 +52,11 @@ def unique_code_validator_attr(form, field):
     ).count()
     if code_unique:
         if not form.id.data:
-            raise wtf.ValidationError('Ce sigle est deja utilise.')
+            raise wtf.ValidationError(u'Ce sigle est déja utilisé.')
         else:
             code = Attribut.objects.get(id=form.id.data)
             if code.name != field.data:
-                raise wtf.ValidationError('Ce sigle est deja utilise.')
+                raise wtf.ValidationError(u'Ce sigle est déja utilisé.')
 
 
 class FormAttribut(wtf.Form):

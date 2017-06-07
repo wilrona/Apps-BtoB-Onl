@@ -302,39 +302,40 @@
                                 <ul class="uk-switcher uk-margin">
                                     <li>
                                         {% if not form.devis_id.data %}
-                                            <a href="" class="uk-button waves-effect uk-button-success uk-button-small uk-margin" id="addRow"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> produit</a>
+                                            <div class="uk-inline first-button">
+                                                <button class="uk-button waves-effect uk-button-success uk-button-small" type="button"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Pachages / Offres</button>
+                                                <div uk-dropdown="mode: click; pos: bottom-justify;" class="uk-padding-remove">
+                                                    <ul class="uk-nav uk-dropdown-nav">
+                                                        <li><a href="#" class="addRow" id="ici_cm">ICI.CM</a></li>
+                                                        <li class="uk-nav-divider"></li>
+                                                        <li><a href="#" class="addRow" id="hosting">HOSTING</a></li>
+                                                        <li class="uk-nav-divider"></li>
+                                                        <li><a href="#" class="addRow" id="website">SITE WEB</a></li>
+                                                        <li class="uk-nav-divider"></li>
+                                                        <li><a href="#" class="addRow" id="domaine">NON DE DOMAINE</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <a href="#" class="uk-button waves-effect uk-button-success uk-button-small uk-margin addRow" id="module"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span> Modules / Apps </a>
                                         {% endif %}
 
                                         <div class="uk-overflow-auto">
-                                            <input type="hidden" name="ici_cm" id="ici_cm" value="{{ session.get('package')['exist_ici']|string }}">
+{#                                            <input type="hidden" name="ici_cm" id="ici_cm" value="{{ session.get('package')['exist_ici']|string }}">#}
                                             <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
                                                 <thead>
-                                                    <tr>
-                                                        <th width="20%">Service</th>
-                                                        <th width="20%">Produit</th>
-                                                        <th width="16%">Quantite</th>
-                                                        <th width="16%">Prix unitaires</th>
-                                                        <th width="16%">Sous total</th>
-                                                        <th width="7%" class="no-sort"></th>
-                                                    </tr>
+                                                <tr>
+                                                    <th width="15%">Produit</th>
+                                                    <th width="25%">Description</th>
+                                                    <th width="16%">Quantite</th>
+                                                    <th width="10%">Prix unitaires</th >
+                                                    <th width="10%">Sous total</th>
+                                                    <th width="7%" class="no-sort"></th>
+                                                </tr>
                                                 </thead>
                                                 <tbody>
                                                 {% if form.devis_id.data or data.parent %}
                                                     {% for pack in ligne_doc %}
                                                         <tr>
-                                                            <td>
-                                                                <div class="uk-form-controls uk-form-service">
-
-                                                                    <ul class="uk-subnav uk-margin-remove-bottom">
-                                                                        {% for service in services %}
-                                                                            {% if service.sigle == pack.idpackage.idligneService %}
-                                                                                <li class="uk-active">{{ service.name }}</li>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </ul>
-
-                                                                </div>
-                                                            </td>
                                                             <td>
 
                                                                 <div class="uk-form-controls uk-form-package">
@@ -347,20 +348,23 @@
 
                                                             </td>
                                                             <td>
-                                                                <div class="uk-form-controls uk-form-qte">
+                                                                <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-form-controls uk-form-qte uk-text-center">
 
-                                                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-input change_qte uk-width-auto uk-form-blank uk-form-small"/>
+                                                                    {{ pack.qte }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
 
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="uk-form-controls uk-form-prix">
+                                                                <div class="uk-form-controls uk-form-prix uk-text-center">
                                                                     <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <div class="uk-form-controls uk-form-st">
-                                                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-form-blank uk-form-small">
+                                                                <div class="uk-form-controls uk-form-st uk-text-center">
+                                                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-input change_st uk-width-auto uk-text-center uk-form-small" data-old="{{ pack['st'] }}">
                                                                 </div>
                                                             </td>
                                                             <td></td>
@@ -370,30 +374,39 @@
                                                     {% for pack in session.get('package_fact')['data'] %}
                                                         <tr>
                                                             <td>
-                                                                <div class="uk-form-controls uk-form-service">
-
-                                                                    <select name="services"  class="uk-select selected services uk-form-small">
-                                                                        <option value="">Choisir un service</option>
-                                                                        {% for service in services %}
-                                                                            <option value="{{ service.sigle }}" {% if pack['service'] == service.sigle %} selected {% endif %}>{{ service.name }}</option>
-                                                                        {% endfor %}
-                                                                    </select>
-
-                                                                </div>
-                                                            </td>
-                                                            <td>
 
                                                                 <div class="uk-form-controls uk-form-package">
 
                                                                     <select name="package" class="uk-select selected package uk-form-small">
-                                                                        <option value="">Choisir un produit</option>
+                                                                        {% if pack['service'] == 'ici_cm' %}
+                                                                            <option value="">Package ici.cm</option>
+                                                                        {% endif %}
+                                                                        {% if pack['service'] == 'hosting' %}
+                                                                            <option value="">Offre Hosting</option>
+                                                                        {% endif %}
+                                                                        {% if pack['service'] == 'website' %}
+                                                                            <option value="">Offre Site web</option>
+                                                                        {% endif %}
+                                                                        {% if pack['service'] == 'module' %}
+                                                                            <option value="">Listes Modules</option>
+                                                                        {% endif %}
+                                                                        {% if pack['service'] == 'domaine' %}
+                                                                            <option value="">Offre nom de domaine</option>
+                                                                        {% endif %}
                                                                         {% for package in pack['similaire'] %}
                                                                             <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
                                                                         {% endfor %}
                                                                     </select>
 
+                                                                    <input type="hidden" name="service" class="service" value="{{ pack['service'] }}">
+
                                                                 </div>
 
+                                                            </td>
+                                                            <td>
+                                                                <div class="uk-text uk-text-justify uk-text-break">
+                                                                    <textarea name="desc" id="" rows="4" class="uk-textarea change_desc" style="height:60px !important;">{{ pack['desc']}}</textarea>
+                                                                </div>
                                                             </td>
                                                             <td>
                                                                 <div class="uk-form-controls uk-form-qte">
@@ -636,31 +649,112 @@
             }
         });
 
-        $('#addRow').on( 'click', function (e) {
-            e.preventDefault();
+        $('.addRow').on( 'click', function (e) {
+            {#            e.preventDefault();#}
 
-            $select = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-service').append(
-                    $('<select/>').addClass('uk-select selected services uk-form-small').attr({
-                        name: 'services'
-                    }).append(
-                        $('<option value="">Choisir un service</option>'),
-                        {% for service in services %}
-                            $('<option value="{{ service.sigle }}">{{ service.name }}</option>'),
-                        {% endfor %}
-                    )
+
+            $description = $('<div/>').append(
+                $('<div/>').addClass('uk-text uk-text-justify uk-text-break').append(
+                    $('<textarea/>').attr({rows:'4', style:'height:60px !important', name:'desc'}).addClass('uk-textarea change_desc')
                 )
             );
 
-            $select_pack = $('<div/>').append(
-                $('<div/>').addClass('uk-form-controls uk-form-package').append(
-                    $('<select/>').addClass('uk-select selected package uk-form-small').attr({
-                        name: 'package'
-                    }).append(
-                        $('<option value="">Choisir un produit</option>')
+            var $this = $(this);
+
+            if($this.attr('id') === 'ici_cm'){
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Package ici.cm</option>'),
+                            {% for package in package_ici %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('ici_cm').addClass('service')
                     )
-                )
-            );
+                );
+            }
+
+            if($this.attr('id') === 'hosting') {
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Offre Hosting</option>'),
+                            {% for package in package_hosting %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('hosting').addClass('service')
+                    )
+                );
+            }
+
+            if($this.attr('id') === 'website') {
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Offre Site web</option>'),
+                            {% for package in package_website %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('website').addClass('service')
+                    )
+                );
+            }
+
+            if($this.attr('id') === 'module') {
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Listes Modules</option>'),
+                            {% for package in package_module %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('module').addClass('service')
+                    )
+                );
+            }
+
+            if($this.attr('id') === 'domaine') {
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Offre nom de domaine</option>'),
+                            {% for package in package_domaine %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('domaine').addClass('service')
+                    )
+                );
+            }
 
             $input_qte = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-qte').append(
@@ -693,27 +787,61 @@
                 )
             );
 
-            table_produit.row.add( [
-                $select.html(),
-                $select_pack.html(),
-                $input_qte.html(),
-                $unit_price.html(),
-                $input_st.html(),
-                '<a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>'
-            ] ).draw( false );
+            counters = 0;
+            $('#dataTable_produit').find('tbody .service').each(function(){
 
-            $(".selected").select2({width:'100%'});
+                if($this.attr('id') === 'ici_cm'){
+
+                    if($(this).val() === 'ici_cm'){
+                        counters++;
+                    }
+                }
+
+                if($this.attr('id') === 'hosting'){
+
+                    if($(this).val() === 'hosting'){
+                        counters++;
+                    }
+                }
+
+                if($this.attr('id') === 'website'){
+
+                    if($(this).val() === 'website'){
+                        counters++;
+                    }
+                }
+            });
+
+            if(counters === 0){
+
+                $nodeD = table_produit.row.add( [
+                    $select_pack.html(),
+                    $description.html(),
+                    $input_qte.html(),
+                    $unit_price.html(),
+                    $input_st.html(),
+                    '<a href="" class="uk-button uk-button-default uk-button-small delete_item" ><span uk-icon="icon: trash"></span></a>'
+                ] ).draw( false ).node();
+
+                {#                $( $nodeD ).find('td').eq(1).addClass('uk-text-nowrap');#}
+
+                $(".selected").select2({width:'100%'});
+
+                {#                verif_ici_cm();#}
+                counter = table_produit.rows().count();
+            }else{
+                $text = 'Cette ligne de service n\'est utilisable qu\'une seule fois.';
+                UIkit.modal.alert($text).then(function() {
+                });
+            }
 
 
-
-            verif_ici_cm();
-            counter = table_produit.rows().count();
         } );
 
         $('body').on( 'click', '.delete_item', function (e) {
             e.preventDefault();
 
-            verif_ici_cm();
+{#            verif_ici_cm();#}
 
             $tr = $(this).parent().parent();
             table_produit.row($tr).remove().draw( false );
@@ -723,67 +851,68 @@
         } );
 
 
-        $('body').on('change', '.services', function(e){
-            e.preventDefault();
-            var $this = $(this);
-            var datas = {};
-
-            $ici_cm = $('input#ici_cm').val();
-
-            $package = $this.parent().parent().next().find('.package');
-            datas['service'] = $this.val();
-
-            if($this.val() != '') {
-
-                if($this.val() == 'ici_cm' && $ici_cm){
-                    $package.find('option:gt(0)').remove();
-                    $text = 'Cette ligne de service n\'est utilisable qu\'une seule fois.';
-                    UIkit.modal.alert($text).then(function() {
-                    });
-                }else{
-                    var url = '{{ url_for('package.find_package') }}';
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: JSON.stringify(datas),
-                        contentType: 'application/json;charset=UTF-8',
-                        dataType: "json",
-                        success: function (data) {
-                            if (data['statut'] === 'OK') {
-
-                                $package.find('option:gt(0)').remove();
-                                $.each(data['data'], function (index, value) {
-                                    $package.append('<option value="' + value['id'] + '">' + value['name'] + '</option>');
-                                });
-
-                            }
-                        }
-                    });
-                }
-
-
-            }else{
-                $package.find('option:gt(0)').remove();
-                $package.change();
-            }
-
-            verif_ici_cm();
-
-        });
+{#        $('body').on('change', '.services', function(e){#}
+{#            e.preventDefault();#}
+{#            var $this = $(this);#}
+{#            var datas = {};#}
+{##}
+{#            $ici_cm = $('input#ici_cm').val();#}
+{##}
+{#            $package = $this.parent().parent().next().find('.package');#}
+{#            datas['service'] = $this.val();#}
+{##}
+{#            if($this.val() != '') {#}
+{##}
+{#                if($this.val() == 'ici_cm' && $ici_cm){#}
+{#                    $package.find('option:gt(0)').remove();#}
+{#                    $text = 'Cette ligne de service n\'est utilisable qu\'une seule fois.';#}
+{#                    UIkit.modal.alert($text).then(function() {#}
+{#                    });#}
+{#                }else{#}
+{#                    var url = '{{ url_for('package.find_package') }}';#}
+{#                    $.ajax({#}
+{#                        url: url,#}
+{#                        type: 'POST',#}
+{#                        data: JSON.stringify(datas),#}
+{#                        contentType: 'application/json;charset=UTF-8',#}
+{#                        dataType: "json",#}
+{#                        success: function (data) {#}
+{#                            if (data['statut'] === 'OK') {#}
+{##}
+{#                                $package.find('option:gt(0)').remove();#}
+{#                                $.each(data['data'], function (index, value) {#}
+{#                                    $package.append('<option value="' + value['id'] + '">' + value['name'] + '</option>');#}
+{#                                });#}
+{##}
+{#                            }#}
+{#                        }#}
+{#                    });#}
+{#                }#}
+{##}
+{##}
+{#            }else{#}
+{#                $package.find('option:gt(0)').remove();#}
+{#                $package.change();#}
+{#            }#}
+{##}
+{#            verif_ici_cm();#}
+{##}
+{#        });#}
 
         $('body').on('change', '.package', function(e) {
             e.preventDefault();
 
             var $this = $(this);
-            $qte = $this.parent().parent().next().find('.change_qte');
-            $prix = $this.parent().parent().next().next().find('.uk-form-prix > div');
-            $prix_hidden = $this.parent().parent().next().next().find('.uk-form-prix > .change_prix');
-            $sous_total = $this.parent().parent().next().next().next().find('.change_st');
+            $desc = $this.parent().parent().next().find('.uk-textarea');
+            $qte = $this.parent().parent().next().next().find('.change_qte');
+            $prix = $this.parent().parent().next().next().next().find('.uk-form-prix > div');
+            $prix_hidden = $this.parent().parent().next().next().next().find('.uk-form-prix > .change_prix');
+            $sous_total = $this.parent().parent().next().next().next().next().find('.change_st');
 
             var datas = {};
             datas['package'] = $this.val();
 
-            if($this.val() != '') {
+            if($this.val() !== '') {
                 var url = '{{ url_for('package.find_single_package') }}';
                 $.ajax({
                     url: url,
@@ -793,6 +922,8 @@
                     dataType: "json",
                     success: function (data) {
                         if (data['statut'] === 'OK') {
+
+                            $desc.val(data['desc']);
 
                             $qte.val(data['qte']);
 
@@ -902,6 +1033,11 @@
 
         });
 
+        $('body').on('change', '#dataTable_produit tbody .change_desc', function(e){
+            e.preventDefault();
+            save_ligne_doc();
+        })
+
         function reload_count(){
             $(".change_qte").each(function(){
                 console.log($(this))
@@ -976,27 +1112,9 @@
 
         }
 
-        function verif_ici_cm(){
-
-            counters = 0;
-            $('#dataTable_produit tbody .services').each(function(){
-                if($(this).val() == 'ici_cm'){
-                    counters++;
-                }
-            });
-
-            if(counters > 0){
-                $('#ici_cm').val(1)
-            }else{
-                $('#ici_cm').val('')
-            }
-
-{#            console.log($('#ici_cm').val());#}
-
-        }
 
         function save_ligne_doc(){
-            var datas = table_produit.$('input, select').serialize();
+            var datas = table_produit.$('input, select, textarea').serialize();
 
             var url = '{{ url_for('facture.ligne_commande') }}';
             $.ajax({

@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'User'
 
 
@@ -25,9 +26,26 @@ def index():
     title_page = 'Facture'
 
     if current_user.has_roles([('super_admin', 'facture')]):
-        datas = Document.objects(devisDoc=False)
+        datas = Document.objects(Q(devisDoc=False) & Q(status__lte=2))
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status__lte=2))
+
+    return render_template('facture/index.html', **locals())
+
+
+@prefix.route('/annuler')
+@login_required
+def index_annuler():
+
+    current_ref = Config_reference.objects().first()
+    title_page = u'Facture annulée'
+
+    annule_dev = True
+
+    if current_user.has_roles([('super_admin', 'facture')]):
+        datas = Document.objects(Q(devisDoc=False) & Q(status=3))
+    else:
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status=3))
 
     return render_template('facture/index.html', **locals())
 
@@ -37,7 +55,7 @@ def index():
 def solde():
 
     current_ref = Config_reference.objects().first()
-    title_page = 'Facture Non solde'
+    title_page = u'Facture Non soldée'
 
     solde = '1'
 
@@ -143,7 +161,11 @@ def edit(facture_id=None):
         for cont in cur_client.relation():
             contact_list.append(cont)
 
-    services = LigneService.objects()
+    package_ici = Package.objects(idligneService='ici_cm')
+    package_hosting = Package.objects(idligneService='hosting')
+    package_website = Package.objects(idligneService='website')
+    package_module = Package.objects(idligneService='module')
+    package_domaine = Package.objects(idligneService='domaine')
 
     if 'package_fact' not in session:
         session['package_fact'] = []
@@ -257,7 +279,7 @@ def edit(facture_id=None):
                 total += ligne.prix
         else:
             for item in session.get('package_fact')['data']:
-                total += item['st']
+                total += float(item['st'])
 
         data.montant = total
 
@@ -287,7 +309,10 @@ def edit(facture_id=None):
 
                     ligne.iddocument = data
                     ligne.prix = float(item['st'])
+                    if int(item['st']) == 0:
+                        ligne.free = 1
                     ligne.qte = item['qte']
+                    ligne.desc = item['desc']
 
                     ligne.idcompagnie = current_client
                     package = Package.objects.get(id=item['package'])
@@ -312,44 +337,44 @@ def edit(facture_id=None):
 @prefix.route('/ligne/commande', methods=['POST'])
 def ligne_commande():
 
-    from ..package.models_package import Package
+    from ..package.models_package import Package, Attribut
 
     session['package_fact'] = []
 
     data = []
-
-    services = request.form.getlist('services')
-    package = request.form.getlist('package')
+    packages = request.form.getlist('package')
     qte = request.form.getlist('qte')
     st = request.form.getlist('st')
     prix = request.form.getlist('prix')
-    exist_ici = ''
-    size = len(services)
-    if size:
-        packs = Package.objects(idligneService=services[0])
+    desc = request.form.getlist('desc')
+
+    count_pack = 0
+    for package in packages:
+
+        pack = Package.objects.get(id=package)
+        packs = Package.objects(idligneService=pack.idligneService)
+
         similaire = []
-        for pack in packs:
+        for packer in packs:
             ligsimilaire = {}
-            ligsimilaire['id'] = str(pack.id)
-            ligsimilaire['name'] = pack.name
+            ligsimilaire['id'] = str(packer.id)
+            ligsimilaire['name'] = packer.name
             similaire.append(ligsimilaire)
 
-        for x in range(0, size):
-            if services[0]:
-                ligne = {}
-                if services[0] == 'ici_cm':
-                    exist_ici = '1'
-                ligne['service'] = services[0]
-                ligne['package'] = str(package[0])
-                ligne['similaire'] = similaire
-                ligne['qte'] = int(qte[0])
-                ligne['prix'] = float(prix[0])
-                ligne['st'] = float(st[0])
 
-                data.append(ligne)
+        ligne = {}
+        ligne['service'] = pack.idligneService
+        ligne['package'] = package
+        ligne['similaire'] = similaire
+        ligne['desc'] = desc[count_pack]
+        ligne['qte'] = int(qte[count_pack])
+        ligne['prix'] = float(prix[count_pack])
+        ligne['st'] = float(st[count_pack])
+
+        data.append(ligne)
+        count_pack += 1
 
     session['package_fact'] = {
-        'exist_ici': exist_ici,
         'data': data
     }
 

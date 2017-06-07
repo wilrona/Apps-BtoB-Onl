@@ -24,10 +24,15 @@
 {% endblock %}
 
 {% block  button %}
-    {% if not current %}
-        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('facture.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% if not annule_dev %}
+        {% if not current %}
+            <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('facture.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Créer</a>
+            <a class="uk-button waves-effect uk-button-info uk-button-small" href="{{ url_for('facture.index_annuler') }}"><span class="uk-margin-small-right"><i class="fa fa-ban"></i></span>Facture Annulée</a>
+        {% else %}
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.view', devis_id=current.id) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        {% endif %}
     {% else %}
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.view', devis_id=current.id) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('facture.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour à la liste</a>
     {% endif %}
 {% endblock %}
 

@@ -64,6 +64,8 @@ def edit(service_id=None):
         else:
             data.package = False
 
+        data.unite = form.unite.data
+
         data = data.save()
 
         flash('Enregistement effectue avec succes', 'success')

@@ -49,15 +49,24 @@ class Package(db.Document):
         pack = Package.objects(Q(idligneService=self.idligneService) & Q(hight=True) & Q(sale=0)).first()
         return pack
 
+    def ligne_service(self):
+        service = LigneService.objects(sigle=self.idligneService).first()
+        return service
+
 
 class LigneService(db.Document):
     name = db.StringField()
     package = db.BooleanField()
     sigle = db.StringField()
+    unite = db.StringField()
 
     def packages(self):
         pack = Package.objects(idligneService=self.sigle)
         return pack
+
+    def attributes(self):
+        attr = Attribut.objects(idligneService=self.sigle)
+        return attr
 
 
 class Attribut(db.Document):

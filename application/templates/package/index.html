@@ -67,24 +67,26 @@
                             </td>
                             <td>{{ data.level }}</td>
                             <td class="">
-                            <div class="uk-flex uk-flex-column">
-                                  {% if current_user.has_roles([('super_admin', 'package')], ['edit']) %}
-                                    {% if not data.sale %}
-                                        <div style="height: 20px;">
-                                            {% if data.level_first() != data.id %}
-                                              <a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a>
-                                            {% endif %}
-                                        </div>
+                            {% if data.level %}
+                                <div class="uk-flex uk-flex-column">
+                                      {% if current_user.has_roles([('super_admin', 'package')], ['edit']) %}
+                                        {% if not data.sale %}
+                                            <div style="height: 20px;">
+                                                {% if data.level_first() != data.id %}
+                                                  <a href="{{ url_for('package.up', package_id=data.id) }}" uk-icon="icon: chevron-up"></a>
+                                                {% endif %}
+                                            </div>
 
 
-                                        <div style="height: 20px;">
-                                          {% if data.level_last().id != data.id %}
-                                            <a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a>
-                                          {% endif %}
-                                        </div>
-                                    {% endif %}
-                                  {% endif %}
-                            </div>
+                                            <div style="height: 20px;">
+                                              {% if data.level_last().id != data.id %}
+                                                <a href="{{ url_for('package.down', package_id=data.id) }}" uk-icon="icon: chevron-down"></a>
+                                              {% endif %}
+                                            </div>
+                                        {% endif %}
+                                      {% endif %}
+                                </div>
+                            {% endif %}
                             </td>
 
                           </tr>

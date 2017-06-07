@@ -44,6 +44,8 @@ class Compagnie(db.Document):
     claimDate = db.DateTimeField()
 
     etat_souscription = db.IntField() #0 non paye; 1 paye; 2 expiree
+    date_expire_ici = db.DateTimeField() # date fin  abonnement ici.cm
+    date_expire_hosting = db.DateTimeField() # date fin abonnement hosting
     uploaded = db.BooleanField()
     partenaire = db.IntField(default=0) # 1 partenaire et institution; 2 institution
 
@@ -86,6 +88,20 @@ class Compagnie(db.Document):
 
         return ligne
 
+    def dateExpired_hosting(self):
+        from ..document.models_doc import LigneDoc
+
+        lignes = LigneDoc.objects(Q(idcompagnie=self.id) & Q(etat=1) & Q(dateFin__ne=None)).order_by('-dateFin')
+
+        ligne = None
+
+        for lign in lignes:
+            if lign.idpackage.idligneService == 'hosting':
+                ligne = lign
+                break
+
+        return ligne
+
     def remaind_day(self, days):
 
         time_zones = tzlocal()
@@ -96,6 +112,21 @@ class Compagnie(db.Document):
         response = False
         if self.dateExpired():
             remaind = self.dateExpired().dateFin - to_day
+            if remaind <= datetime.timedelta(days=days):
+                response = True
+
+        return response
+
+    def remaind_day_hosting(self, days):
+
+        time_zones = tzlocal()
+        date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
+
+        to_day = function.datetime_convert(date_auto_nows)
+
+        response = False
+        if self.dateExpired_hosting():
+            remaind = self.dateExpired_hosting().dateFin - to_day
             if remaind <= datetime.timedelta(days=days):
                 response = True
 

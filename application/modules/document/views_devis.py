@@ -31,6 +31,23 @@ def index():
     return render_template('devis/index.html', **locals())
 
 
+@prefix.route('/annuler')
+@login_required
+def index_annuler():
+
+    current_ref = Config_reference.objects().first()
+    title_page = u'Devis Annulée'
+
+    annule_dev = True
+
+    if current_user.has_roles([('super_admin', 'devis')]):
+        datas = Document.objects(Q(devisDoc=True)& Q(status=3))
+    else:
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status=3))
+
+    return render_template('devis/index.html', **locals())
+
+
 @prefix.route('/view/<objectid:devis_id>', methods=['GET'])
 def view(devis_id):
 
@@ -51,8 +68,6 @@ def view(devis_id):
         form.opportunite_text.data = data.opportunite_id.name
 
     check_status(data)
-
-    ligne_doc = LigneDoc.objects(iddevis=data.id)
 
     customer = Compagnie.objects.get(id=data.client_id.id)
     form_client = FormClient(prefix="client", obj=customer)
@@ -125,10 +140,15 @@ def edit(devis_id=None):
 
     package_ici = Package.objects(idligneService='ici_cm')
     package_hosting = Package.objects(idligneService='hosting')
+    package_website = Package.objects(idligneService='website')
+    package_module = Package.objects(idligneService='module')
+    package_domaine = Package.objects(idligneService='domaine')
 
     if 'package' not in session:
         session['package'] = []
+
     # session.pop('package')
+
     current_client = None
     if request.method == 'POST' and 'client_exist' in request.form and request.form['client_exist']:
 
@@ -256,6 +276,8 @@ def edit(devis_id=None):
 
                 ligne.iddevis = data
                 ligne.prix = float(item['st'])
+                if int(item['st']) == 0:
+                    ligne.free = 1
                 ligne.qte = item['qte']
                 ligne.desc = item['desc']
 
@@ -291,6 +313,7 @@ def ligne_commande():
     qte = request.form.getlist('qte')
     st = request.form.getlist('st')
     prix = request.form.getlist('prix')
+    desc = request.form.getlist('desc')
 
     count_pack = 0
     for package in packages:
@@ -299,27 +322,17 @@ def ligne_commande():
         packs = Package.objects(idligneService=pack.idligneService)
 
         similaire = []
-        for pack in packs:
+        for packer in packs:
             ligsimilaire = {}
-            ligsimilaire['id'] = str(pack.id)
-            ligsimilaire['name'] = pack.name
+            ligsimilaire['id'] = str(packer.id)
+            ligsimilaire['name'] = packer.name
             similaire.append(ligsimilaire)
-
-        desc = 'Element du package : \n'
-        count = 0
-        for elem in pack.attribut:
-
-            if count >= 1:
-                desc += ','
-            attribut = Attribut.objects(name=elem).first()
-            desc += attribut.libelle
-            count += 1
 
         ligne = {}
         ligne['service'] = pack.idligneService
         ligne['package'] = package
         ligne['similaire'] = similaire
-        ligne['desc'] = desc
+        ligne['desc'] = desc[count_pack]
         ligne['qte'] = int(qte[count_pack])
         ligne['prix'] = float(prix[count_pack])
         ligne['st'] = float(st[count_pack])

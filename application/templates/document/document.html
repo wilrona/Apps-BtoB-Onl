@@ -95,33 +95,22 @@
     <tr>
         <td style="width: 5%"></td>
         <td>
-            <table class="uk-table uk-table-small uk-table-middle" id="dataTable_produit">
+            <table class="uk-table uk-table-small uk-table-middle uk-table-divider" id="dataTable_produit">
                 <thead>
                 <tr>
-                    <th width="20%">Service</th>
-                    <th width="20%">Produit</th>
-                    <th width="16%">Quantite</th>
-                    <th width="16%">Prix unitaires</th>
-                    <th width="16%">Sous total</th>
+                <tr>
+                    <th width="15%">Produit</th>
+                    <th width="30%">Description</th>
+                    <th width="10%">Qté / Période</th>
+                    <th width="10%">P.U</th >
+                    <th width="10%">Total</th>
+                </tr>
                 </tr>
                 </thead>
                 <tbody>
                 {% if data.devisDoc %}
                     {% for pack in data.lignedoc_devis() %}
                         <tr>
-                            <td>
-                                <div class="uk-form-controls uk-form-service">
-
-                                    <ul class="uk-subnav uk-margin-remove-bottom">
-                                        {% for service in services %}
-                                            {% if service.sigle == pack.idpackage.idligneService %}
-                                                <li class="uk-active">{{ service.name }}</li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-
-                                </div>
-                            </td>
                             <td>
 
                                 <div class="uk-form-controls uk-form-package">
@@ -134,20 +123,23 @@
 
                             </td>
                             <td>
-                                <div class="uk-form-controls uk-form-qte">
+                                <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte uk-text-center">
 
-                                    <input type="text" value="{{ pack.qte }}" name="qte" class="uk-width-auto uk-form-blank"/>
+                                    {{ pack.qte|format_price() }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
 
                                 </div>
                             </td>
                             <td>
                                 <div class="uk-form-controls uk-form-prix">
-                                    <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                    <div class="uk-width-auto uk-text-center">{{ (pack.prix / pack.qte)|round(2, 'floor')|format_price() }}</div>
                                 </div>
                             </td>
                             <td>
-                                <div class="uk-form-controls uk-form-st">
-                                    <input type="text" value="{{ pack.prix }}" name="st" class="uk-width-auto uk-form-blank">
+                                <div class="uk-form-controls uk-form-st uk-text-center">
+                                    {{ pack.prix|format_price() }}
                                 </div>
                             </td>
                         </tr>
@@ -156,19 +148,6 @@
                     {% for pack in data.lignedoc_facture() %}
                         <tr>
                             <td>
-                                <div class="uk-form-controls uk-form-service">
-
-                                    <ul class="uk-subnav uk-margin-remove-bottom">
-                                        {% for service in services %}
-                                            {% if service.sigle == pack.idpackage.idligneService %}
-                                                <li class="uk-active">{{ service.name }}</li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </ul>
-
-                                </div>
-                            </td>
-                            <td>
 
                                 <div class="uk-form-controls uk-form-package">
 
@@ -180,20 +159,23 @@
 
                             </td>
                             <td>
-                                <div class="uk-form-controls uk-form-qte">
+                                <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte uk-text-center">
 
-                                    <input type="text" value="{{ pack.qte }}" name="qte" class=" uk-width-auto uk-form-blank"/>
+                                    {{ pack.qte|format_price() }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
 
                                 </div>
                             </td>
                             <td>
                                 <div class="uk-form-controls uk-form-prix">
-                                    <div class="uk-width-auto">{{ (pack.prix / pack.qte)|round(2, 'floor') }}</div>
+                                    <div class="uk-width-auto uk-text-center">{{ (pack.prix / pack.qte)|round(2, 'floor')|format_price() }}</div>
                                 </div>
                             </td>
                             <td>
-                                <div class="uk-form-controls uk-form-st">
-                                    <input type="text" value="{{ pack.prix }}" name="st" class=" uk-width-auto uk-form-blank">
+                                <div class="uk-form-controls uk-form-st uk-text-center">
+                                    {{ pack.prix|format_price() }}
                                 </div>
                             </td>
                         </tr>
@@ -220,6 +202,7 @@
                         <table class="uk-table">
                             <tr>
                                 <td>
+                                {% if data.reglement_facture(True) %}
                                     <span class="uk-h4">Accompte versée </span>
                                     <table class="uk-table uk-table-small uk-table-middle uk-table-bordered">
                                         <thead>
@@ -229,16 +212,15 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for paiement in data.reglement_facture() %}
-                                            {% if paiement.status == 1 %}
+                                        {% for paiement in data.reglement_facture(True) %}
                                                 <tr>
                                                     <td>{{ paiement.createDate|format_date("%d/%m/%Y") }}</td>
                                                     <td>{{ paiement.montant|format_price() }}</td>
                                                 </tr>
-                                            {% endif %}
                                         {% endfor %}
                                         </tbody>
                                     </table>
+                                {% endif %}
                                 </td>
                                 <td style="width: 15%"></td>
                             </tr>
@@ -256,12 +238,12 @@
                                 <tr>
 
                                     <td class="uk-h4 no-border" style="width: 50%">Accompte :</td>
-                                    <td class="uk-text-center">{{ data.montant_reglement()|format_price() }}</td>
+                                    <td class="uk-text-center">{{ data.montant_reglement(True)|format_price() }}</td>
                                 </tr>
                                 <tr>
 
                                     <td class="uk-h4 no-border" style="width: 50%">A regler :</td>
-                                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant - data.montant_reglement())|format_price() }}</td>
+                                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ (data.montant - data.montant_reglement(True))|format_price() }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -280,7 +262,7 @@
         <tr>
             <td style="width: 5%"></td>
             <td>
-                <table class="uk-table uk-table-bordered uk-table-small uk-table-middle uk-table-striped" border="0">
+                <table class="uk-table uk-table-small uk-table-middle uk-table-striped">
                     <tbody>
                     <tr>
                         <td style="width: 61%;" colspan="2" class="no-border no-border-first-child"></td>

@@ -24,10 +24,15 @@
 {% endblock %}
 
 {% block  button %}
-    {% if not current %}
-    <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('devis.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Creer</a>
+    {% if not annule_dev %}
+        {% if not current %}
+        <a class="uk-button waves-effect uk-button-success uk-button-small" href="{{ url_for('devis.edit') }}"><span class="uk-margin-small-right"><i class="fa fa-plus"></i></span>Créer</a>
+        <a class="uk-button waves-effect uk-button-info uk-button-small" href="{{ url_for('devis.index_annuler') }}"><span class="uk-margin-small-right"><i class="fa fa-ban"></i></span>Devis Annulé</a>
+        {% else %}
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('opportunite.view', opportunite_id=current.id) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        {% endif %}
     {% else %}
-    <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('opportunite.view', opportunite_id=current.id) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('devis.index') }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour à la liste</a>
     {% endif %}
 {% endblock %}
 

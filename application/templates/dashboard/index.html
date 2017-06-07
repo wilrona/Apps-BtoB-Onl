@@ -107,6 +107,18 @@
                 </div>
             </div>
         </div>
+        <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
+            <div class="info-box">
+                <div class="icon">
+                    <i class="fa fa-user-o"></i>
+                </div>
+                <div class="content">
+                    <div class="number count-to" data-from="0" data-to="{{ count_internaute }}" data-speed="1000" data-fresh-interval="20"></div>
+                    <div class="text">Internautes</div>
+
+                </div>
+            </div>
+        </div>
         {% if current_user.has_roles([('super_admin', 'claim')]) %}
         <div class="uk-width-1-5@m uk-width-1-2@s uk-width-1-1">
             <div class="info-box">
@@ -158,12 +170,12 @@
                             <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
                                 <thead>
                                 <tr>
-                                    <th width="25%">Opportunité</th>
-                                    <th width="15%">Client</th>
-                                    <th width="15%">Tache suivante</th>
-                                    <th width="15%">Resumé</th>
-                                    <th width="10%">Etape</th>
-                                    <th width="10%">Date prochaine action</th>
+                                    <th width="16%">Opportunité</th>
+                                    <th width="16%">Client</th>
+                                    <th width="16%">Tache suivante</th>
+                                    <th width="16%">Resumé</th>
+                                    <th width="16%">Etape</th>
+                                    <th width="16%">Date prochaine action</th>
                                 </tr>
                                 </thead>
                                 <tbody>

@@ -241,24 +241,28 @@ def find_single_package():
     if pack.promo:
         prix = pack.prix_promo
 
-    desc = 'Element du package : \n'
+    desc = ''
 
     count = 0
     for elem in pack.attribut:
 
         if count >= 1:
-            desc += ','
+            desc += ', '
 
         attribut = Attribut.objects(name=elem).first()
 
         desc += attribut.libelle
         count += 1
 
+    if not pack.attribut:
+        desc = pack.description
+
     data = json.dumps({
         'id': str(pack.id),
         'qte': pack.duree,
         'desc': desc,
         'prix': prix,
+        'attribut': pack.attribut,
         'statut': 'OK'
     })
 

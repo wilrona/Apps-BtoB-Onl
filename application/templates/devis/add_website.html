@@ -4,12 +4,12 @@
 </div>
 
 <div class="uk-modal-body">
-    <div class="uk-form-horizontal uk-margin-small">
+    <form class="uk-form-horizontal uk-margin-small" id="package_forme">
 
         <div class="uk-margin">
             <label class="uk-form-label" for="form-horizontal-select">Offre Site web prédéfini :</label>
             <div class="uk-form-controls">
-                <select class="uk-select" id="form-horizontal-select">
+                <select class="uk-select" id="form-horizontal-select" name="package">
                     <option value="">Selectionne une offre</option>
                     {% for package in package_website %}
                         <option value="{{ package.id }}">{{ package.name }}</option>
@@ -18,7 +18,7 @@
             </div>
         </div>
 
-    </div>
+    </form>
     <hr>
     <div class="uk-inline uk-width-1-1">
         <span class="uk-form-icon uk-form-icon-flip uk-icon" uk-icon="icon: search"></span>
@@ -29,7 +29,7 @@
         <thead>
         <tr>
             <th width="80%">Composants</th>
-            <th width="20%">Selection</th>
+            <th width="20%" class="no-sort">Selection</th>
         </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
                 {{ composant.libelle }}
             </td>
             <td>
-                <input class="uk-checkbox" type="checkbox" name="composant" id="{{ composant.id }}">
+                <input class="uk-checkbox" type="checkbox" name="composant" id="{{ composant.name }}">
             </td>
         </tr>
         {% endfor %}
@@ -50,7 +50,7 @@
 
 <div class="uk-modal-footer uk-text-right">
     <button class="uk-button waves-effect uk-button-danger uk-modal-close uk-button-small" type="button">Fermer</button>
-    <button type="button" id="submit_modal" class="uk-button waves-effect uk-button-success uk-button-small"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Enreg.</button>
+    <button type="button" id="submit_modal" class="uk-button waves-effect uk-button-success uk-button-small"><span class="uk-margin-small-right"><i class="fa fa-floppy-o"></i></span>Valider</button>
 </div>
 <script>
     var table_modal = $('#dataTable_modal').DataTable({
@@ -87,4 +87,60 @@
     $('#searchbox_modal').on('keyup', function(){
         table_modal.search($(this).val()).draw() ;
     });
+
+    $('body').on('change', '#form-horizontal-select', function(e) {
+        e.preventDefault();
+
+        var $this = $(this);
+
+        var datas = {};
+        datas['package'] = $this.val();
+
+        if ($this.val() !== '') {
+            var url = '{{ url_for('package.find_single_package') }}';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(datas),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: "json",
+                success: function (data) {
+                    if (data['statut'] === 'OK') {
+                        var rowcollection =  table_modal.$(".uk-checkbox", {"page": "all"});
+                        rowcollection.each(function(index,elem){
+                            if($.inArray($(elem).attr('id'), data['attribut']) !== -1){
+                                $(elem).prop('checked', true);
+                            }else{
+                                $(elem).prop('checked', false)
+                            }
+                        });
+                    }
+                }
+            });
+
+        }
+    });
+
+    $('body').on('click', '#submit_modal', function(e) {
+
+        var dataString = table_modal.$('input').serialize();
+        var form = $('#package_forme').serialize();
+
+        var url = '{{ url_for('devis.ligne_commande') }}';
+        $.ajax({
+            method: "POST",
+            data: dataString+"&"+form,
+            url: url
+        }).done(function( msg ) {
+
+            msg = $.parseJSON(msg);
+            console.log(msg);
+
+
+        });
+    });
+
+
+
+
 </script>
