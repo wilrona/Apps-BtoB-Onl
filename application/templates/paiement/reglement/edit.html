@@ -15,17 +15,17 @@
         </div>
         <div class="uk-width-1-1">
             <div class="uk-overflow-auto">
-                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable_modal">
+                <table class="uk-table uk-table-small uk-table-middle uk-table-striped " id="dataTable_modal">
                     <thead>
                     <tr>
                         <th class="no-sort" width="3%"></th>
-                        <th width="">Date</th>
-                        <th width="">Ref</th>
-                        <th width="">Client</th>
-                        <th width="15%">Contact</th>
-                        <th width="">Montant</th>
-                        <th width="">Reste</th>
-                        <th width="15%">Mont. perçu</th>
+                        <th width="13%">Date</th>
+                        <th width="13%">Ref</th>
+                        <th width="13%">Client</th>
+                        <th width="13%">Contact</th>
+                        <th width="13%">Montant</th>
+                        <th width="13%">Reste</th>
+                        <th width="13%">Mont. perçu</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -173,9 +173,9 @@
             var $parent = $(this).parent().parent().parent();
             var reste = $parent.find('.reste');
 
-            if($(this).val() != ''){
+            if($(this).val() !== ''){
                 if($.isNumeric(concat($(this).val()))){
-                    if(parseFloat(concat($(this).val())) > parseFloat(concat(reste.text())) || $(this).val() == 0){
+                    if(parseFloat(concat($(this).val())) > parseFloat(concat(reste.text())) || $(this).val() === 0){
                         $parent.removeClass('uk-background-primary').addClass('uk-background-danger');
                     }else{
                         $parent.addClass('uk-background-primary').removeClass('uk-background-danger');
@@ -191,7 +191,7 @@
     $('.contact_select').on('change', function(){
         var $parent = $(this).parent().parent().parent();
         var $montant = $parent.find('.montant');
-        if($(this).val() != ''){
+        if($(this).val() !== ''){
             $montant.prop('disabled', false).focus();
         }else{
             $montant.prop('disabled', true).val('')

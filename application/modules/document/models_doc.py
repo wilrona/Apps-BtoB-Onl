@@ -132,5 +132,18 @@ class LigneDoc(db.Document):
     desc = db.StringField()
     free = db.IntField(default=0)
 
+    def expired(self, days):
+        response = False
+        if self.idpackage.idligneService == 'hosting' or self.idpackage.idligneService == 'domaine':
+            time_zones = tzlocal()
+            date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
+
+            to_day = function.datetime_convert(date_auto_nows)
+
+            expired = self.dateFin - to_day
+            if expired <= datetime.timedelta(days=days):
+                response = True
+
+        return response
 
 

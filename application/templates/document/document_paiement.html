@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {#    <link href="{{ url_for('static', filename='css/uikit.min.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/lato-font.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/roboto.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/material-icon.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/apps.css', _external=True) }}" rel="stylesheet" />#}
+    {#    <link href="{{ url_for('static', filename='css/pdf.css', _external=True) }}" rel="stylesheet" />#}
+    <title>
+        {% if data.devisDoc %}
+            Devis
+        {% else %}
+            Facture
+        {% endif %}
+        {{ data.reference() }}
+    </title>
+</head>
+<body>
+
+<table class="uk-table" border="0">
+    <tbody>
+    <tr>
+        <td style="width: 5%" class="zone"></td>
+        <td style="width: 45%" class="title">
+            <span class="uk-h1">
+                {% if data.devisDoc %}
+                    Devis
+                {% else %}
+                    Facture
+                {% endif %}
+            </span>
+        </td>
+        <td style="width: 45%" rowspan="2" class="uk-clearfix">
+            <div class="uk-float-right uk-margin-small-bottom">
+                <img src="{{ image }}" class="uk-display-block image" alt=""/>
+            </div>
+            <div class="uk-clearfix"></div>
+            <div class="uk-text-right uk-text-bold" style="padding-right: 15px; color: #f44336;">
+                Everything is here
+            </div>
+
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+    <tr>
+        <td style="width: 5%"></td>
+        <td style="width: 45%">
+            <div class="subtitle"><span class="uk-text-bold">No </span>:   {{ data.reference() }}</div>
+            <div class="subtitle"><span class="uk-text-bold">Date </span>: {% if data.devisDoc %} {{ data.createDate|format_date('%d/%m/%Y') }} {% else %}  {{ data.createDate|format_date('%d/%m/%Y') }} {% endif %}</div>
+            {% if data.devisDoc %} <div class="subtitle"><span class="uk-text-bold">Cam </span>: {{ data.vendeur_id.full_name() }}</div> {% endif %}
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="uk-table uk-info-zone" border="0">
+    <tr>
+        <td style="width: 5%"></td>
+        <td>
+            <div class="uk-text-bold title">Entreprise</div>
+            {{ data.client_id.name }} {{ data.client_id.raison }}  <br/>
+            {% if data.client_id.numcontr %}{{ data.client_id.numcontr }} {% endif %} <br/>
+            {% if data.client_id.registcom %}{{ data.client_id.registcom }} {% endif %}
+        </td>
+        <td>
+            <div class="uk-text-bold title">Contact</div>
+            {{ data.contact_id.first_name }} {{ data.contact_id.last_name }} <br/>
+            {% if data.contact_id.telephone %} Tel: {{ data.contact_id.telephone }} {% endif %}
+            {% if data.contact_id.mobile %} Mobile: {{ data.contact_id.mobile }} {% endif %} <br/>
+            {% if data.contact_id.email %} Email: {{ data.contact_id.email }} {% endif %}
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+    <tr>
+        <td style="width: 5%"></td>
+        <td>
+            <div class="uk-text-bold title">Adresse de facturation</div>
+            {{ data.client_id.rue }} {{ data.client_id.quartier }} {{ data.client_id.ville }} <br/>
+            <span class="uk-text-bold">Email :</span> {{ data.client_id.email }} <br/>
+            <span class="uk-text-bold">Tel :</span> {{ data.client_id.phone }} <br/>
+
+        </td>
+        <td>
+            {#            <div class="uk-text-bold title">Support utlisé</div>#}
+            {#            {{ data.support_id.name }} <br/>#}
+            {#            <div class="uk-text-bold title">Le client n'a pas de support ?</div>#}
+            {#            {% if data.have_support %} Oui {% else %} Non {% endif %} <br/>#}
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+</table>
+<table class="uk-table">
+    <tr>
+        <td style="width: 5%"></td>
+        <td>
+            <table class="uk-table uk-table-small uk-table-middle uk-table-divider" id="dataTable_produit">
+                <thead>
+                <tr>
+                <tr>
+                    <th width="15%">Produit</th>
+                    <th width="30%">Description</th>
+                    <th width="10%">Qté / Période</th>
+                    <th width="10%">P.U</th >
+                    <th width="10%">Total</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {% if data.devisDoc %}
+                    {% for pack in data.lignedoc_devis() %}
+                        <tr>
+                            <td>
+
+                                <div class="uk-form-controls uk-form-package">
+
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        <li class="uk-active">{{ pack.idpackage.name }}</li>
+                                    </ul>
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte uk-text-center">
+
+                                    {{ pack.qte|format_price() }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-prix">
+                                    <div class="uk-width-auto uk-text-center">{{ (pack.prix / pack.qte)|round(2, 'floor')|format_price() }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st uk-text-center">
+                                    {{ pack.prix|format_price() }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for pack in data.lignedoc_facture() %}
+                        <tr>
+                            <td>
+
+                                <div class="uk-form-controls uk-form-package">
+
+                                    <ul class="uk-subnav uk-margin-remove-bottom">
+                                        <li class="uk-active">{{ pack.idpackage.name }}</li>
+                                    </ul>
+
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="uk-text uk-text-justify uk-text-break">{{ pack.desc }}</div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-qte uk-text-center">
+
+                                    {{ pack.qte|format_price() }} {% if pack.idpackage.ligne_service().unite %} {{ pack.idpackage.ligne_service().unite }} {% endif %}
+
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-prix">
+                                    <div class="uk-width-auto uk-text-center">{{ (pack.prix / pack.qte)|round(2, 'floor')|format_price() }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="uk-form-controls uk-form-st uk-text-center">
+                                    {{ pack.prix|format_price() }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+
+            </table>
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+</table>
+
+
+    <table class="uk-table price">
+        <tr>
+            <td style="width: 5%"></td>
+            <td>
+                <table class="uk-table uk-table-small uk-table-middle">
+                    <tbody>
+                    <tr>
+                        <td style="width: 57%;" colspan="3" rowspan="3" class="no-border-first-child">
+
+                        </td>
+                    </tr>
+                    <tr class="no-border">
+                        <td style="width: 63%;" colspan="2" rowspan="3" class="no-border-first-child">
+                            <table class="uk-table uk-table-bordered uk-table-small uk-table-middle uk-table-striped" border="0">
+                                <tbody>
+                                <tr>
+                                    <td class="uk-h4 no-border" style="width: 50%">Montant Global :</td>
+                                    <td class="uk-text-center" width="30%">{{ data.montant|format_price() }}</td>
+                                </tr>
+                                <tr>
+
+                                    <td class="uk-h4 no-border" style="width: 50%">Coefficient facturé en % :</td>
+                                    <td class="uk-text-center">{{ (paiement.montant * 100)/data.montant|round(2, 'floor') }} %</td>
+                                </tr>
+                                <tr>
+
+                                    <td class="uk-h4 no-border" style="width: 50%">Montant attendu :</td>
+                                    <td class="uk-text-center uk-background-custom uk-text-bold">{{ paiement.montant|format_price() }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td style="width: 5%"></td>
+        </tr>
+    </table>
+
+<table class="uk-table uk-table-small footer" border="0">
+    <tr>
+        <td style="width: 5%"></td>
+        <td style="width: 40%">
+            <div class="uk-text-bold uk-h4 uk-text-center"> La Direction</div>
+        </td>
+        <td style="width: 40%">
+            <div class="uk-text-bold uk-h4 uk-text-right">La devise est le Franc CFA</div>
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+    <tr>
+        <td style="width: 5%"></td>
+        <td colspan="2" class="title">
+            <table>
+                <td class="zone title" ></td>
+                <td class="title">
+                    <blockquote cite="#" style="font-size: 11px; font-style: italic">
+                        <p class="uk-text-break" style="font-style: italic"><strong>Information Légale :</strong> <br/>
+                            <strong>ICI.CM</strong> est un produit de l'entreprise {{ compagnie.name }} <br>
+                            Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>
+                            Phone: {{ compagnie.phone }} - Email : {{ compagnie.email }}<br/>
+                            RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
+                        </p>
+                    </blockquote>
+                </td>
+            </table>
+        </td>
+        <td style="width: 5%"></td>
+    </tr>
+    <tr>
+        <td class="zone" style="width: 5%"></td>
+        <td class="zone" colspan="2">
+            <table class="uk-table">
+                <tr>
+                    <td class="uk-text-middle"><img src="{{ word }}" alt="" class="icon-width"/> {{ compagnie.siteweb }}</td>
+                    <td class="uk-text-middle"><img src="{{ word }}" alt="" class="icon-width"/> {{ compagnie.email }}</td>
+                    <td class="uk-text-middle"><img src="{{ facebook }}" alt="" class="icon-width"/> {{ compagnie.facebook }}</td>
+                    <td class="uk-text-middle"><img src="{{ twitter }}" alt="" class="icon-width"/> {{ compagnie.twitter }}</td>
+                </tr>
+            </table>
+        </td>
+        <td class="zone" style="width: 5%"></td>
+    </tr>
+</table>
+
+
+
+</body>
+</html>

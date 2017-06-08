@@ -15,7 +15,7 @@ def index():
     single = False
 
     if not current_user.has_roles([('super_admin', 'opportunite')]):
-        ids_opportunity = [opportunite.id for opportunite in Opportunite.objects(vendeur_id__ne=current_user.id)]
+        ids_opportunity = [opportunite.id for opportunite in Opportunite.objects(vendeur_id__ne=current_user.id).order_by('-createDate')]
     else:
         ids_opportunity = []
 

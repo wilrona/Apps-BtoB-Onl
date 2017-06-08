@@ -24,9 +24,9 @@ def index():
     title_page = 'Devis'
 
     if current_user.has_roles([('super_admin', 'devis')]):
-        datas = Document.objects(Q(devisDoc=True)& Q(status__lt=2))
+        datas = Document.objects(Q(devisDoc=True)& Q(status__lt=2)).order_by('-createDate')
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=2))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status__lt=2)).order_by('-createDate')
 
     return render_template('devis/index.html', **locals())
 
@@ -41,9 +41,9 @@ def index_annuler():
     annule_dev = True
 
     if current_user.has_roles([('super_admin', 'devis')]):
-        datas = Document.objects(Q(devisDoc=True)& Q(status=3))
+        datas = Document.objects(Q(devisDoc=True)& Q(status=3)).order_by('-createDate')
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status=3))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=True) & Q(status=3)).order_by('-createDate')
 
     return render_template('devis/index.html', **locals())
 
@@ -349,17 +349,6 @@ def ligne_commande():
     return data
 
 
-@prefix.route('/add/site')
-def add_website():
-    from ..package.models_package import Attribut, Package
-
-    package_website = Package.objects(idligneService='website')
-
-    attribut = Attribut.objects(idligneService='website')
-
-    return render_template('devis/add_website.html', **locals())
-
-
 @prefix.route('/change/<objectid:devis_id>/<int:status>', methods=['GET'])
 def change_satus(devis_id, status):
 
@@ -391,7 +380,7 @@ def facture(devis_id):
     current = Document.objects.get(id=devis_id)
 
     current_ref = Config_reference.objects().first()
-    datas = Document.objects(Q(parent=current) & Q(devisDoc=False))
+    datas = Document.objects(Q(parent=current) & Q(devisDoc=False)).order_by('-createDate')
 
     return render_template('facture/index.html', **locals())
 

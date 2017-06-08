@@ -6,8 +6,19 @@
         <ul class="uk-nav-sub">
             <li><a href="{{ url_for('relance.index') }}" class="waves-effect">Activité suivante</a></li>
             <li><a href="{{ url_for('opportunite.index') }}" class="waves-effect">Opportunités</a></li>
+            <li class="uk-nav-header">ICI Manager</li>
             {% if current_user.has_roles([('super_admin', 'abonnement_ici')]) %}
-                <li><a href="{{ url_for('abonnement.ici') }}" class="waves-effect">Abonnement ICI</a></li>
+                <li><a href="{{ url_for('abonnement.index') }}" class="waves-effect">Abonnement</a></li>
+            {% endif %}
+            <li class="uk-nav-header">Hosting Manager</li>
+            {% if current_user.has_roles([('super_admin', 'hosting')]) %}
+                <li><a href="{{ url_for('hosting.index') }}" class="waves-effect">Activation</a></li>
+                <li><a href="{{ url_for('hosting.abonne') }}" class="waves-effect">Abonnement</a></li>
+            {% endif %}
+            <li class="uk-nav-header">Domaine Name Manager</li>
+            {% if current_user.has_roles([('super_admin', 'domaine')]) %}
+                <li><a href="{{ url_for('domaine.index') }}" class="waves-effect">Activation</a></li>
+                <li><a href="{{ url_for('domaine.abonne') }}" class="waves-effect">Abonnement</a></li>
             {% endif %}
 
         </ul>

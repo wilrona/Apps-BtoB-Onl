@@ -16,7 +16,7 @@ def index():
 
     title_page = 'Demande Relation'
 
-    datas = Relation.objects(Q(statut=1) | Q(statut=0))
+    datas = Relation.objects(Q(statut=1) | Q(statut=0)).order_by('-createDate')
 
     return render_template('client/relation/index.html', **locals())
 

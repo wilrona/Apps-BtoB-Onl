@@ -177,6 +177,14 @@ global_role = [
          {'titre': 'Traitement des demandes de relation ', 'valeur': 'relation', 'action': 1}
      ]
      },
+    {'module': 'Gestion des abonnements', 'valeur': 'module_abonnement',
+     'role': [
+         {'titre': 'Traitement des abonnements ici.cm', 'valeur': 'abonnement_ici', 'action': 2},
+         {'titre': 'Traitement des abonnements hosting', 'valeur': 'hosting', 'action': 0},
+         {'titre': 'Traitement des abonnements de nom de domaine', 'valeur': 'domaine', 'action': 0}
+
+     ]
+     },
     {'module': 'Gestion des ventes', 'valeur': 'module_vente',
      'role': [
          {'titre': 'Traitement des clients ', 'valeur': 'client', 'action': 2},
@@ -188,8 +196,7 @@ global_role = [
          {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2},
          {'titre': 'Traitement des factures ', 'valeur': 'facture', 'action': 2},
          {'titre': 'Traitement des reglements factures', 'valeur': 'reglement', 'action': 2},
-         {'titre': 'Traitement des internautes', 'valeur': 'internaute', 'action': 2},
-         {'titre': 'Traitement des abonnements ici.cm', 'valeur': 'abonnement_ici', 'action': 2}
+         {'titre': 'Traitement des internautes', 'valeur': 'internaute', 'action': 2}
      ]
     },
 ]

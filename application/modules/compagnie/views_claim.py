@@ -15,7 +15,7 @@ def index():
 
     title_page = 'Reclamation Entreprise'
 
-    datas = Claim.objects(Q(statut=1) | Q(statut=0))
+    datas = Claim.objects(Q(statut=1) | Q(statut=0)).order_by('-createDate')
 
     return render_template('client/claim/index.html', **locals())
 

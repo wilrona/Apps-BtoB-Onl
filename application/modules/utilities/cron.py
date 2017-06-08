@@ -153,28 +153,21 @@ def send_mail_expired_company():
         if not enterprise.uploaded and enterprise.etat_souscription == 1 and not enterprise.partenaire:
 
             days = None
-            if enterprise.remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration du package
-                if enterprise.remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration du package
-                    if enterprise.remaind_day(days=15): # si le temps restant est <= 15 jours avant expiration du
-                        # package
-                        if enterprise.remaind_day(days=7): # si le temps restant est <= 7 jours avant expiration du
-                            # package
-                            if enterprise.remaind_day(days=3): # si le temps restant est <= 3 jours avant expiration
-                                # du package
-                                # envoie de l'email
-                                days = 3
-                            else:
-                                # envoie de l'email
-                                days = 7
-                        else:
-                            # envoie de l'email
-                            days = 15
-                    else:
-                        # envoie de l'email
-                        days = 30
+
+            if enterprise.remaind_day(days=60):
+                days = 60
+            else:
+                if enterprise.remaind_day(days=30):
+                    days = 30
                 else:
-                    # envoie de l'email
-                    days = 60
+                    if enterprise.remaind_day(days=15):
+                        days = 15
+                    else:
+                        if enterprise.remaind_day(days=7):
+                            days = 7
+                        else:
+                            if enterprise.remaind_day(days=3):
+                                days = 3
 
             if days:
 
@@ -211,35 +204,25 @@ def send_mail_expired_company():
         if enterprise.uploaded and enterprise.claimDate:
 
             days = None
-            if enterprise.claim_remaind_day(days=60): # si le temps restant est <= 60 jours avant expiration des 3
-                # mois fournis
-                if enterprise.claim_remaind_day(days=30): # si le temps restant est <= 30 jours avant expiration des
-                    # 3 mois fournis
-                    if enterprise.claim_remaind_day(days=15): # si le temps restant est <= 15 jours avant expiration
-                        # des 3 mois fournis
-                        if enterprise.claim_remaind_day(days=7): # si le temps restant est <= 7 jours avant
-                            # expiration des 3 mois fournis
-                            if enterprise.claim_remaind_day(days=3): # si le temps restant est <= 3 jours avant
-                                # expiration des 3 mois fournis
-                                if enterprise.claim_remaind_day(days=0): # s'il n'existe plus de temps restant,
-                                    # on reinitialise
+
+            if enterprise.remaind_day(days=60):
+                days = 60
+            else:
+                if enterprise.remaind_day(days=30):
+                    days = 30
+                else:
+                    if enterprise.remaind_day(days=15):
+                        days = 15
+                    else:
+                        if enterprise.remaind_day(days=7):
+                            days = 7
+                        else:
+                            if enterprise.remaind_day(days=3):
+                                days = 3
+                            else:
+                                if enterprise.remaind_day(days=0):
                                     enterprise.etat_souscription = 2
                                     enterprise = enterprise.save()
-                                else:
-                                    # envoie de l'email
-                                    days = 3
-                            else:
-                                # envoie de l'email
-                                days = 7
-                        else:
-                            # envoie de l'email
-                            days = 15
-                    else:
-                        # envoie de l'email
-                        days = 30
-                else:
-                    # envoie de l'email
-                    days = 60
 
             if days:
 

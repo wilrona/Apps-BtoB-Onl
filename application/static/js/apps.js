@@ -398,7 +398,7 @@
 
 
         // click pour ouvrir une autre page en target="_blank"
-        $('#print').on('click', function (e) {
+        $('#print, .print').on('click', function (e) {
             e.preventDefault();
             url = $(this).attr('href');
             window.open(url);

@@ -22,9 +22,9 @@ def index():
     title_page = 'Opportunites'
 
     if current_user.has_roles([('super_admin', 'opportunite')]):
-        datas = Opportunite.objects()
+        datas = Opportunite.objects().order_by('-createDate')
     else:
-        datas = Opportunite.objects(vendeur_id=current_user.id)
+        datas = Opportunite.objects(vendeur_id=current_user.id).order_by('-createDate')
 
     return render_template('opportunite/index.html', **locals())
 
@@ -402,7 +402,7 @@ def devis(opportunite_id):
     current = Opportunite.objects.get(id=opportunite_id)
 
     current_ref = Config_reference.objects().first()
-    datas = Document.objects(Q(opportunite_id=current) & Q(devisDoc=True))
+    datas = Document.objects(Q(opportunite_id=current) & Q(devisDoc=True)).order_by('-createDate')
 
     return render_template('devis/index.html', **locals())
 

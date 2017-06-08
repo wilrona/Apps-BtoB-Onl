@@ -26,9 +26,9 @@ def index():
     title_page = 'Facture'
 
     if current_user.has_roles([('super_admin', 'facture')]):
-        datas = Document.objects(Q(devisDoc=False) & Q(status__lte=2))
+        datas = Document.objects(Q(devisDoc=False) & Q(status__lte=2)).order_by('-createDate')
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status__lte=2))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status__lte=2)).order_by('-createDate')
 
     return render_template('facture/index.html', **locals())
 
@@ -43,9 +43,9 @@ def index_annuler():
     annule_dev = True
 
     if current_user.has_roles([('super_admin', 'facture')]):
-        datas = Document.objects(Q(devisDoc=False) & Q(status=3))
+        datas = Document.objects(Q(devisDoc=False) & Q(status=3)).order_by('-createDate')
     else:
-        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status=3))
+        datas = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False) & Q(status=3)).order_by('-createDate')
 
     return render_template('facture/index.html', **locals())
 
@@ -60,9 +60,9 @@ def solde():
     solde = '1'
 
     if current_user.has_roles([('super_admin', 'facture')]):
-        data = Document.objects(devisDoc=False)
+        data = Document.objects(devisDoc=False).order_by('-createDate')
     else:
-        data = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False))
+        data = Document.objects(Q(vendeur_id=current_user.id) & Q(devisDoc=False)).order_by('-createDate')
 
     datas = []
 
@@ -497,8 +497,6 @@ def print_facture(facture_id):
 
     data = Document.objects.get(id=facture_id)
 
-    services = LigneService.objects()
-
     PROJECT_DIR = app.config['FOLDER_APPS']
 
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
@@ -538,14 +536,7 @@ def print_facture(facture_id):
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'
-    # if not attach:
     response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
-    # else:
-    #     response.headers['Content-Disposition'] = 'attach; filename='+data.reference()+'.pdf'
-
-    # if data.status == 0:
-    #     data.status = 1
-    #     data.save()
 
     return response
 

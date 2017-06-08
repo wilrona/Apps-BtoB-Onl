@@ -102,7 +102,7 @@ class Compagnie(db.Document):
 
         return ligne
 
-    def remaind_day(self, days):
+    def remaind_day(self, days, alert=False):
 
         time_zones = tzlocal()
         date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
@@ -112,12 +112,16 @@ class Compagnie(db.Document):
         response = False
         if self.dateExpired():
             remaind = self.dateExpired().dateFin - to_day
-            if remaind <= datetime.timedelta(days=days):
-                response = True
+            if alert:
+                if remaind <= datetime.timedelta(days=days):
+                    response = True
+            else:
+                if remaind == datetime.timedelta(days=days):
+                    response = True
 
         return response
 
-    def remaind_day_hosting(self, days):
+    def remaind_day_hosting(self, days, alert=False):
 
         time_zones = tzlocal()
         date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
@@ -127,8 +131,12 @@ class Compagnie(db.Document):
         response = False
         if self.dateExpired_hosting():
             remaind = self.dateExpired_hosting().dateFin - to_day
-            if remaind <= datetime.timedelta(days=days):
-                response = True
+            if alert:
+                if remaind <= datetime.timedelta(days=days):
+                    response = True
+            else:
+                if remaind == datetime.timedelta(days=days):
+                    response = True
 
         return response
 
@@ -142,7 +150,7 @@ class Compagnie(db.Document):
         response = False
         if self.claimDate:
             remaind = self.claimDate - to_day
-            if remaind <= datetime.timedelta(days=days):
+            if remaind == datetime.timedelta(days=days):
                 response = True
 
         return response
@@ -159,6 +167,13 @@ class Compagnie(db.Document):
 
         return vid
 
+    def ligne_service(self):
+
+        from ..document.models_doc import LigneDoc
+
+        lignes = LigneDoc.objects(Q(idcompagnie=self.id) & Q(etat=1) & Q(dateFin__ne=None)).order_by('-dateFin')
+
+        return lignes
 
 class Media(db.Document):
     type = db.StringField()

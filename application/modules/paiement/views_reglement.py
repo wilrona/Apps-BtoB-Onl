@@ -33,7 +33,7 @@ def transaction():
 @login_required
 def edit():
 
-    factures = Document.objects(Q(devisDoc=False) & Q(status__ne=3))
+    factures = Document.objects(Q(devisDoc=False) & Q(status__ne=3)).order_by('-createDate')
 
     datas = []
 
@@ -102,24 +102,38 @@ def valide():
             user = Users.objects.get(id=current_user.id)
             item_found.iduser_valid = user
 
-            html = render_template('template_mail/compagnie/accept_reglement.html', **locals())
+            if item_found.iddocument.package_ici_cm():
 
-            msg = Message()
-            msg.recipients = [item_found.iduser_paid.email]
-            msg.add_recipient(infos.emailNotification)
-            msg.subject = 'Confirmation de paiement'
-            msg.attach()
-            msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
+                html = render_template('template_mail/compagnie/accept_reglement.html', **locals())
 
-            msg.html = html
-            mail.send(msg)
+                msg = Message()
+                msg.recipients = [item_found.iduser_paid.email]
+                msg.add_recipient(infos.emailNotification)
+                msg.subject = 'Confirmation de paiement'
+                msg.attach()
+                msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
-            notification = Notification()
-            notification.title = 'Confirmation de paiement'
-            notification.message = 'Votre paiement a été validé avec succes. Vous pouvez consulter les informations ' \
-                                   'de votre entreprise sur ICI. '
-            notification.id_compagnie = item_found.iddocument.client_id
-            notification.save()
+                msg.html = html
+                mail.send(msg)
+
+                notification = Notification()
+                notification.title = 'Confirmation de paiement'
+                notification.message = 'Votre paiement a été validé avec succes. Vous pouvez consulter les ' \
+                                       'informations de votre entreprise sur ICI. '
+                notification.id_compagnie = item_found.iddocument.client_id
+                notification.save()
+
+            facture = item_found.iddocument
+            ligne_doc = facture.lignedoc_facture()
+
+            for ligne in ligne_doc:
+                if ligne.idpackage.idligneService == 'hosting':
+                    ligne.etat = 1
+                    ligne.save()
+
+                if ligne.idpackage.idligneService == 'domaine':
+                    ligne.etat = 1
+                    ligne.save()
 
             item_found.save()
 
@@ -128,8 +142,8 @@ def valide():
         else:
 
             info['statut'] = 'NOK'
-            info['message'] = 'La facture No: "' + item_found.iddocument.reference() + '" ne contient pas de souche ' \
-                                                                                       'renseigné. '
+            info['message'] = u'La facture No: "' + item_found.iddocument.reference() + u'" ne contient pas de souche ' \
+                                                                                       u'renseigné. '
             data.append(info)
 
         item_index += 1
@@ -144,3 +158,59 @@ def valide():
     data = json.dumps(data)
 
     return data
+
+
+@prefix.route('/print/<objectid:paiement_id>', methods=['GET'])
+def print_paiement(paiement_id):
+
+    from ..company.models_company import Config_reference, Company
+
+    current_ref = Config_reference.objects().first()
+    compagnie = Company.objects.first()
+
+    paiement = Paiement.objects.get(id=paiement_id)
+
+    data = Document.objects.get(id=paiement.iddocument.id)
+
+    PROJECT_DIR = app.config['FOLDER_APPS']
+
+    config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
+    image = PROJECT_DIR+'/static/images/icicm.jpg'
+
+    word = PROJECT_DIR+'/static/images/icon/word.png'
+    facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
+    twitter = PROJECT_DIR+'/static/images/icon/tweeter.png'
+
+
+    css = [
+        PROJECT_DIR+'/static/css/uikit-new.css',
+        PROJECT_DIR+'/static/css/lato-font.css',
+        PROJECT_DIR+'/static/css/apps.css',
+        PROJECT_DIR+'/static/css/pdf.css',
+        ]
+
+    rendered = render_template('document/document_paiement.html', **locals())
+
+    pdfs = pdfkit.from_string(
+        rendered, False,
+        css=css,
+        options={
+            'page-size': 'A4',
+            # 'margin-top': '0',
+            'margin-right': '0',
+            'margin-left': '0',
+            'margin-bottom': '0',
+            'zoom': '0.65',
+            'dpi': '400',
+            'encoding': "UTF-8"
+
+        },
+        configuration=config
+    )
+
+    response = make_response(pdfs)
+    response.headers['Content-Type'] = 'application.pdf'
+    response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
+
+    return response

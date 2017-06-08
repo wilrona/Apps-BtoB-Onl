@@ -4,48 +4,56 @@
 
 {% block title_header %} {{ title_page }} {% endblock %}
 
-
 {% block search %}
     <div class="uk-inline">
         <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
-        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox">
+        <input class="uk-input uk-form-width-large uk-input-search uk-form-small uk-form-small" placeholder="Recherche" id="searchbox">
     </div>
 {% endblock %}
 
+{% block link %}
+        <div class="uk-inline uk-div uk-width-1-3@l uk-width-1-1@s uk-margin-auto uk-display-block uk-hidden">
+            <button class="uk-button uk-button-secondary uk-button-small uk-width-1-1" type="button">Options <span uk-icon="icon:  triangle-down"></span></button>
+            <div uk-dropdown="mode: click; boundary: ! .uk-div; boundary-align: true;">
+                <ul class="uk-nav uk-dropdown-nav">
+                    <li><a href="{% if domaine %} {{ url_for('domaine.valide') }} {% else %} {{ url_for('hosting.valide') }} {% endif %}" id="valide">Valider enregistrement</a></li>
+                </ul>
+            </div>
+        </div>
+{% endblock %}
 
 {% block layout_content %}
-
     <div class="uk-container-expand">
+        {% include 'includes/flash_message.html' %}
         <div class="uk-grid-small" uk-grid>
             <div class="uk-width-1-1">
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover " id="dataTable">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
                         <thead>
                         <tr>
-                            <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                            <th width="15%">Date</th>
-                            <th width="15%">Ref</th>
-                            <th width="">Client</th>
-                            <th width="">Contact</th>
-                            <th width="15%">Montant</th>
-                            <th width="5%"></th>
+                            <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all uk-hidden"/></th>
+                            <th width="35%">Nom entreprise</th>
+                            <th width="25%">Offres</th>
+                            <th width="25%">Durée</th>
+                            <th width="15%">Date Début</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for data in datas %}
-                            <tr data-link="">
+                            <tr data-link="{{ url_for('facture.view', facture_id=data.iddocument.id) }}">
                                 <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
-                                <td>{{ data.createDate|format_date('%d/%m/%Y - %H:%M') }}</td>
-                                <td>{{ data.iddocument.reference() }}</td>
-                                <td>{{ data.iddocument.client_id.name }}</td>
-                                <td>{{ data.iduser_paid.full_name() }}</td>
-                                <td>{{ data.montant|format_price() }} <small class="uk-float-right uk-label uk-label-success">{{ (data.reste())|format_price() }}</small></td>
-                                <td class="uk-text-center">
-                                    {% if data.validDate %}
-                                        <a href="{{ url_for('reglement.print_paiement', paiement_id=data.id) }}" class="uk-button uk-button-text" id="print">imprimer</a>
-                                    {% endif %}
+                                <td>{{ data.idcompagnie.name }}</td>
+                                <td>
+                                    {{ data.idpackage.name }}
                                 </td>
-
+                                <td>
+                                    {{ data.qte }} {{ data.idpackage.ligne_service().unite }}
+                                </td>
+                                <td>
+                                    <div class="uk-form-controls uk-form-st">
+                                        <input type="text" value="" name="date" class="uk-input uk-width-auto uk-text-center uk-form-small souche" data-toggle="datepicker" disabled>
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
 
@@ -58,7 +66,6 @@
     </div>
 
 {% endblock %}
-
 
 {% block footer_script %}
 
@@ -78,6 +85,14 @@
                 $parent.find('.souche').prop('disabled', false).focus();
             }
 
+        }).find('tbody .uk-checkbox-item').each(function(){
+            var $check = $(this);
+            var $parent = $check.parent().parent();
+            if(!$check.is(':checked')){
+                $parent.find('.souche').prop('disabled', true).val('');
+            }else{
+                $parent.find('.souche').prop('disabled', false).focus();
+            }
         });
 
         $('body').on('click', '#valide', function(e){

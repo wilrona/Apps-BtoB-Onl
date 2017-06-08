@@ -52,7 +52,7 @@ class Users(db.Document):
         return False
 
     def full_name(self):
-        full_name = ''+str(self.first_name)+' '+str(self.last_name)+''
+        full_name = u''+self.first_name+u' '+self.last_name+u''
         return full_name
 
     def has_roles(self, requirements, accesibles=None):
