@@ -102,6 +102,20 @@ class Compagnie(db.Document):
 
         return ligne
 
+    def dateExpired_domaine(self):
+        from ..document.models_doc import LigneDoc
+
+        lignes = LigneDoc.objects(Q(idcompagnie=self.id) & Q(etat=1) & Q(dateFin__ne=None)).order_by('-dateFin')
+
+        ligne = None
+
+        for lign in lignes:
+            if lign.idpackage.idligneService == 'domaine':
+                ligne = lign
+                break
+
+        return ligne
+
     def remaind_day(self, days, alert=False):
 
         time_zones = tzlocal()
@@ -118,40 +132,6 @@ class Compagnie(db.Document):
             else:
                 if remaind == datetime.timedelta(days=days):
                     response = True
-
-        return response
-
-    def remaind_day_hosting(self, days, alert=False):
-
-        time_zones = tzlocal()
-        date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
-
-        to_day = function.datetime_convert(date_auto_nows)
-
-        response = False
-        if self.dateExpired_hosting():
-            remaind = self.dateExpired_hosting().dateFin - to_day
-            if alert:
-                if remaind <= datetime.timedelta(days=days):
-                    response = True
-            else:
-                if remaind == datetime.timedelta(days=days):
-                    response = True
-
-        return response
-
-    def claim_remaind_day(self, days):
-
-        time_zones = tzlocal()
-        date_auto_nows = datetime.datetime.now(time_zones).strftime("%Y-%m-%d %H:%M:%S")
-
-        to_day = function.datetime_convert(date_auto_nows)
-
-        response = False
-        if self.claimDate:
-            remaind = self.claimDate - to_day
-            if remaind == datetime.timedelta(days=days):
-                response = True
 
         return response
 
@@ -174,6 +154,7 @@ class Compagnie(db.Document):
         lignes = LigneDoc.objects(Q(idcompagnie=self.id) & Q(etat=1) & Q(dateFin__ne=None)).order_by('-dateFin')
 
         return lignes
+
 
 class Media(db.Document):
     type = db.StringField()

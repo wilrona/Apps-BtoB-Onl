@@ -106,7 +106,7 @@ def verify_expired_company():
 
     current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
 
-    entreprises = Compagnie.objects(activated=True)
+    entreprises = Compagnie.objects(Q(etat_souscription=1) & Q(activated=True))
 
     for enterprise in entreprises:
 
@@ -128,6 +128,126 @@ def verify_expired_company():
                 ligne.save()
 
     print('Entreprise expiree traite')
+
+
+# Execution tous les jours a 03:00
+def send_mail_hosting_company():
+    from ..document.models_doc import LigneDoc
+    from ..company.models_company import Company
+    import time
+
+    info = Company.objects().first()
+    lignes = LigneDoc.objects(Q(etat=1) & Q(dateFin__ne=None) & Q(iddocument__ne=None))
+
+    count = 0
+    sleep = 1
+
+    for ligne in lignes:
+
+        if ligne.idpackage.idligneService == 'hosting':
+
+            days = None
+            if ligne.expired(days=60, alert=False):
+                days = 60
+            else:
+                if ligne.expired(days=30, alert=False):
+                    days = 30
+                else:
+                    if ligne.expired(days=15, alert=False):
+                        days = 15
+                    else:
+                        if ligne.expired(days=7, alert=False):
+                            days = 7
+                        else:
+                            if ligne.expired(days=3, alert=False):
+                                days = 3
+            if days:
+                user_mail = ligne.iddocument.contact_id
+
+                current_domaine = None
+                domaines = LigneDoc.objects(Q(iddocument=ligne.iddocument) & Q(free=True))
+                for domaine in domaines:
+                    if domaine.idpackage.idligneService == 'domaine':
+                        current_domaine = domaine
+                        pass
+
+                msg = Message()
+                msg.recipients = [user_mail.email]
+                html = render_template('template_mail/compagnie/hosting.html', **locals())
+                msg.subject = 'VOTRE FACTURE POUR RENOUVELLEMENT AU SERVICE D\'HEBERGEMENT WEB YOOMEE'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+            if ligne.expired(days=0, alert=False):
+
+                user_mail = ligne.iddocument.contact_id
+                current_domaine = None
+                domaines = LigneDoc.objects(Q(iddocument=ligne.iddocument) & Q(free=True))
+                for domaine in domaines:
+                    if domaine.idpackage.idligneService == 'domaine':
+                        current_domaine = domaine
+                        pass
+
+                msg = Message()
+                msg.recipients = [user_mail.email]
+                html = render_template('template_mail/compagnie/hosting_expired.html', **locals())
+                msg.subject = 'EXPIRATION SERVICE D\'HEBERGEMENT WEB YOOMEE'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+        if ligne.idpackage.idligneService == 'domaine' and not ligne.free:
+
+            days = None
+            if ligne.expired(days=60, alert=False):
+                days = 60
+            else:
+                if ligne.expired(days=30, alert=False):
+                    days = 30
+                else:
+                    if ligne.expired(days=15, alert=False):
+                        days = 15
+                    else:
+                        if ligne.expired(days=7, alert=False):
+                            days = 7
+                        else:
+                            if ligne.expired(days=3, alert=False):
+                                days = 3
+
+            if days:
+                user_mail = ligne.iddocument.contact_id
+
+                msg = Message()
+                msg.recipients = [user_mail.email]
+                html = render_template('template_mail/compagnie/domaine.html', **locals())
+                msg.subject = 'VOTRE FACTURE POUR ACHAT DE NOM DE DOMAINE'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+            if ligne.expired(days=0, alert=False):
+
+                user_mail = ligne.iddocument.contact_id
+
+                msg = Message()
+                msg.recipients = [user_mail.email]
+                html = render_template('template_mail/compagnie/domaine_expired.html', **locals())
+                msg.subject = 'EXPIRATION NOM DE DOMAINE'
+                msg.sender = (info.senderNotification, 'no_reply@ici.cm')
+
+                msg.html = html
+                mail.send(msg)
+
+        count += 1
+        if count >= (20 * sleep):
+            time.sleep(600)
+            sleep += 1
+
+    return 'True'
 
 
 # Execution tous les jours a 06:30
@@ -225,6 +345,8 @@ def send_mail_expired_company():
                                     enterprise = enterprise.save()
 
             if days:
+
+                lien_reactivation = "#"
 
                 user_mail = enterprise.mainuser
 

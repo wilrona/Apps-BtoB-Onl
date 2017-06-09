@@ -488,9 +488,9 @@ def canceled():
     return data
 
 
-# @prefix.route('/print/<objectid:facture_id>/<attach>', methods=['GET'])
+@prefix.route('/print/<objectid:facture_id>/<attach>', methods=['GET'])
 @prefix.route('/print/<objectid:facture_id>', methods=['GET'])
-def print_facture(facture_id):
+def print_facture(facture_id, attach=None):
 
     current_ref = Config_reference.objects().first()
     compagnie = Company.objects.first()
@@ -536,9 +536,91 @@ def print_facture(facture_id):
 
     response = make_response(pdfs)
     response.headers['Content-Type'] = 'application.pdf'
-    response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
+    if attach:
+        response.headers['Content-Disposition'] = 'attach; filename='+data.reference()+'.pdf'
+    else:
+        response.headers['Content-Disposition'] = 'inline; filename='+data.reference()+'.pdf'
 
     return response
+
+
+@prefix.route('/generate/<objectid:ligne_id>', methods=['GET'])
+def generate_facture(ligne_id):
+
+    ligne = LigneDoc.objects.get(id=ligne_id)
+
+    facture_next = Document.objects(generated_from=ligne.iddocument.id).first()
+
+    data = None
+
+    if not facture_next:
+
+        facture = Document()
+        facture.devisDoc = False
+        facture.status = 1
+        facture.montant = ligne.iddocument.montant
+        facture.vendeur_id = ligne.iddocument.vendeur_id
+        facture.contact_id = ligne.iddocument.contact_id
+
+        count_exist = Document.objects(devisDoc=False).count()
+        facture.ref = function.reference(count=count_exist+1, caractere=7, refuser=facture.vendeur_id.ref)
+        facture.generated_from = ligne.iddocument
+
+        data = facture.save()
+
+    else:
+
+        data = facture_next
+
+    if data.status != 3:
+
+        PROJECT_DIR = app.config['FOLDER_APPS']
+
+        config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
+        image = PROJECT_DIR+'/static/images/icicm.jpg'
+
+        word = PROJECT_DIR+'/static/images/icon/word.png'
+        facebook = PROJECT_DIR+'/static/images/icon/facebook.png'
+        twitter = PROJECT_DIR+'/static/images/icon/tweeter.png'
+
+        css = [
+            PROJECT_DIR+'/static/css/uikit-new.css',
+            PROJECT_DIR+'/static/css/lato-font.css',
+            PROJECT_DIR+'/static/css/apps.css',
+            PROJECT_DIR+'/static/css/pdf.css',
+            ]
+
+        rendered = render_template('document/document.html', **locals())
+
+        pdfs = pdfkit.from_string(
+            rendered, False,
+            css=css,
+            options={
+                'page-size': 'A4',
+                # 'margin-top': '0',
+                'margin-right': '0',
+                'margin-left': '0',
+                'margin-bottom': '0',
+                'zoom': '0.65',
+                'dpi': '400',
+                'encoding': "UTF-8"
+
+            },
+            configuration=config
+        )
+
+        response = make_response(pdfs)
+        response.headers['Content-Type'] = 'application.pdf'
+        response.headers['Content-Disposition'] = 'attach; filename='+data.reference()+'.pdf'
+
+        return response
+
+    else:
+        return render_template('notbill.html', **locals())
+
+
+
 
 
 # @prefix.route('/print2/<objectid:facture_id>', methods=['GET'])

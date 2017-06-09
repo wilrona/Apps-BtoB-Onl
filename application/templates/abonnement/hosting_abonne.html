@@ -36,9 +36,10 @@
                         <thead>
                         <tr>
                             <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
-                            <th width="30%">Nom entreprise</th>
+                            <th width="25%">Nom entreprise</th>
+                            <th width="25%">Description</th>
                             <th width="25%">Date Expiration</th>
-                            <th width="25%">Recommandation</th>
+                            <th width="15%"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -70,6 +71,16 @@
                                         <span class="uk-label">Aucune</span>
                                     {% endif %}
 
+                                </td>
+
+                                <td>
+                                    {% if data.expired(60)  %}
+                                        {% if data.iddocument.generate_child() %}
+                                            <a href="{{ url_for('facture.generate_facture', ligne_id=data.id) }}" class="uk-button uk-button-text print">Imprimer</a>
+                                        {% else %}
+                                            <a href="{{ url_for('facture.generate_facture', ligne_id=data.id) }}" class="uk-button uk-button-text print">Non Imprimer</a>
+                                        {% endif %}
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

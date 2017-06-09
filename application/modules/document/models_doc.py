@@ -22,6 +22,7 @@ class Document(db.Document):
     note = db.StringField()
 
     exe_ici_cm = db.IntField() # verifier si une facture a deja ete traite, 0 non traite; 1 Traite; 2 Traite partiel
+    generated_from = db.ReferenceField('self') # stock l'origine de la generation du fichier pour les hostings et les nom de domaine
 
     def save(self, *args, **kwargs):
         if not self.createDate:
@@ -118,6 +119,10 @@ class Document(db.Document):
 
         return montant
 
+    def generate_child(self):
+        doc = Document.objects(generated_from=self.id).first()
+        return doc
+
 
 class LigneDoc(db.Document):
     iddocument = db.ReferenceField('Document')
@@ -132,7 +137,7 @@ class LigneDoc(db.Document):
     desc = db.StringField()
     free = db.IntField(default=0)
 
-    def expired(self, days):
+    def expired(self, days, alert=True):
         response = False
         if self.idpackage.idligneService == 'hosting' or self.idpackage.idligneService == 'domaine':
             time_zones = tzlocal()
@@ -141,8 +146,12 @@ class LigneDoc(db.Document):
             to_day = function.datetime_convert(date_auto_nows)
 
             expired = self.dateFin - to_day
-            if expired <= datetime.timedelta(days=days):
-                response = True
+            if alert:
+                if expired <= datetime.timedelta(days=days):
+                    response = True
+            else:
+                if expired == datetime.timedelta(days=days):
+                    response = True
 
         return response
 

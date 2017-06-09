@@ -29,7 +29,7 @@
                                                                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
                                                                     <tr>
                                                                         <td align="center" class="MsoNormal" style="color:#333333; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; font-weight:600; letter-spacing:6px; line-height:26px; text-transform:uppercase;">
-                                                                            <multiline>Renouvellement de nos services</multiline>
+                                                                            <multiline>RENOUVELLEMENT AU SERVICE D'HEBERGEMENT WEB YOOMEE</multiline>
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
@@ -43,14 +43,13 @@
                                                                         <td align="center" class="MsoNormal" style="color:#666666; font-family:'Segoe UI', Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-size:14px; line-height:24px; letter-spacing:1px; font-weight:500;">
                                                                             <multiline>Bonjour {{ user_mail.full_name() }},
                                                                                 <br>
-                                                                                Nous vous informons sur l'évolution de vos services ICI.cm.
+                                                                                Nous vous adressons ce mail pour vous signifier que votre abonnement au service d'hébergement <span style="text-transform: uppercase">{{ ligne.idpackage.name }}</span> {% if current_domaine %}et de messagerie professionnelle avec pour nom de domaine « {{ current_domaine.desc }} »{% endif %}, expire dans {{ days }} jour(s) soit le {{ ligne.dataFin|format_date("%d-%m-%Y") }}.
                                                                                 <br>
 
-                                                                                Votre souscription pour l’entreprise {{ enterprise.name }}  expire dans {{ days }} jours soit le {{ enterprise.dateExpired().dataFin|format_date("%d/%m/%Y") }}.
+                                                                                Pour éviter tout désagrément lié à la suspension de votre site internet et de votre messagerie professionnelle, veuillez renouveler votre abonnement par l'un des modes de paiement mentionnés sur la facture.
+                                                                                <br>
 
-                                                                                <br>
-                                                                                <br>
-                                                                                Pour le prolonger, il vous suffit de vous rendre sur notre site en cliquant sur le lien suivante :
+                                                                                Trouvez ci-dessous la facture correspondante de renouvellement de votre abonnement.
                                                                             </multiline>
                                                                         </td>
                                                                     </tr>
@@ -63,7 +62,7 @@
                                                                                 <tr>
                                                                                     <td align="center" class="MsoNormal" style="color:#ffffff; font-family:Segoe UI, Helvetica Neue, Arial, Verdana, Trebuchet MS, sans-serif; font-weight:600; padding:7px 12px; text-transform:uppercase; font-size:12px; letter-spacing:1px;">
                                                                                         <multiline>
-                                                                                            <a target="_blank" href="{{ lien_reactivation }}" style="color:#ffffff; text-decoration:none;">Renouvellement</a>
+                                                                                            <a target="_blank" href="{{ url_for('facture.generate_facture', ligne_id=ligne.id) }}" style="color:#ffffff; text-decoration:none;">Lien facture renouvellement</a>
                                                                                         </multiline>
                                                                                     </td>
                                                                                 </tr>

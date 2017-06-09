@@ -15,9 +15,9 @@ def index():
     domaine = True
 
     datas = []
-    lignes = LigneDoc.objects(etat=1)
+    lignes = LigneDoc.objects(Q(etat=1) & Q(dateFin=None) & Q(iddocument__ne=None) & Q(free=False)).order_by('-dateFin')
     for ligne in lignes:
-        if ligne.idpackage.idligneService == 'domaine' and not ligne.dateDebut and not ligne.free:
+        if ligne.idpackage.idligneService == 'domaine':
             datas.append(ligne)
 
     return render_template('abonnement/hosting.html', **locals())
@@ -39,11 +39,11 @@ def valide():
 
         if request.form.getlist('date')[item_index]:
 
-            if item_found.idcompagnie.dateExpired_hosting() and item_found.idcompagnie.dateExpired_hosting().dateFin:
-                date_auto_nows = item_found.idcompagnie.dateExpired_hosting().dateFin.strftime("%m/%d/%y")
+            if item_found.idcompagnie.dateExpired_domaine() and item_found.idcompagnie.dateExpired_domaine().dateFin:
+                date_auto_nows = item_found.idcompagnie.dateExpired_domaine().dateFin.strftime("%m/%d/%y")
                 current_date = datetime.datetime.strptime(date_auto_nows, "%m/%d/%y")
 
-                old_subcription = item_found.idcompagnie.dateExpired_hosting()
+                old_subcription = item_found.idcompagnie.dateExpired_domaine()
                 old_subcription.etat = 2
                 old_subcription.save()
 
@@ -57,13 +57,6 @@ def valide():
 
             item_found.etat = 1
 
-            domaine_associe = LigneDoc.objects(Q(iddocument=item_found.iddocument) & Q(free=True) & Q(etat=1))
-            for domaine in domaine_associe:
-                if domaine.idpackage.idligneService == 'domaine':
-                    domaine.dateDebut = item_found.dateDebut
-                    domaine.dateFin = item_found.dateFin
-                    domaine.save()
-
             item_found.save()
 
             element.append(str(item_found.id))
@@ -71,7 +64,7 @@ def valide():
         else:
 
             info['statut'] = 'NOK'
-            info['message'] = u'L\'hebergement de : "' + item_found.idcompagnie.name + u'" ne contient pas de date ' \
+            info['message'] = u'Le nom de domaine de : "' + item_found.idcompagnie.name + u'" ne contient pas de date ' \
                                                                                        u'de debut'
             data.append(info)
 
@@ -96,9 +89,9 @@ def abonne():
     title_page = u'Nom de domaine Abonnée'
 
     datas = []
-    lignes = LigneDoc.objects(etat=1).order_by('-dateFin')
+    lignes = LigneDoc.objects(Q(etat=1) & Q(dateFin__ne=None) & Q(iddocument__ne=None)).order_by('-dateFin')
     for ligne in lignes:
-        if ligne.idpackage.idligneService == 'domaine' and ligne.dateDebut:
+        if ligne.idpackage.idligneService == 'domaine':
             datas.append(ligne)
 
     return render_template('abonnement/domaine_abonne.html', **locals())

@@ -12,9 +12,9 @@ prefix = Blueprint('hosting', __name__)
 def index():
     title_page = u'Hébergement Web'
     datas = []
-    lignes = LigneDoc.objects(etat=1)
+    lignes = LigneDoc.objects(Q(etat=1) & Q(dateFin=None) & Q(iddocument__ne=None)).order_by('-dateFin')
     for ligne in lignes:
-        if ligne.idpackage.idligneService == 'hosting' and not ligne.dateDebut:
+        if ligne.idpackage.idligneService == 'hosting':
             datas.append(ligne)
 
     return render_template('abonnement/hosting.html', **locals())
@@ -56,7 +56,7 @@ def valide():
 
             domaine_associe = LigneDoc.objects(Q(iddocument=item_found.iddocument) & Q(free=True) & Q(etat=1))
             for domaine in domaine_associe:
-                if domaine.idpackage.idligneService == 'domaine':
+                if domaine.idpackage.idligneService == 'domaine' and not domaine.dateDebut:
                     domaine.dateDebut = item_found.dateDebut
                     domaine.dateFin = item_found.dateFin
                     domaine.save()
@@ -93,9 +93,9 @@ def abonne():
     title_page = u'Hébergement Web Abonnée'
 
     datas = []
-    lignes = LigneDoc.objects(etat=1).order_by('-dateFin')
+    lignes = LigneDoc.objects(Q(etat=1) & Q(dateFin__ne=None) & Q(iddocument__ne=None)).order_by('-dateFin')
     for ligne in lignes:
-        if ligne.idpackage.idligneService == 'hosting' and ligne.dateDebut:
+        if ligne.idpackage.idligneService == 'hosting':
             datas.append(ligne)
 
     return render_template('abonnement/hosting_abonne.html', **locals())

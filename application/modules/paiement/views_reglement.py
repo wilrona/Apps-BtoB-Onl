@@ -110,7 +110,6 @@ def valide():
                 msg.recipients = [item_found.iduser_paid.email]
                 msg.add_recipient(infos.emailNotification)
                 msg.subject = 'Confirmation de paiement'
-                msg.attach()
                 msg.sender = (infos.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
@@ -124,6 +123,7 @@ def valide():
                 notification.save()
 
             facture = item_found.iddocument
+
             ligne_doc = facture.lignedoc_facture()
 
             for ligne in ligne_doc:

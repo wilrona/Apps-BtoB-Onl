@@ -305,16 +305,32 @@
     <tr>
         <td style="width: 5%"></td>
         <td colspan="2" class="title">
-            <table>
+            <table class="uk-table">
                 <td class="zone title" ></td>
                 <td class="title">
-                    <blockquote cite="#" style="font-size: 11px; font-style: italic">
-                        <p class="uk-text-break" style="font-style: italic"><strong>Information Légale :</strong> <br/>
-                            <strong>ICI.CM</strong> est un produit de l'entreprise {{ compagnie.name }} <br>
-                            Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>
-                            Phone: {{ compagnie.phone }} - Email : {{ compagnie.email }}<br/>
-                            RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
-                        </p>
+                    <blockquote cite="#" style="font-size: 11px; font-style: italic; width: 100%;">
+                        <table class="uk-table uk-table-small">
+                        <tr>
+                            <td style="width: 45%">
+                                <span class="uk-text-break" style="font-style: italic"><strong>INFORMATION LEGALE :</strong> <br/>
+                                    <strong>ICI.CM</strong> est un produit de l'entreprise {{ compagnie.name }} <br>
+                                    Office: {{ compagnie.adress }} {{ compagnie.quartier }}, {{ compagnie.ville }} {% if compagnie.pays %}{{ compagnie.pays }}{% endif %}<br/>
+                                    Phone: {{ compagnie.phone }} - Email : {{ compagnie.email }}<br/>
+                                    RCCM: {{ compagnie.registcom }} - NIU: {{ compagnie.numcontr }}
+                                </span>
+
+                            </td>
+                            <td style="width: 55%">
+                                <span class="uk-text-break" style="font-style: italic"><strong>MOYEN DE PAIEMENT :</strong> <br/>
+                                    Par virement bancaire: UBA: 10033-05206-06003000046-17 <br>
+                                    Par chèque bénéficiaire: YOOMEE ONLINE <br/>
+                                    Par espèce: Showroom YOOMEE Douala Bonanjo / Showroom YOOMEE Douala Carrefour Abia<br/>
+                                    Contactez nous au n° tel: +237 690 41 54 56
+                                </span>
+                            </td>
+                        </tr>
+
+                        </table>
                     </blockquote>
                 </td>
             </table>
