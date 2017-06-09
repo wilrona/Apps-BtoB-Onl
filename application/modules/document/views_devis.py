@@ -436,6 +436,7 @@ def print_devis(devis_id):
     config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
 
     image = PROJECT_DIR+'/static/images/icicm.png'
+    signature = PROJECT_DIR+'/static/images/signature.png'
 
     word = PROJECT_DIR+'/static/images/icon/word.png'
     facebook = PROJECT_DIR+'/static/images/icon/facebook.png'

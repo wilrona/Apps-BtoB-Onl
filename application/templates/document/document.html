@@ -203,7 +203,6 @@
                             <tr>
                                 <td>
                                 {% if data.reglement_facture(True) %}
-                                    <span class="uk-h4">Accompte versée </span>
                                     <table class="uk-table uk-table-small uk-table-middle uk-table-bordered">
                                         <thead>
                                         <tr>
@@ -213,10 +212,10 @@
                                         </thead>
                                         <tbody>
                                         {% for paiement in data.reglement_facture(True) %}
-                                                <tr>
-                                                    <td>{{ paiement.createDate|format_date("%d/%m/%Y") }}</td>
-                                                    <td>{{ paiement.montant|format_price() }}</td>
-                                                </tr>
+                                            <tr>
+                                                <td>{{ paiement.createDate|format_date("%d/%m/%Y") }}</td>
+                                                <td>{{ paiement.montant|format_price() }}</td>
+                                            </tr>
                                         {% endfor %}
                                         </tbody>
                                     </table>
@@ -294,8 +293,9 @@
 <table class="uk-table uk-table-small footer" border="0">
     <tr>
         <td style="width: 5%"></td>
-        <td style="width: 40%">
-            <div class="uk-text-bold uk-h4 uk-text-center"> La Direction</div>
+        <td style="width: 40%" class="uk-position-relative">
+            <img src="{{ signature }}" class="uk-display-block uk-position-bottom-center" alt="" width="150"/>
+            <div class="uk-text-bold uk-h4 uk-text-left uk-margin-left uk-text-middle"> La Direction</div>
         </td>
         <td style="width: 40%">
             <div class="uk-text-bold uk-h4 uk-text-right">La devise est le Franc CFA</div>
