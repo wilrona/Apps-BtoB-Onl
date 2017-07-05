@@ -3,6 +3,11 @@ __author__ = 'User'
 from ...modules import *
 
 
+class Tag(db.EmbeddedDocument):
+    key = db.StringField()
+    cat = db.IntField()
+
+
 class Compagnie(db.Document):
 
     name = db.StringField()
@@ -38,6 +43,7 @@ class Compagnie(db.Document):
     parent_idcompagnie = db.ReferenceField('self')
     maincategorie = db.ReferenceField('Categorie')
     idcategorie = db.ListField(db.ReferenceField('Categorie'))
+    tag = db.ListField(db.EmbeddedDocumentField(Tag))
 
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()

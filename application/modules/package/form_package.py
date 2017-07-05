@@ -17,7 +17,7 @@ class FormPackage(wtf.Form):
     id = wtf.HiddenField()
     name = wtf.StringField(label='Nom du package :', validators=[validators.Required(message='Champ obligatoire')])
     description = wtf.TextAreaField(label='Description :')
-    duree = wtf.StringField(label=u'Durée/Période :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
+    duree = wtf.StringField(label=u'Durée/Période/Quantité :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
     prix = wtf.StringField(label='Prix :', widget=NumberInput(), validators=[validators.Required(message='Champ obligatoire')])
     prix_promo = wtf.StringField(label='Prix promotionnel :', widget=NumberInput(), validators=[valid_promo])
     promo = wtf.BooleanField()

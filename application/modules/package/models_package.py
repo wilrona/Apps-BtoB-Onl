@@ -1,3 +1,5 @@
+from mongoengine import queryset_manager
+
 __author__ = 'User'
 
 from ...modules import *
@@ -17,6 +19,12 @@ class Package(db.Document):
     attribut = db.ListField(db.StringField())
     sale = db.IntField()
     hight = db.BooleanField()
+
+    @queryset_manager
+    def objects(doc_cls, queryset):
+        # This may actually also be done by defining a default ordering for
+        # the document, but this illustrates the use of manager methods
+        return queryset.filter(status=True)
 
     def similar(self):
 
@@ -52,6 +60,13 @@ class Package(db.Document):
     def ligne_service(self):
         service = LigneService.objects(sigle=self.idligneService).first()
         return service
+
+    def used(self):
+        from ..document.models_doc import LigneDoc
+        ligne = LigneDoc.objects(idpackage=self.id).count()
+        return ligne
+
+
 
 
 class LigneService(db.Document):

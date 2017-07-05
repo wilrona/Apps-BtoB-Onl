@@ -54,7 +54,8 @@ def edit(package_id=None):
         form = FormPackage(obj=data)
         form.id.data = package_id
         form.idligneService.data = data.idligneService
-
+        if data.used():
+            flash(u'Certain élement du package ne sont plus modifiable car il est déja utilisé dans certaine commande. ', 'warning')
     else:
         data = Package()
         form = FormPackage()
@@ -69,46 +70,56 @@ def edit(package_id=None):
 
     if form.validate_on_submit():
 
-        data.name = form.name.data
-        data.idligneService = form.idligneService.data
+        if not data.used():
+
+            data.name = form.name.data
+            data.idligneService = form.idligneService.data
+
+            data.prix = float(form.prix.data)
+            data.duree = int(form.duree.data)
+
+            ligne = LigneService.objects.get(sigle=form.idligneService.data)
+            if ligne.package:
+                data.is_package = True
+            else:
+                data.is_package = False
+
+            if form.sale.data:
+                data.sale = 1
+                data.level = 0
+            else:
+                data.sale = 0
+
+            if form.prix_promo.data:
+                data.prix_promo = float(form.prix_promo.data)
+
+            if form.promo.data:
+                data.promo = True
+            else:
+                data.promo = False
+
+            if ligne.package and not package_id and not data.sale:
+                count = Package.objects(Q(idligneService=form.idligneService.data) & Q(sale=0)).count()
+                data.level = (count + 1)
+                data.hight = True
+
+                prev = Package.objects(Q(idligneService=form.idligneService.data) & Q(level=count) & Q(sale=0)).first()
+                if prev:
+                    prev.hight = False
+                    prev.save()
+
+            data.attribut = []
+            for attr in request.form.getlist('attr'):
+                data.attribut.append(attr)
+
         data.description = form.description.data
-        data.prix = float(form.prix.data)
-        data.duree = int(form.duree.data)
-
-        ligne = LigneService.objects.get(sigle=form.idligneService.data)
-        if ligne.package:
-            data.is_package = True
-        else:
-            data.is_package = False
-
-        if form.sale.data:
-            data.sale = 1
-            data.level = 0
-        else:
-            data.sale = 0
-
-        if form.prix_promo.data:
-            data.prix_promo = float(form.prix_promo.data)
-
         if form.promo.data:
             data.promo = True
         else:
             data.promo = False
 
-        if ligne.package and not package_id and not data.sale:
-            count = Package.objects(Q(idligneService=form.idligneService.data) & Q(sale=0)).count()
-            data.level = (count + 1)
-            data.hight = True
-
-            prev = Package.objects(Q(idligneService=form.idligneService.data) & Q(level=count) & Q(sale=0)).first()
-            if prev:
-                prev.hight = False
-                prev.save()
-
-
-        data.attribut = []
-        for attr in request.form.getlist('attr'):
-            data.attribut.append(attr)
+        if form.prix_promo.data:
+            data.prix_promo = float(form.prix_promo.data)
 
         data = data.save()
 
@@ -257,12 +268,17 @@ def find_single_package():
     if not pack.attribut:
         desc = pack.description
 
+    sale = True
+    if pack.prix:
+        sale = False
+
     data = json.dumps({
         'id': str(pack.id),
         'qte': pack.duree,
         'desc': desc,
         'prix': prix,
         'attribut': pack.attribut,
+        'free': sale,
         'statut': 'OK'
     })
 

@@ -323,6 +323,8 @@
                                                     <li><a href="#" class="addRow" id="website">SITE WEB</a></li>
                                                     <li class="uk-nav-divider"></li>
                                                     <li><a href="#" class="addRow" id="domaine">NOM DE DOMAINE</a></li>
+                                                    <li class="uk-nav-divider"></li>
+                                                    <li><a href="#" class="addRow" id="sms">SMS</a></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -364,6 +366,9 @@
                                                                     {% endif %}
                                                                     {% if pack['service'] == 'domaine' %}
                                                                     <option value="">Offre nom de domaine</option>
+                                                                    {% endif %}
+                                                                    {% if pack['service'] == 'sms' %}
+                                                                        <option value="">Offre SMS</option>
                                                                     {% endif %}
                                                                     {% for package in pack['similaire'] %}
                                                                         <option value="{{ package.id }}" {% if pack['package']|string == package.id|string %} selected {% endif %}>{{ package.name }}</option>
@@ -728,6 +733,25 @@
                 );
             }
 
+            if($this.attr('id') === 'sms') {
+                $select_pack = $('<div/>').append(
+                    $('<div/>').addClass('uk-form-controls uk-form-package').append(
+                        $('<select/>').addClass('uk-select selected package uk-form-small').attr({
+                            name: 'package'
+                        }).append(
+                            $('<option value="">Offre SMS</option>'),
+                            {% for package in package_sms %}
+                                $('<option value="{{ package.id }}">{{ package.name }}</option>'),
+                            {% endfor %}
+                        ),
+                        $('<input/>').attr({
+                            name: 'service',
+                            type: 'hidden'
+                        }).val('sms').addClass('service')
+                    )
+                );
+            }
+
             $input_qte = $('<div/>').append(
                 $('<div/>').addClass('uk-form-controls uk-form-qte').append(
                     $('<a class="uk-button uk-button-link uk-button-small uk-text-small ddd uk-icon-link" href="#" data-multi="-1"><span uk-icon="icon: minus"></span></a>'),
@@ -779,6 +803,13 @@
                 if($this.attr('id') === 'website'){
 
                     if($(this).val() === 'website'){
+                        counters++;
+                    }
+                }
+
+                if($this.attr('id') === 'sms'){
+
+                    if($(this).val() === 'sms'){
                         counters++;
                     }
                 }
@@ -904,6 +935,12 @@
 
 
                             $sous_total.val(parseFloat(data['prix']).toFixed(2)).data("old", parseFloat(data['prix']));
+
+                            if(data['free']){
+                                $sous_total.prop("disabled", true);
+                            }else{
+                                $sous_total.prop("disabled", false);
+                            }
 
                             change_total();
 

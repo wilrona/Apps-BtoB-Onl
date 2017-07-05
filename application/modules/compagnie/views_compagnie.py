@@ -3,7 +3,7 @@ __author__ = 'User'
 
 from ...modules import *
 from forms_compagnie import FormClient
-from models_compagnie import Compagnie, Categorie, Media, Raison
+from models_compagnie import Compagnie, Categorie, Media, Raison, Tag
 from ..user.models_user import Users
 
 prefix = Blueprint('client', __name__)
@@ -154,6 +154,23 @@ def edit(client_id=None):
             the_cat = Categorie.objects.get(id=cat_id)
 
             data.idcategorie.append(the_cat)
+
+        data.tag = []
+
+        for tag in data.tag:
+            if not tag.cat:
+                tag_cat = Tag()
+                tag_cat.cat = 1
+                tag_cat.key = tag.key
+                data.tag.append(tag_cat)
+
+        for cat in request.form.getlist('idcategorie'):
+            the_cat = Categorie.objects.get(id=cat)
+
+            tag_cat = Tag()
+            tag_cat.cat = 1
+            tag_cat.key = the_cat.name
+            data.tag.append(tag_cat)
 
         principale = Categorie.objects.get(id=form.maincategorie.data)
         data.maincategorie = principale

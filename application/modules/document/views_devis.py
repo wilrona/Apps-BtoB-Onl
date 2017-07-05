@@ -143,6 +143,7 @@ def edit(devis_id=None):
     package_website = Package.objects(idligneService='website')
     package_module = Package.objects(idligneService='module')
     package_domaine = Package.objects(idligneService='domaine')
+    package_sms = Package.objects(idligneService='sms')
 
     if 'package' not in session:
         session['package'] = []
@@ -360,7 +361,7 @@ def change_satus(devis_id, status):
 
     if int(status) == 3:
         if data.facture_valid():
-            flash('Le devis "'+data.ref+'" contient '+str(data.factu_devis().count())+' Facture(s) validee(s). il ne peut etre annule.', 'warning')
+            flash('Le devis "'+data.ref+'" contient '+str(data.factu_devis().count())+'Facture(s) validée(s). il ne peut etre annule.', 'warning')
             return redirect(url_for('devis.view', devis_id=devis_id))
 
     data.status = status
