@@ -49,7 +49,7 @@ class Compagnie(db.Document):
     updateDate = db.DateTimeField()
     claimDate = db.DateTimeField()
 
-    etat_souscription = db.IntField() #0 non paye; 1 paye; 2 expiree
+    etat_souscription = db.IntField(default=0) #0 non paye; 1 paye; 2 expiree
     date_expire_ici = db.DateTimeField() # date fin  abonnement ici.cm
     date_expire_hosting = db.DateTimeField() # date fin abonnement hosting
     uploaded = db.BooleanField()

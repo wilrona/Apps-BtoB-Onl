@@ -1,3 +1,4 @@
+# coding=utf-8
 from ...modules import *
 
 
@@ -11,7 +12,7 @@ class ExcelParser(object):
             number_of_rows = sheet.nrows
             number_of_columns = sheet.ncols
 
-            headers = [str(cell.value) for cell in sheet.row(0)]
+            headers = [cell.value for cell in sheet.row(0)]
 
             response = self.check_header(headers)
 

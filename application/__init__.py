@@ -51,7 +51,7 @@ APP_STATIC = os.path.join(APP_ROOT, 'static')
 
 app.config['MONGODB_SETTINGS'] = {
     'db': 'crm_yoomee'
-    # 'db': 'icicmtest',
+    # 'db': 'ici_cm',
     # 'host': 'localhost',
     # 'port': 28569
 }

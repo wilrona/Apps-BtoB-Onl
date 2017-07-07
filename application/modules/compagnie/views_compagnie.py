@@ -800,6 +800,7 @@ def import_excel():
             file.save(source_save)
 
             items = excel_parser.read_excel(source_save)
+            # return str(items)
             os.remove(source_save)
 
             for item in items:
@@ -830,45 +831,54 @@ def traitement_import():
 
                 catego = Categorie.objects(name=data['categorie']).first()
 
-                if catego:
+                if not catego:
 
-                    entreprise = Compagnie()
-                    entreprise.name = data['nom']
+                    catego = Categorie()
+                    catego.name = data['categorie']
+                    catego.slug = function._slugify(data['categorie'])
+                    catego = catego.save()
 
-                    entreprise.email = data['email']
-                    entreprise.phone = data['phone']
-                    entreprise.description = data['description']
+                entreprise = Compagnie()
+                entreprise.name = data['nom']
 
-                    entreprise.region = data['region']
-                    entreprise.repere = data['reperage']
-                    entreprise.ville = data['ville']
-                    entreprise.quartier = data['quartier']
-                    entreprise.adresse = data['rue']
-                    entreprise.postal_code = data['bp']
+                entreprise.email = data['email']
+                entreprise.phone = data['phone']
+                entreprise.description = data['description']
 
-                    entreprise.uploaded = True
-                    entreprise.activated = True
-                    entreprise.verify = True
+                entreprise.region = data['region']
+                entreprise.repere = data['reperage']
+                entreprise.ville = data['ville']
+                entreprise.quartier = data['quartier']
+                entreprise.adresse = data['rue']
+                entreprise.postal_code = data['bp']
 
-                    entreprise.urlsite = data['website']
-                    entreprise.imagedir = data['dossier']
-                    entreprise.logo = data['logo']
+                entreprise.uploaded = True
+                entreprise.activated = True
+                entreprise.verify = True
 
-                    entreprise.facebook = data['facebook']
-                    entreprise.maincategorie = catego
-                    entreprise.idcategorie.append(catego)
+                entreprise.urlsite = data['website']
+                # entreprise.imagedir = data['dossier']
+                # entreprise.logo = data['logo']
 
-                    entreprise.latitude = data['latitude']
-                    entreprise.longitude = data['longitude']
+                # entreprise.facebook = data['facebook']
+                entreprise.maincategorie = catego
+                entreprise.idcategorie.append(catego)
 
-                    entreprise = entreprise.save()
+                # entreprise.latitude = data['latitude']
+                # entreprise.longitude = data['longitude']
 
-                    media = Media()
-                    media.type = 'image'
-                    media.une = True
-                    media.idcompagnie = entreprise
-                    media.url = data['image']
-                    media.save()
+                entreprise = entreprise.save()
+
+                # media = Media()
+                # media.type = 'image'
+                # media.une = True
+                # media.idcompagnie = entreprise
+                # media.url = data['image']
+                # media.save()
+
+                if entreprise.id not in catego.compagnie:
+                    catego.compagnie.append(entreprise)
+                    catego.save()
 
             importa.delete()
 
