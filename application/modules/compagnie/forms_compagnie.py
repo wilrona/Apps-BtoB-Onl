@@ -51,6 +51,7 @@ class FormClient(wtf.Form):
     maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[check_not_cat])
 
     logo = wtf.StringField(label='Logo entreprise :')
+    imageslide = wtf.StringField(label='Image du slide :')
 
 
 def check_enfant(form, field):

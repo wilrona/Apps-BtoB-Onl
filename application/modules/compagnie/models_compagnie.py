@@ -43,7 +43,7 @@ class Compagnie(db.Document):
     parent_idcompagnie = db.ReferenceField('self')
     maincategorie = db.ReferenceField('Categorie')
     idcategorie = db.ListField(db.ReferenceField('Categorie'))
-    tag = db.ListField(db.EmbeddedDocumentField(Tag))
+    tags = db.ListField(db.EmbeddedDocumentField(Tag))
 
     createDate = db.DateTimeField()
     updateDate = db.DateTimeField()
@@ -60,6 +60,7 @@ class Compagnie(db.Document):
     idcontact = db.ListField(db.ReferenceField('Users'))
 
     slide = db.BooleanField(default=False)
+    imageslide = db.StringField()
 
     def save(self, *args, **kwargs):
         if not self.createDate:

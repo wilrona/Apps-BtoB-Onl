@@ -162,7 +162,7 @@ def edit(client_id=None):
                 tag_cat = Tag()
                 tag_cat.cat = 1
                 tag_cat.key = tag.key
-                data.tag.append(tag_cat)
+                data.tags.append(tag_cat)
 
         for cat in request.form.getlist('idcategorie'):
             the_cat = Categorie.objects.get(id=cat)
@@ -170,15 +170,16 @@ def edit(client_id=None):
             tag_cat = Tag()
             tag_cat.cat = 1
             tag_cat.key = the_cat.name
-            data.tag.append(tag_cat)
+            data.tags.append(tag_cat)
 
         principale = Categorie.objects.get(id=form.maincategorie.data)
         data.maincategorie = principale
 
         error_file = False
         file = request.files['file']
+        file_imageslide = request.files['file_imageslide']
 
-        if file:
+        if file or file_imageslide:
 
             if old_name:
                 old_rename = function._slugify(old_name)
@@ -198,28 +199,53 @@ def edit(client_id=None):
 
             url_dossier = os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imagedir)
 
-            if allowed_file(file.filename):
+            if file:
+                if allowed_file(file.filename):
 
-                if data.logo and request.form['url_image_change'] == '1' and client_id:
-                    os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.logo))
+                    if data.logo and request.form['url_image_change'] == '1' and client_id:
+                        os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.logo))
 
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
 
-                extension = filename.split(".")
-                extension = extension[1]
+                    extension = filename.split(".")
+                    extension = extension[1]
 
-                source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
-                destination = url_dossier + "/logo-" + old_rename + "." + extension
+                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+                    destination = url_dossier + "/logo-" + old_rename + "." + extension
 
-                os.rename(source, destination)
+                    os.rename(source, destination)
 
-                link_save_file = "/logo-" + old_rename + "." + extension
-                data.logo = data.imagedir + link_save_file
+                    link_save_file = "/logo-" + old_rename + "." + extension
+                    data.logo = data.imagedir + link_save_file
 
-            else:
-                flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg', 'warning')
-                error_file = True
+                else:
+                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur le logo)', 'warning')
+                    error_file = True
+
+            if file_imageslide:
+                if allowed_file(file_imageslide.filename):
+
+                    if data.imageslide and request.form['url_image_change_imageslide'] == '1' and client_id:
+                        os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imageslide))
+
+                    filename = secure_filename(file_imageslide.filename)
+                    file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+
+                    extension = filename.split(".")
+                    extension = extension[1]
+
+                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+                    destination = url_dossier + "/imageslide-" + old_rename + "." + extension
+
+                    os.rename(source, destination)
+
+                    link_save_file = "/imageslide-" + old_rename + "." + extension
+                    data.imageslide = data.imagedir + link_save_file
+
+                else:
+                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur l\'image de slide)', 'warning')
+                    error_file = True
 
         if not error_file:
 
@@ -860,12 +886,17 @@ def traitement_import():
                 # entreprise.imagedir = data['dossier']
                 # entreprise.logo = data['logo']
 
-                # entreprise.facebook = data['facebook']
+                entreprise.facebook = data['facebook']
                 entreprise.maincategorie = catego
                 entreprise.idcategorie.append(catego)
 
-                # entreprise.latitude = data['latitude']
-                # entreprise.longitude = data['longitude']
+                entreprise.latitude = data['latitude']
+                entreprise.longitude = data['longitude']
+
+                tag_cat = Tag()
+                tag_cat.cat = 1
+                tag_cat.key = catego.name
+                entreprise.tags.append(tag_cat)
 
                 entreprise = entreprise.save()
 
@@ -1168,3 +1199,16 @@ def change_mainuser(client_id):
         success = True
 
     return render_template('client/change_mainuser.html', **locals())
+
+
+@prefix.route('/update')
+def update():
+
+    compa = Compagnie.objects()
+
+    for comp in compa:
+        comp.latitude = ''
+        comp.longitude = ''
+        comp.save()
+
+    return 'OK'

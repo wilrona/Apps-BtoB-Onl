@@ -44,7 +44,7 @@
                                                 <div uk-form-custom class="uk-margin-bottom">
                                                     <span uk-icon="icon: cloud-upload"></span>
                                                     <input type="file" name="file" id="file_upload">
-                                                    <span class="uk-link">Cliquez pour selectionnez une logo</span>
+                                                    <span class="uk-link">Cliquez pour selectionnez un logo</span>
                                                 </div>
                                                 <br/>
                                                 <br/>
@@ -259,7 +259,7 @@
                                         <label for="" class="uk-form-label uk-text-bold">Tags saisis</label>
                                         <div class="uk-form-controls">
                                             <ul class="uk-subnav uk-margin-small-top uk-subnav-divider">
-                                                {% for item in data.tag %}
+                                                {% for item in data.tags %}
                                                     <li class="uk-active">{{ item.key }}</li>
                                                 {% endfor %}
                                             </ul>
@@ -301,6 +301,20 @@
                                 </div>
                             {% if client_id %}
                                 <div class="uk-width-1-1">
+                                    <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Image sur le slide</span></h2>
+                                    <div class="uk-width-1-1@s">
+                                        <div class="test-upload uk-placeholder uk-text-center">
+                                            <div uk-form-custom class="uk-margin-bottom">
+                                                <span uk-icon="icon: cloud-upload"></span>
+                                                <input type="file" name="file_imageslide" id="file_upload_imageslide">
+                                                <span class="uk-link">Cliquez pour selectionnez une image</span>
+                                            </div>
+                                            <br/>
+                                            <br/>
+                                            <img src="{% if form.imageslide.data %}{{ url_for('client.download_file', filename=form.imageslide.data) }}{% endif %}" id="image_upload_imageslide" alt="" class="{% if not form.imageslide.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block uk-height-max-large"/>
+                                            <input type="hidden" name="url_image_change_imageslide" value="0" id="image_upload_input_imageslide">
+                                        </div>
+                                    </div>
 
                                     <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Lien Vidéo</span></h2>
                                         <div class="uk-grid-small" uk-grid>
@@ -510,6 +524,24 @@
                 reader.onload = function (e) {
                     $('#image_upload').attr('src', e.target.result).removeClass('uk-hidden');
                     $('#image_upload_input').val('1');
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#file_upload_imageslide").on('change', function(){
+            readURL_imageslide(this);
+        });
+
+        function readURL_imageslide(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image_upload_imageslide').attr('src', e.target.result).removeClass('uk-hidden');
+                    $('#image_upload_input_imageslide').val('1');
                 };
 
                 reader.readAsDataURL(input.files[0]);
