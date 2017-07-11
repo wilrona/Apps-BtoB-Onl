@@ -19,6 +19,10 @@ def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_CLIENT'],
                                filename, as_attachment=True)
 
+@prefix.route('/uploads/slider/<path:filename>')
+def download_file_slider(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER_CLIENT'],
+                               filename, as_attachment=True)
 
 @prefix.route('/')
 @login_required
@@ -91,21 +95,22 @@ def edit(client_id=None):
         if request.method == "GET":
             form.maincategorie.data = str(data.maincategorie.id)
 
-        for choice in data.idcategorie:
-            form.maincategorie.choices.append((str(choice.id), choice.name))
+            for choice in data.idcategorie:
+                form.maincategorie.choices.append((str(choice.id), choice.name))
 
-        if request.method == "POST":
+        if request.method == "POST" and form.maincategorie.data:
             principale = Categorie.objects.get(id=form.maincategorie.data)
             form.maincategorie.data = str(principale.id)
+
     else:
         data = Compagnie()
         form = FormClient()
 
     all = Categorie.objects(Q(activated=True) & Q(parent_idcategorie__ne=None))
 
-    form.idcategorie.choices = [('', '')]
-    for choice in all:
-        form.idcategorie.choices.append((str(choice.id), choice.name))
+    form.idcategorie.choices = [('', u'Choisir des catégories')]
+    for choice_id in all:
+        form.idcategorie.choices.append((str(choice_id.id), choice_id.name))
 
     if not client_id:
         form.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
@@ -155,9 +160,9 @@ def edit(client_id=None):
 
             data.idcategorie.append(the_cat)
 
-        data.tag = []
+        data.tags = []
 
-        for tag in data.tag:
+        for tag in data.tags:
             if not tag.cat:
                 tag_cat = Tag()
                 tag_cat.cat = 1
@@ -224,24 +229,25 @@ def edit(client_id=None):
                     error_file = True
 
             if file_imageslide:
+
                 if allowed_file(file_imageslide.filename):
 
                     if data.imageslide and request.form['url_image_change_imageslide'] == '1' and client_id:
                         os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imageslide))
 
-                    filename = secure_filename(file_imageslide.filename)
-                    file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+                    filename_slide = secure_filename(file_imageslide.filename)
+                    file_imageslide.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename_slide))
 
-                    extension = filename.split(".")
+                    extension = filename_slide.split(".")
                     extension = extension[1]
 
-                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename_slide)
                     destination = url_dossier + "/imageslide-" + old_rename + "." + extension
 
                     os.rename(source, destination)
 
-                    link_save_file = "/imageslide-" + old_rename + "." + extension
-                    data.imageslide = data.imagedir + link_save_file
+                    link_save_file_slide = "/imageslide-" + old_rename + "." + extension
+                    data.imageslide = data.imagedir + link_save_file_slide
 
                 else:
                     flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur l\'image de slide)', 'warning')

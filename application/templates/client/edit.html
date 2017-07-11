@@ -311,7 +311,7 @@
                                             </div>
                                             <br/>
                                             <br/>
-                                            <img src="{% if form.imageslide.data %}{{ url_for('client.download_file', filename=form.imageslide.data) }}{% endif %}" id="image_upload_imageslide" alt="" class="{% if not form.imageslide.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block uk-height-max-large"/>
+                                            <img src="{% if form.imageslide.data %}{{ url_for('client.download_file_slider', filename=form.imageslide.data) }}{% endif %}" id="image_upload_imageslide" alt="" class="{% if not form.imageslide.data %}uk-hidden{% endif %} uk-margin-auto uk-display-block uk-height-max-large"/>
                                             <input type="hidden" name="url_image_change_imageslide" value="0" id="image_upload_input_imageslide">
                                         </div>
                                     </div>
@@ -537,14 +537,14 @@
         function readURL_imageslide(input) {
 
             if (input.files && input.files[0]) {
-                var reader = new FileReader();
+                var reader_slide = new FileReader();
 
-                reader.onload = function (e) {
+                reader_slide.onload = function (e) {
                     $('#image_upload_imageslide').attr('src', e.target.result).removeClass('uk-hidden');
                     $('#image_upload_input_imageslide').val('1');
                 };
 
-                reader.readAsDataURL(input.files[0]);
+                reader_slide.readAsDataURL(input.files[0]);
             }
         }
     </script>

@@ -47,8 +47,8 @@ class FormClient(wtf.Form):
     linkedin = wtf.StringField(label='Lien linkedin :')
     youtube = wtf.StringField(label='Lien youtube :')
 
-    idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[check_not_cat])
-    maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[check_not_cat])
+    idcategorie = wtf.SelectMultipleField(label='Categorie de l\'entreprise :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
+    maincategorie = wtf.SelectField(label='Categorie Principale :', coerce=str, validators=[validators.Required(message='Champ obligatoire')])
 
     logo = wtf.StringField(label='Logo entreprise :')
     imageslide = wtf.StringField(label='Image du slide :')
