@@ -62,6 +62,8 @@ def login():
         flash('Adresse email ou mot de passe incorrect ICI', 'danger')
         return redirect(url_for('home.index'))
 
+        # return render_template('test.html', **locals())
+
 
 @prefix.route('/logout')
 def logout():

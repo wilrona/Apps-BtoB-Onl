@@ -871,7 +871,7 @@ def traitement_import():
                     catego = catego.save()
 
                 entreprise = Compagnie()
-                entreprise.name = data['nom']
+                entreprise.name = " ".join(data['nom'].split())
 
                 entreprise.email = data['email']
                 entreprise.phone = data['phone']
@@ -879,8 +879,8 @@ def traitement_import():
 
                 entreprise.region = data['region']
                 entreprise.repere = data['reperage']
-                entreprise.ville = data['ville']
-                entreprise.quartier = data['quartier']
+                entreprise.ville = " ".join(data['ville'].lower().split())
+                entreprise.quartier = " ".join(data['quartier'].lower().split())
                 entreprise.adresse = data['rue']
                 entreprise.postal_code = data['bp']
 
@@ -1213,8 +1213,10 @@ def update():
     compa = Compagnie.objects()
 
     for comp in compa:
-        comp.latitude = ''
-        comp.longitude = ''
+        if comp.ville:
+            comp.ville = comp.ville.lower().strip()
+        if comp.quartier:
+            comp.quartier = comp.quartier.lower().strip()
         comp.save()
 
     return 'OK'
