@@ -81,6 +81,23 @@
                                         </div>
 
                                     </div>
+                                    <div class="uk-width-1-1">
+                                        <table class="uk-table">
+                                            <caption>Liste des entreprises de la caégorie</caption>
+                                            <thead>
+                                            <tr>
+                                                <th>Nom de l'entreprise</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for list in data.compagnie %}
+                                                    <tr>
+                                                        <td><a href="{{ url_for('client.view', client_id=list.id) }}">{{ list.name }}</a></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
                             </div>
                         </div>
                     </form>

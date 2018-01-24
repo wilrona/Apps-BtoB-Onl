@@ -88,19 +88,21 @@ def edit(client_id=None):
         form = FormClient(obj=data)
         form.id.data = client_id
 
-        form.idcategorie.data = [str(cat.id) for cat in data.idcategorie]
-
         form.maincategorie.choices = [('', 'Faite le choix de la categorie principale')]
 
         if request.method == "GET":
+
+            form.idcategorie.data = [str(cat.id) for cat in data.idcategorie]
+
             form.maincategorie.data = str(data.maincategorie.id)
 
             for choice in data.idcategorie:
                 form.maincategorie.choices.append((str(choice.id), choice.name))
 
-        if request.method == "POST" and form.maincategorie.data:
-            principale = Categorie.objects.get(id=form.maincategorie.data)
-            form.maincategorie.data = str(principale.id)
+        if request.method == "POST":
+            if form.maincategorie.data:
+                principale = Categorie.objects.get(id=form.maincategorie.data)
+                form.maincategorie.data = str(principale.id)
 
     else:
         data = Compagnie()
