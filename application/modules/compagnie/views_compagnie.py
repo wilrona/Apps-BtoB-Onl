@@ -1,4 +1,5 @@
 # coding=utf-8
+# encoding=utf8
 __author__ = 'User'
 
 from ...modules import *
@@ -19,20 +20,22 @@ def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_CLIENT'],
                                filename, as_attachment=True)
 
+
 @prefix.route('/uploads/slider/<path:filename>')
 def download_file_slider(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER_CLIENT'],
                                filename, as_attachment=True)
+
 
 @prefix.route('/')
 @login_required
 def index():
     title_page = 'Clients'
 
-    for newer in Compagnie.objects():
-        if not newer.partenaire:
-            newer.partenaire = False
-            newer.save()
+    # for newer in Compagnie.objects():
+    #     if not newer.partenaire:
+    #         newer.partenaire = False
+    #         newer.save()
 
     datas = Compagnie.objects(verify=1)
 
@@ -53,7 +56,6 @@ def new():
 @prefix.route('/view/<objectid:client_id>')
 @login_required
 def view(client_id):
-
     if request.args.get('news'):
         if request.args.get('news') == "2":
             title_page = 'Client Abonnement ICI'
@@ -74,7 +76,6 @@ def view(client_id):
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def edit(client_id=None):
-
     if request.args.get('news'):
         if request.args.get('news') == "2":
             title_page = 'Client Abonnement ICI'
@@ -213,12 +214,12 @@ def edit(client_id=None):
                         os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.logo))
 
                     filename = secure_filename(file.filename)
-                    file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+                    file.save(os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename))
 
                     extension = filename.split(".")
                     extension = extension[1]
 
-                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+                    source = os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename)
                     destination = url_dossier + "/logo-" + old_rename + "." + extension
 
                     os.rename(source, destination)
@@ -227,7 +228,8 @@ def edit(client_id=None):
                     data.logo = data.imagedir + link_save_file
 
                 else:
-                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur le logo)', 'warning')
+                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur le logo)',
+                          'warning')
                     error_file = True
 
             if file_imageslide:
@@ -238,12 +240,12 @@ def edit(client_id=None):
                         os.remove(os.path.join(app.config['UPLOAD_FOLDER_CLIENT'], data.imageslide))
 
                     filename_slide = secure_filename(file_imageslide.filename)
-                    file_imageslide.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename_slide))
+                    file_imageslide.save(os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename_slide))
 
                     extension = filename_slide.split(".")
                     extension = extension[1]
 
-                    source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename_slide)
+                    source = os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename_slide)
                     destination = url_dossier + "/imageslide-" + old_rename + "." + extension
 
                     os.rename(source, destination)
@@ -252,7 +254,9 @@ def edit(client_id=None):
                     data.imageslide = data.imagedir + link_save_file_slide
 
                 else:
-                    flash('Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur l\'image de slide)', 'warning')
+                    flash(
+                        'Le systeme n\'accepte que les images au format .png, .jpg ou .jpeg (Erreur sur l\'image de slide)',
+                        'warning')
                     error_file = True
 
         if not error_file:
@@ -282,7 +286,6 @@ def edit(client_id=None):
 
 @prefix.route('/uploader/<objectid:client_id>', methods=['POST'])
 def uploader(client_id):
-
     from ..workflow.workflow_user import id_generator
 
     data = Compagnie.objects.get(id=client_id)
@@ -304,29 +307,29 @@ def uploader(client_id):
 
     saved_file = None
     for key, file in request.files.items():
-        if file: # and allowed_file(fie.filename):
+        if file:  # and allowed_file(fie.filename):
 
             filename = secure_filename(file.filename)
 
-            file.save(os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename))
+            file.save(os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename))
 
-            source = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+            source = os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename)
 
             destination = url_dossier + "/" + filename
 
-            url_save = data.imagedir+"/"+filename
+            url_save = data.imagedir + "/" + filename
 
             count_image = Media.objects(Q(type='image') & Q(url=url_save) & Q(idcompagnie=data.id)).count()
 
             if count_image:
                 extension = filename.split(".")
-                rename = extension[0]+'-'+str(id_generator(size=7))
-                filename = rename+'.'+extension[1]
-                destination = url_dossier + "/"+filename
+                rename = extension[0] + '-' + str(id_generator(size=7))
+                filename = rename + '.' + extension[1]
+                destination = url_dossier + "/" + filename
 
             os.rename(source, destination)
 
-            url_save = data.imagedir+"/"+filename
+            url_save = data.imagedir + "/" + filename
 
             nbr_img_une = Media.objects(Q(type='image') & Q(idcompagnie=data.id) & Q(une=True)).count()
 
@@ -347,7 +350,6 @@ def uploader(client_id):
 
 @prefix.route('/deleted/image/<objectid:image_id>', methods=['GET'])
 def delete_image(image_id):
-
     media = Media.objects.get(id=image_id)
 
     companie_id = media.idcompagnie.id
@@ -374,7 +376,6 @@ def delete_image(image_id):
 
 @prefix.route('/une/image/<objectid:image_id>', methods=['GET'])
 def une_image(image_id):
-
     media = Media.objects.get(id=image_id)
 
     reste_image = Media.objects(Q(type='image') & Q(idcompagnie=media.idcompagnie.id) & Q(une=True))
@@ -398,7 +399,6 @@ def une_image(image_id):
 @prefix.route('/edit/video/<objectid:client_id>')
 @prefix.route('/edit/video/<objectid:client_id>/<video_link>')
 def edit_video(client_id, video_link=None):
-
     company = Compagnie.objects.get(id=client_id)
     video = Media.objects(Q(idcompagnie=client_id) & Q(type="video")).first()
 
@@ -406,12 +406,12 @@ def edit_video(client_id, video_link=None):
         if not video:
             media_v = Media()
             media_v.type = "video"
-            media_v.url = "https://www.youtube.com/watch?v="+video_link
+            media_v.url = "https://www.youtube.com/watch?v=" + video_link
             media_v.une = False
             media_v.idcompagnie = company
             media_v.save()
         else:
-            video.url = "https://www.youtube.com/watch?v="+video_link
+            video.url = "https://www.youtube.com/watch?v=" + video_link
             video.save()
 
     return redirect(url_for('client.edit', client_id=client_id))
@@ -497,7 +497,6 @@ def reload_categorie():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def etat_activated():
-
     from ..company.models_company import Company
     from ..utilities.model_cron import Notification
 
@@ -635,7 +634,6 @@ def etat(client_id):
 
 @prefix.route('/refuse/<objectid:client_id>', methods=['GET', 'POST'])
 def refuse_client(client_id):
-
     from ..company.models_company import Company
     from ..utilities.model_cron import Notification
 
@@ -765,7 +763,8 @@ def edit_special():
     title_page = 'Clients'
 
     if request.args.get('partenaire'):
-        datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire=0) | Q(partenaire=1) & Q(verify=1) & Q(activated=True))
+        datas = Compagnie.objects(
+            Q(partenaire__exists=0) | Q(partenaire=0) | Q(partenaire=1) & Q(verify=1) & Q(activated=True))
         title_page += '- Partenaires'
     else:
         datas = Compagnie.objects(Q(partenaire__exists=0) | Q(partenaire__gte=0) & Q(verify=1) & Q(activated=True))
@@ -811,7 +810,6 @@ def edit_special():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def import_excel():
-
     title_page = 'Clients - Import'
 
     from ..utilities.imports import ExcelParser
@@ -830,7 +828,7 @@ def import_excel():
             excel_parser = ExcelParser()
 
             filename = secure_filename(file.filename)
-            source_save = os.path.join(app.config['FOLDER_APPS']+'/static/uploads', filename)
+            source_save = os.path.join(app.config['FOLDER_APPS'] + '/static/uploads', filename)
             file.save(source_save)
 
             items = excel_parser.read_excel(source_save)
@@ -851,7 +849,6 @@ def import_excel():
 @prefix.route('/traitement/import', methods=['POST'])
 @login_required
 def traitement_import():
-
     from ..utilities.model_cron import Import_excel
 
     importation = Import_excel.objects()
@@ -866,7 +863,6 @@ def traitement_import():
                 catego = Categorie.objects(name=data['categorie']).first()
 
                 if not catego:
-
                     catego = Categorie()
                     catego.name = data['categorie']
                     catego.slug = function._slugify(data['categorie'])
@@ -939,7 +935,6 @@ def traitement_import():
 @prefix.route('/sortie/import', methods=['POST'])
 @login_required
 def annuler_import():
-
     from ..utilities.model_cron import Import_excel
 
     importation = Import_excel.objects()
@@ -1032,7 +1027,6 @@ def remove_slide():
 @login_required
 @roles_required([('super_admin', 'client')], ['edit'])
 def remove_special():
-
     if request.form.getlist('item_id'):
         error = False
         for id_compagnie in request.form.getlist('item_id'):
@@ -1048,9 +1042,11 @@ def remove_special():
 
             current.save()
         if request.args.get('partenaire'):
-            flash('Les clients selectionnes ne sont plus des partenaires. Ils sont acquis une relation de client', 'success')
+            flash('Les clients selectionnes ne sont plus des partenaires. Ils sont acquis une relation de client',
+                  'success')
         else:
-            flash('Les clients selectionnes ne sont plus des institutions. Ils sont acquis une relation de client', 'success')
+            flash('Les clients selectionnes ne sont plus des institutions. Ils sont acquis une relation de client',
+                  'success')
 
         if error:
             flash('Certaines entreprises sont des partenaires. ils ne peuvent etre enlever institution', 'warning')
@@ -1070,7 +1066,6 @@ def remove_special():
 
 @prefix.route('/all_activated')
 def all_activated():
-
     compagnie = Compagnie.objects(uploaded=True).update(verify=1)
 
     count = 0
@@ -1082,7 +1077,6 @@ def all_activated():
 
 @prefix.route('/contact/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
 def contact_to_admin(client_id):
-
     client = Compagnie.objects.get(id=client_id)
 
     success = False
@@ -1116,7 +1110,6 @@ def contact_to_admin(client_id):
 
 @prefix.route('/add/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
 def add_admin(client_id):
-
     datas = Users.objects(user=0)
 
     client = Compagnie.objects.get(id=client_id)
@@ -1154,7 +1147,6 @@ def add_admin(client_id):
 
 @prefix.route('/delete/administrateur/<objectid:client_id>', methods=['GET', 'POST'])
 def delete_admin(client_id):
-
     client = Compagnie.objects.get(id=client_id)
 
     success = False
@@ -1186,7 +1178,6 @@ def delete_admin(client_id):
 
 @prefix.route('/change/maineuser/<objectid:client_id>', methods=['GET', 'POST'])
 def change_mainuser(client_id):
-
     client = Compagnie.objects.get(id=client_id)
 
     success = False
@@ -1211,7 +1202,6 @@ def change_mainuser(client_id):
 
 @prefix.route('/update')
 def update():
-
     compa = Compagnie.objects()
 
     for comp in compa:
@@ -1222,3 +1212,43 @@ def update():
         comp.save()
 
     return 'OK'
+
+
+@prefix.route('/export/<int:id>')
+@prefix.route('/export')
+def export(id=None):
+
+    import StringIO
+    import csv
+
+    si = StringIO.StringIO()
+    cw = csv.writer(si)
+
+    cw.writerow(['Name', 'Email address'])
+
+    datas = Compagnie.objects()
+
+    compagnies = []
+
+    for data in datas:
+        name = None
+        email = None
+        phone = None
+
+        if data.name:
+            name = data.name.encode("utf-8")
+        if data.email:
+            email = data.email.encode("utf-8")
+        if data.phone:
+            phone = data.phone.encode("utf-8")
+
+        if email:
+            compagnies.append([name, email])
+
+    for comp in compagnies:
+        cw.writerow(comp)
+
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=export.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output

@@ -37,6 +37,8 @@ class Users(db.Document):
     roles = db.ListField(db.EmbeddedDocumentField(UserRole))
     idcompagnie = db.ListField(db.ReferenceField('Compagnie'))
 
+    favorite = db.ListField(db.ReferenceField('Compagnie'))
+
     def save(self, *args, **kwargs):
         if not self.registerDate:
             self.registerDate = datetime.datetime.now()
