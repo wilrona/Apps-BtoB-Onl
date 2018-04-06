@@ -141,7 +141,12 @@ class Users(db.Document):
             date_start = datetime.date.today()
             date_end = datetime.date.today()
 
-        nbre = Document.objects(Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end)).count()
+        nbre = 0
+        resultats = Document.objects(Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
+
+        for result in resultats:
+            if len(result.package_ici_cm()):
+                nbre += 1
 
         return nbre
 
@@ -152,7 +157,12 @@ class Users(db.Document):
             date_start = datetime.date.today()
             date_end = datetime.date.today()
 
-        nbre = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end)).count()
+        nbre = 0
+        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
+
+        for result in resultats:
+            if len(result.package_ici_cm()):
+                nbre += 1
 
         return nbre
 

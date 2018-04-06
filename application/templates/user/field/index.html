@@ -83,12 +83,56 @@
                 $( '#datepicker_input' ).datepicker({
                     language: 'fr-FR',
                     format: 'dd/mm/yyyy',
-                    autoHide: true
+                    autoHide: true,
+                    pick: function (date) {
+                        $date_end = $(date.currentTarget).parent().next().find('input.date_end');
+                        $reforme_date_start_show = ('0' + date.date.getDate()).slice(-2)+'/'+( '0' + (date.date.getMonth()+1) ).slice( -2 )+'/'+date.date.getFullYear();
+                        $reforme_date_start = ''+( '0' + (date.date.getMonth()+1) ).slice( -2 )+'/'+date.date.getDate()+'/'+date.date.getFullYear();
+
+                        if($date_end){
+
+                            $reforme_date_end = "";
+
+                            if ($date_end.val() === ''){
+                                $date_end.val($reforme_date_start_show);
+                            }else{
+                                date_end_js = $date_end.val().split('/');
+                                $reforme_date_end = (date_end_js[1]) + '/' + date_end_js[0] + '/' + date_end_js[2];
+                            }
+
+                            if(new Date($reforme_date_start) >= new Date($reforme_date_end)){
+                                $date_end.val($reforme_date_start_show);
+                            }
+                        }
+                    }
                 });
             $( '#datepicker2_input' ).datepicker({
                 language: 'fr-FR',
                 format: 'dd/mm/yyyy',
-                autoHide: true
+                autoHide: true,
+                pick: function (date) {
+                    $date_start = $(date.currentTarget).parent().prev().find('input.date_start');
+                    $reforme_date_end_show = ('0' + date.date.getDate()).slice(-2)+'/'+( '0' + (date.date.getMonth()+1) ).slice( -2 )+'/'+date.date.getFullYear();
+                    $reforme_date_end = ''+( '0' + (date.date.getMonth()+1) ).slice( -2 )+'/'+date.date.getDate()+'/'+date.date.getFullYear();
+
+                    if($date_start){
+
+                        $reforme_date_start = "";
+
+                        if ($date_start.val() === ''){
+                            $date_start.val($reforme_date_end_show);
+                        }else{
+                            date_start_js = $date_start.val().split('/');
+                            console.log(date_start_js);
+                            $reforme_date_start = date_start_js[1] + '/' + date_start_js[0] + '/' + date_start_js[2];
+                        }
+
+
+                        if(new Date($reforme_date_end) <= new Date($reforme_date_start)){
+                            $date_start.val($reforme_date_end_show);
+                        }
+                    }
+                }
             });
         })
     </script>
