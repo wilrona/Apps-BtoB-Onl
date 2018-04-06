@@ -62,6 +62,8 @@ class Compagnie(db.Document):
     slide = db.BooleanField(default=False)
     imageslide = db.StringField()
 
+    view = db.IntField(default=0)
+
     def save(self, *args, **kwargs):
         if not self.createDate:
             self.createDate = datetime.datetime.now()

@@ -196,7 +196,8 @@ global_role = [
          {'titre': 'Traitement des opportunites ', 'valeur': 'opportunite', 'action': 2},
          {'titre': 'Traitement des factures ', 'valeur': 'facture', 'action': 2},
          {'titre': 'Traitement des reglements factures', 'valeur': 'reglement', 'action': 2},
-         {'titre': 'Traitement des internautes', 'valeur': 'internaute', 'action': 2}
+         {'titre': 'Traitement des internautes', 'valeur': 'internaute', 'action': 2},
+         {'titre': 'Consultation des rapports des field soldier', 'valeur': 'fieldsoldier', 'action': 0}
      ]
     },
 ]

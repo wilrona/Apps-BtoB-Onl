@@ -30,6 +30,10 @@ class Users(db.Document):
     lastLogin = db.DateTimeField()
     user = db.IntField() # 0 simple user; 1 field soldier; 2 administrateur/cam
     note = db.StringField()
+    ville = db.StringField()
+    sex = db.StringField()
+    dateNaiss = db.DateTimeField()
+    picture = db.StringField()
 
     source = db.StringField()
     list_id = db.ListField(db.StringField())
@@ -128,6 +132,29 @@ class Users(db.Document):
 
         # All requirements have been met: return True
         return True
+
+    def nbre_prospection(self, date_start=None, date_end=None):
+
+        from ..document.models_doc import Document
+
+        if date_start is None and date_end is None:
+            date_start = datetime.date.today()
+            date_end = datetime.date.today()
+
+        nbre = Document.objects(Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end)).count()
+
+        return nbre
+
+    def nbre_activation(self, date_start=None, date_end=None):
+
+        from ..document.models_doc import Document
+        if date_start is None and date_end is None:
+            date_start = datetime.date.today()
+            date_end = datetime.date.today()
+
+        nbre = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end)).count()
+
+        return nbre
 
 
 

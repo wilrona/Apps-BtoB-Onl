@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title_page }} {% endblock %}
+
+{% block title_header %} {{ title_page }} {% endblock %}
+
+{% block search %}
+    <div class="uk-inline">
+        <span class="uk-form-icon uk-form-icon-flip" uk-icon="icon: search"></span>
+        <input class="uk-input uk-form-width-large uk-input-search" placeholder="Recherche" id="searchbox">
+    </div>
+{% endblock %}
+
+{% block  button %}
+    <form action="" method="get">
+        <div uk-grid class="uk-grid-collapse uk-text-large">
+            <div>
+                Du
+                <input type="text" id="datepicker_input" class="date_start custom_input uk-input" name="date_start" value="{{ date_start_show }}">
+            </div>
+            <div>
+                Au
+                <input type="text" id="datepicker2_input" class="uk-input date_end custom_input" name="date_end" value="{{ date_end_show }}">
+            </div>
+            <div class="uk-width-auto">
+                <button type="submit" class="uk-button waves-effect uk-button-info uk-button-small">valider</button>
+            </div>
+        </div>
+    </form>
+
+{% endblock %}
+
+
+{% block layout_content %}
+
+    <div class="uk-container-expand">
+        <div class="uk-grid-small" uk-grid>
+            <div class="uk-width-1-1">
+                {% include 'includes/flash_message.html' %}
+
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th class="no-sort" width="3%"><input type="checkbox" value="" class="uk-checkbox uk-checkbox-all"/></th>
+                            <th width="19%">Nom</th>
+                            <th width="19%">Prospections</th>
+                            <th width="19%">Activation</th>
+                            <th width="19%">Taux conversion</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data in datas %}
+                            <tr data-link="#">
+                                <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
+                                <td>{{ data.full_name() }}</td>
+                                <td>{{ data.nbre_prospection(date_start, date_end) }}</td>
+                                <td>{{ data.nbre_activation(date_start, date_end) }}</td>
+                                <td>{% if data.nbre_prospection(date_start, date_end)|int > 0 %} {{ data.nbre_activation(date_start, date_end) / data.nbre_prospection(date_start, date_end) }} {% else %} 0 {% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footer_script %}
+
+    {% if request.args.get('paged')|int %}
+        <script>
+            table.page({{ request.args.get('paged')|int }}).draw( 'page' );
+        </script>
+    {% endif %}
+
+    <script>
+        jQuery(document).ready(function ($) {
+                $( '#datepicker_input' ).datepicker({
+                    language: 'fr-FR',
+                    format: 'dd/mm/yyyy',
+                    autoHide: true
+                });
+            $( '#datepicker2_input' ).datepicker({
+                language: 'fr-FR',
+                format: 'dd/mm/yyyy',
+                autoHide: true
+            });
+        })
+    </script>
+
+{% endblock %}

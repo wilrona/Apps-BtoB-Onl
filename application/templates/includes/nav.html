@@ -35,6 +35,9 @@
             {% if current_user.has_roles([('super_admin', 'internaute')]) %}
                 <li><a href="{{ url_for('user.index') }}" class="waves-effect">Internautes</a></li>
             {% endif %}
+            {% if current_user.has_roles([('super_admin', 'fieldsoldier')]) %}
+                <li><a href="{{ url_for('user_soldier.index') }}" class="waves-effect">Field Soldier</a></li>
+            {% endif %}
         </ul>
     </li>
     <li class="uk-nav-divider"></li>

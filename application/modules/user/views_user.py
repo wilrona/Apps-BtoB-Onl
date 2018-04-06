@@ -10,6 +10,7 @@ from ..company.models_company import Company
 
 prefix = Blueprint('user', __name__)
 prefix_param = Blueprint('user_param', __name__)
+prefix_soldier = Blueprint('user_soldier', __name__)
 
 
 @login_manager.user_loader
@@ -719,7 +720,30 @@ def resend_confirmation():
     return redirect(url_for('user_param.unconfirmed'))
 
 
+@prefix_soldier.route('/')
+@login_required
+@roles_required([('super_admin', 'fieldsoldier')])
+def index():
+    title_page = 'Statistique Field Soldier'
 
+    date_auto_nows = datetime.date.today().strftime('%d/%m/%Y')
+
+    if request.args.get('date_start') and request.args.get('date_end'):
+        date_start = function.date_convert(request.args.get('date_start'))
+        date_start_show = request.args.get('date_start')
+
+        date_end = function.date_convert(request.args.get('date_end'))
+        date_end_show = request.args.get('date_end')
+    else:
+        date_start = datetime.date.today()
+        date_start_show = date_start.strftime('%d/%m/%Y')
+
+        date_end = datetime.date.today()
+        date_end_show = date_end.strftime('%d/%m/%Y')
+
+    datas = Users.objects(user=1)
+
+    return render_template('user/field/index.html', **locals())
 
 
 # @prefix_param.route('/set_ref')

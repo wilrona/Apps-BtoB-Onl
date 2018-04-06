@@ -84,8 +84,10 @@ def date_convert(date):# Convertis date sous la forme YYYY-MM-DD
 
 # jinja 2 formatage de la date
 def format_date(date, format=None):
+    newdate = None
     try:
-        newdate = date.strftime(format)
+        if(date):
+            newdate = date.strftime(format)
     except ValueError:
         dateMin = str(date.minute)
         if date.minute < 10:
