@@ -51,12 +51,22 @@
                         </thead>
                         <tbody>
                         {% for data in datas %}
-                            <tr data-link="#">
+                            <tr data-link="{{ url_for('user_param.view', user_id=data.id, soldier=True) }}">
                                 <td><input type="checkbox" value="{{ data.id }}" name="item_id" class="uk-checkbox uk-checkbox-item"/></td>
                                 <td>{{ data.full_name() }}</td>
                                 <td>{{ data.nbre_prospection(date_start, date_end) }}</td>
                                 <td>{{ data.nbre_activation(date_start, date_end) }}</td>
-                                <td>{% if data.nbre_prospection(date_start, date_end)|int > 0 %} {{ data.nbre_activation(date_start, date_end) / data.nbre_prospection(date_start, date_end) }} {% else %} 0 {% endif %}</td>
+                                <td>
+                                    {% if data.nbre_prospection(date_start, date_end)|int > 0 %} {{ data.nbre_activation(date_start, date_end) / data.nbre_prospection(date_start, date_end) }} {% else %} 0 {% endif %}
+
+                                    <span class="uk-float-right">
+                                        {% if (data.nbre_activation(date_start, date_end) % 4900) == 0 and data.nbre_activation(date_start, date_end) != 0 %}
+                                            <span class="uk-label uk-label-success">OK</span>
+                                        {% else %}
+                                            <span class="uk-label uk-label-danger">NOK</span>
+                                        {% endif %}
+                                    </span>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>

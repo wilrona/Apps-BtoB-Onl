@@ -9,7 +9,11 @@
         <a class="uk-button waves-effect uk-button-success uk-button-small"  href="{{ url_for('user_param.edit', user_id=user_id, paged=request.args.get('paged'), internaute=request.args.get('internaute')) }}"><span class="uk-margin-small-right"><i class="fa fa-pencil-square-o"></i></span>Modifier</a>
     {% endif %}
     {%  if not request.args.get('internaute') %}
-        <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        {%  if request.args.get('soldier') %}
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_soldier.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        {% else %}
+            <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user_param.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
+        {% endif %}
     {% else %}
         <a class="uk-button waves-effect uk-button-danger uk-button-small" href="{{ url_for('user.index', paged=request.args.get('paged')) }}"><span class="uk-margin-small-right"><i class="fa fa-reply"></i></span>Retour</a>
     {% endif %}
@@ -192,6 +196,124 @@
                                 </li>
                             </ul>
                         </div>
+                        {% endif %}
+
+                        {% if data.user == 1 %}
+                            <div class="uk-grid-small uk-flex-center uk-grid-match" uk-grid uk-grid-margin>
+                                <div class="uk-width-1-4@m uk-width-1-2@s uk-width-1-1">
+                                    <div class="info-box">
+                                        <div class="icon">
+                                            <i class="fa fa-user-o"></i>
+                                        </div>
+                                        <div class="content">
+                                            <div class="number count-to" data-from="0" data-to="{{ data.nbre_prospection(date_start, date_end) }}" data-speed="1000" data-fresh-interval="20"></div>
+                                            <div class="text">Prospection du mois</div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-4@m uk-width-1-2@s uk-width-1-1">
+                                    <div class="info-box">
+                                        <div class="icon">
+                                            <i class="fa fa-user"></i>
+                                        </div>
+                                        <div class="content">
+                                            <div class="number count-to" data-from="0" data-to="{{ data.nbre_activation(date_start, date_end) }}" data-speed="1000" data-fresh-interval="20"></div>
+                                            <div class="text">Activation du  mois</div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-4@m uk-width-1-2@s uk-width-1-1">
+                                    <div class="info-box">
+                                        <div class="icon">
+                                            <i class="fa fa-paper-plane-o"></i>
+                                        </div>
+                                        <div class="content">
+                                            <div class="number count-to" data-from="0" data-to="{% if data.nbre_prospection(date_start, date_end)|int > 0 %} {{ data.nbre_activation(date_start, date_end) / data.nbre_prospection(date_start, date_end) }} {% else %} 0 {% endif %}" data-speed="1000" data-fresh-interval="20"></div>
+                                            <div class="text">Taux de conversion</div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-width-1-4@m uk-width-1-2@s uk-width-1-1">
+                                    <div class="info-box">
+                                        <div class="icon">
+                                            <i class="fa fa-credit-card"></i>
+                                        </div>
+                                        <div class="content">
+                                            <div class="number count-to" data-from="0" data-to="{{ data.commission(date_start, date_end) }}" data-speed="1000" data-fresh-interval="20"></div>
+                                            <div class="text">Commission du mois</div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Historique des prospections</span></h2>
+                            <div class="uk-overflow-auto">
+                                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <th width="30%">Client</th>
+                                        <th width="25%">Date creation</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for prospect in data.all_propection() %}
+
+                                        <tr>
+                                            <td>{{ prospect.client_id.name }}</td>
+                                            <td>{{ prospect.createDate|format_date('%d/%m/%Y %H:%M') }}</td>
+                                        </tr>
+
+                                    {% endfor %}
+
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Historique des activations</span></h2>
+                            <div class="uk-overflow-auto">
+                                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <th width="30%">Client</th>
+                                        <th width="25%">Date creation</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for activation in data.all_activation() %}
+
+                                        <tr>
+                                            <td>{{ activation.client_id.name }}</td>
+                                            <td>{{ activation.createDate|format_date('%d/%m/%Y %H:%M') }}</td>
+                                        </tr>
+
+                                    {% endfor %}
+
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <h2 class="uk-heading-line uk-text-left uk-margin-top"><span>Historique des commissions</span></h2>
+                            <div class="uk-overflow-auto">
+                                <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
+                                    <thead>
+                                    <tr>
+                                        <th width="30%">Mois</th>
+                                        <th width="25%">Montant</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+
+                                    </tbody>
+
+                                </table>
+                            </div>
                         {% endif %}
                     </div>
                 </div>

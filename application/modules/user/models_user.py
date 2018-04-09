@@ -11,7 +11,6 @@ class UserRole(db.EmbeddedDocument):
 
 
 class Users(db.Document):
-
     ref = db.StringField()
 
     first_name = db.StringField()
@@ -28,7 +27,7 @@ class Users(db.Document):
 
     logged = db.BooleanField()
     lastLogin = db.DateTimeField()
-    user = db.IntField() # 0 simple user; 1 field soldier; 2 administrateur/cam
+    user = db.IntField()  # 0 simple user; 1 field soldier; 2 administrateur/cam
     note = db.StringField()
     ville = db.StringField()
     sex = db.StringField()
@@ -58,7 +57,7 @@ class Users(db.Document):
         return False
 
     def full_name(self):
-        full_name = u''+self.first_name+u' '+self.last_name+u''
+        full_name = u'' + self.first_name + u' ' + self.last_name + u''
         return full_name
 
     def has_roles(self, requirements, accesibles=None):
@@ -102,7 +101,7 @@ class Users(db.Document):
                         else:
                             break
                 if not authorized:
-                    return False                    # tuple_of_role_names requirement failed: return False
+                    return False  # tuple_of_role_names requirement failed: return False
                 else:
                     return True
             else:
@@ -111,7 +110,7 @@ class Users(db.Document):
 
                 # the user must have this role
                 if not role_name in user_roles:
-                    return False                    # role_name requirement failed: return False
+                    return False  # role_name requirement failed: return False
                 else:
                     if accesibles and role_name != 'super_admin':
 
@@ -133,7 +132,7 @@ class Users(db.Document):
         # All requirements have been met: return True
         return True
 
-    def nbre_prospection(self, date_start=None, date_end=None):
+    def nbre_prospection(self, date_start=None, date_end=None, result=False):
 
         from ..document.models_doc import Document
 
@@ -141,35 +140,80 @@ class Users(db.Document):
             date_start = datetime.date.today()
             date_end = datetime.date.today()
 
-        nbre = 0
-        resultats = Document.objects(Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
+        resultats = Document.objects(
+            Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
 
-        for result in resultats:
-            if len(result.package_ici_cm()):
-                nbre += 1
+        if (result):
+            returned = resultats
 
-        return nbre
+        else:
+            nbre = 0
+            for result in resultats:
+                if len(result.package_ici_cm()):
+                    nbre += 1
+            returned = nbre
 
-    def nbre_activation(self, date_start=None, date_end=None):
+        return returned
+
+    def all_propection(self):
+        from ..document.models_doc import Document
+
+        resultats = Document.objects(vendeur_id=self.id).order_by('-createDate')
+
+        return resultats
+
+
+    def nbre_activation(self, date_start=None, date_end=None, result=False):
 
         from ..document.models_doc import Document
         if date_start is None and date_end is None:
             date_start = datetime.date.today()
             date_end = datetime.date.today()
 
-        nbre = 0
-        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
 
+        resultats = Document.objects(
+            Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
+
+        if (result):
+            returned = resultats
+        else:
+            nbre = 0
+            for result in resultats:
+                if len(result.package_ici_cm()):
+                    nbre += 1
+            returned = nbre
+
+        return returned
+
+    def all_activation(self):
+        from ..document.models_doc import Document
+
+        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0)).order_by('-createDate')
+
+        return resultats
+
+    def commission(self, date_start=None, date_end=None):
+
+        from ..document.models_doc import Document
+        if date_start is None and date_end is None:
+            date_start = datetime.date.today()
+            date_end = datetime.date.today()
+
+        commission = 0
+
+        resultats = Document.objects(
+            Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
+
+        chiffre_affaire = 0
         for result in resultats:
-            if len(result.package_ici_cm()):
-                nbre += 1
+            chiffre_affaire += result.montant
 
-        return nbre
+        if chiffre_affaire < 100000:
+            commission = (chiffre_affaire * 30) / 100
 
+        if chiffre_affaire >= 100000:
+            surplus = chiffre_affaire - 100000
+            commission_surplus = (surplus * 10) / 100
+            commission = 50000 + commission_surplus
 
-
-
-
-
-
-
+        return commission

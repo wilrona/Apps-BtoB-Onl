@@ -127,36 +127,43 @@ def view(user_id):
     data = Users.objects.get(id=user_id)
     form = FormUser(obj=data)
 
-    # liste des roles lie a l'utiliasteur en cours
-    attrib_list = [role.role_id.id for role in data.roles]
+    if data.user == 2:
+        # liste des roles lie a l'utiliasteur en cours
+        attrib_list = [role.role_id.id for role in data.roles]
 
-    # liste des roles lie a l'utiliasteur en cours avec le droit d'edition
-    edit_list = [role.role_id.id for role in data.roles if role.edit == True]
+        # liste des roles lie a l'utiliasteur en cours avec le droit d'edition
+        edit_list = [role.role_id.id for role in data.roles if role.edit == True]
 
-    # liste des roles lie a l'utiliasteur en cours avec le droit de suppression
-    delete_list = [role.role_id.id for role in data.roles if role.deleted == True]
+        # liste des roles lie a l'utiliasteur en cours avec le droit de suppression
+        delete_list = [role.role_id.id for role in data.roles if role.deleted == True]
 
-    liste_role = []
-    data_role = Roles.objects(
-        valeur__ne='super_admin'
-    )
+        liste_role = []
+        data_role = Roles.objects(
+            valeur__ne='super_admin'
+        )
 
-    for role in data_role:
-        if not role.parent:
-            module = {}
-            module['titre'] = role.titre
-            module['id'] = role.id
-            enfants = Roles.objects(
-                parent = role.id
-            )
-            module['role'] = []
-            for enfant in enfants:
-                rol = {}
-                rol['id'] = enfant.id
-                rol['titre'] = enfant.titre
-                rol['action'] = enfant.action
-                module['role'].append(rol)
-            liste_role.append(module)
+        for role in data_role:
+            if not role.parent:
+                module = {}
+                module['titre'] = role.titre
+                module['id'] = role.id
+                enfants = Roles.objects(
+                    parent = role.id
+                )
+                module['role'] = []
+                for enfant in enfants:
+                    rol = {}
+                    rol['id'] = enfant.id
+                    rol['titre'] = enfant.titre
+                    rol['action'] = enfant.action
+                    module['role'].append(rol)
+                liste_role.append(module)
+
+    if data.user == 1:
+
+        date_start = datetime.date.today().replace(day=1)
+
+        date_end = datetime.date.today()
 
     return render_template('user/view.html', **locals())
 
