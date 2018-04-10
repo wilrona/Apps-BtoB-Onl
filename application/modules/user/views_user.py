@@ -748,6 +748,9 @@ def index():
         date_end = datetime.date.today()
         date_end_show = date_end.strftime('%d/%m/%Y')
 
+    diff = date_end - date_start
+    diff = diff.days
+
     datas = Users.objects(user=1)
 
     return render_template('user/field/index.html', **locals())

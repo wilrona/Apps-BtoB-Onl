@@ -296,7 +296,7 @@ def send_mail_expired_company():
                 msg = Message()
                 msg.recipients = [enterprise.mainuser.email]
                 html = render_template('template_mail/compagnie/relance.html', **locals())
-                msg.subject = 'Renouvellement de vos services'
+                msg.subject = 'Renouvellement de nos services'
                 msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
@@ -308,14 +308,14 @@ def send_mail_expired_company():
                     msg = Message()
                     msg.recipients = [user.email]
                     html = render_template('template_mail/compagnie/relance.html', **locals())
-                    msg.subject = 'Renouvellement de vos services'
+                    msg.subject = 'Renouvellement de nos services'
                     msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                     msg.html = html
                     mail.send(msg)
 
                 notification = Notification()
-                notification.title = 'Renouvellement de vos services'
+                notification.title = 'Renouvellement de nos services'
                 notification.message = "Votre souscription pour l'entreprise " + enterprise.name + " expire dans" + days + " jours soit le " + function.format_date(enterprise.dateExpired().dataFin, "%d/%m/%Y") + "."
                 notification.id_compagnie = enterprise
                 notification.save()
@@ -353,7 +353,7 @@ def send_mail_expired_company():
                 msg = Message()
                 msg.recipients = [enterprise.mainuser.email]
                 html = render_template('template_mail/compagnie/relance.html', **locals())
-                msg.subject = 'Renouvellement de vos services'
+                msg.subject = 'Renouvellement de nos services'
                 msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                 msg.html = html
@@ -365,14 +365,14 @@ def send_mail_expired_company():
                     msg = Message()
                     msg.recipients = [user.email]
                     html = render_template('template_mail/compagnie/relance.html', **locals())
-                    msg.subject = 'Renouvellement de vos services'
+                    msg.subject = 'Renouvellement de nos services'
                     msg.sender = (info.senderNotification, 'no_reply@ici.cm')
 
                     msg.html = html
                     mail.send(msg)
 
                 notification = Notification()
-                notification.title = 'Renouvellement de vos services'
+                notification.title = 'Renouvellement de nos services'
                 notification.message = "Votre souscription pour l'entreprise " + enterprise.name + " expire dans" + str(days) + " jours soit le " + function.format_date(enterprise.dateExpired().dataFin, "%d/%m/%Y") + "."
                 notification.id_compagnie = enterprise
                 notification.save()

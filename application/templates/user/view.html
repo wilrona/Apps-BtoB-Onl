@@ -254,16 +254,16 @@
                                 <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
                                     <thead>
                                     <tr>
-                                        <th width="30%">Client</th>
-                                        <th width="25%">Date creation</th>
+                                        <th width="30%">Date</th>
+                                        <th width="25%">Nombre</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for prospect in data.all_propection() %}
+                                    {% for prospect in data.story_propection() %}
 
                                         <tr>
-                                            <td>{{ prospect.client_id.name }}</td>
-                                            <td>{{ prospect.createDate|format_date('%d/%m/%Y %H:%M') }}</td>
+                                            <td>{{ prospect.date }}</td>
+                                            <td>{{ prospect.count }}</td>
                                         </tr>
 
                                     {% endfor %}
@@ -278,17 +278,27 @@
                                 <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover display">
                                     <thead>
                                     <tr>
-                                        <th width="30%">Client</th>
-                                        <th width="25%">Date creation</th>
+                                        <th width="30%">Date</th>
+                                        <th width="25%">Nombre</th>
+                                        <th width="25%">Objectif</th>
                                     </tr>
                                     </thead>
                                     <tbody>
 
-                                    {% for activation in data.all_activation() %}
+                                    {% for activation in data.story_activation() %}
 
                                         <tr>
-                                            <td>{{ activation.client_id.name }}</td>
-                                            <td>{{ activation.createDate|format_date('%d/%m/%Y %H:%M') }}</td>
+                                            <td>{{ activation.date }}</td>
+                                            <td>{{ activation.count }}</td>
+                                            <td>
+                                                <span>
+                                                    {% if activation.montant > 4900 %}
+                                                        <span class="uk-label uk-label-success">OK</span>
+                                                    {% else %}
+                                                        <span class="uk-label uk-label-danger">NOK</span>
+                                                    {% endif %}
+                                                </span>
+                                            </td>
                                         </tr>
 
                                     {% endfor %}
@@ -308,7 +318,14 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    {% for activation in data.story_commission() %}
 
+                                        <tr>
+                                            <td>{{ activation.date_month }}</td>
+                                            <td>{{ activation.commission }}</td>
+                                        </tr>
+
+                                    {% endfor %}
 
                                     </tbody>
 

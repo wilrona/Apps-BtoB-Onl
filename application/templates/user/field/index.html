@@ -38,6 +38,7 @@
             <div class="uk-width-1-1">
                 {% include 'includes/flash_message.html' %}
 
+
                 <div class="uk-overflow-auto">
                     <table class="uk-table uk-table-small uk-table-middle uk-table-striped uk-table-hover" id="dataTable">
                         <thead>
@@ -59,13 +60,16 @@
                                 <td>
                                     {% if data.nbre_prospection(date_start, date_end)|int > 0 %} {{ data.nbre_activation(date_start, date_end) / data.nbre_prospection(date_start, date_end) }} {% else %} 0 {% endif %}
 
-                                    <span class="uk-float-right">
-                                        {% if (data.nbre_activation(date_start, date_end) % 4900) == 0 and data.nbre_activation(date_start, date_end) != 0 %}
-                                            <span class="uk-label uk-label-success">OK</span>
-                                        {% else %}
-                                            <span class="uk-label uk-label-danger">NOK</span>
-                                        {% endif %}
-                                    </span>
+                                    {% if diff == 0 %}
+                                        <span class="uk-float-right">
+                                            {% if data.nbre_activation(date_start, date_end , true) > 4900 %}
+                                                <span class="uk-label uk-label-success">OK</span>
+                                            {% else %}
+                                                <span class="uk-label uk-label-danger">NOK</span>
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+
                                 </td>
                             </tr>
                         {% endfor %}

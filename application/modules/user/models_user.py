@@ -132,7 +132,7 @@ class Users(db.Document):
         # All requirements have been met: return True
         return True
 
-    def nbre_prospection(self, date_start=None, date_end=None, result=False):
+    def nbre_prospection(self, date_start=None, date_end=None, montant=False):
 
         from ..document.models_doc import Document
 
@@ -143,8 +143,12 @@ class Users(db.Document):
         resultats = Document.objects(
             Q(vendeur_id=self.id) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
 
-        if (result):
-            returned = resultats
+        if montant:
+            argent = 0
+            for amount in resultats:
+                argent += amount.montant
+
+            returned = argent
 
         else:
             nbre = 0
@@ -155,27 +159,22 @@ class Users(db.Document):
 
         return returned
 
-    def all_propection(self):
-        from ..document.models_doc import Document
-
-        resultats = Document.objects(vendeur_id=self.id).order_by('-createDate')
-
-        return resultats
-
-
-    def nbre_activation(self, date_start=None, date_end=None, result=False):
+    def nbre_activation(self, date_start=None, date_end=None, montant=False):
 
         from ..document.models_doc import Document
         if date_start is None and date_end is None:
             date_start = datetime.date.today()
             date_end = datetime.date.today()
 
-
         resultats = Document.objects(
             Q(vendeur_id=self.id) & Q(montant__ne=0) & Q(createDate__gte=date_start) & Q(createDate__lte=date_end))
 
-        if (result):
-            returned = resultats
+        if montant:
+            argent = 0
+            for amount in resultats:
+                argent += amount.montant
+
+            returned = argent
         else:
             nbre = 0
             for result in resultats:
@@ -184,13 +183,6 @@ class Users(db.Document):
             returned = nbre
 
         return returned
-
-    def all_activation(self):
-        from ..document.models_doc import Document
-
-        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0)).order_by('-createDate')
-
-        return resultats
 
     def commission(self, date_start=None, date_end=None):
 
@@ -217,3 +209,99 @@ class Users(db.Document):
             commission = 50000 + commission_surplus
 
         return commission
+
+    def story_activation(self):
+        from ..document.models_doc import Document
+
+        data = []
+        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0))
+
+        for result in resultats:
+            if len(result.package_ici_cm()):
+                info = {}
+                info['unique'] = '1'
+                info['date'] = function.format_date(result.createDate, '%d/%m/%Y')
+                info['count'] = 1
+                info['montant'] = result.montant
+                data.append(info)
+
+        returned = []
+        grouper = itemgetter("date", "unique")
+        for key, grp in groupby(sorted(data, key=grouper), grouper):
+            temp_dict = dict(zip(["date", "unique"], key))
+            temp_dict['count'] = 0
+            temp_dict['montant'] = 0
+            for item in grp:
+                temp_dict['count'] += item['count']
+                temp_dict['montant'] += item['montant']
+
+            returned.append(temp_dict)
+
+        return returned
+
+    def story_propection(self):
+        from ..document.models_doc import Document
+
+        data = []
+        resultats = Document.objects(vendeur_id=self.id)
+
+        for result in resultats:
+            if len(result.package_ici_cm()):
+                info = {}
+                info['unique'] = '1'
+                info['date'] = function.format_date(result.createDate, '%d/%m/%Y')
+                info['count'] = 1
+                data.append(info)
+
+        returned = []
+        grouper = itemgetter("date", "unique")
+        for key, grp in groupby(sorted(data, key=grouper), grouper):
+            temp_dict = dict(zip(["date", "unique"], key))
+            temp_dict['count'] = 0
+            for item in grp:
+                temp_dict['count'] += item['count']
+
+            returned.append(temp_dict)
+
+        return returned
+
+    def story_commission(self):
+
+        from ..document.models_doc import Document
+
+        data = []
+        resultats = Document.objects(Q(vendeur_id=self.id) & Q(montant__ne=0))
+
+        Monthly = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout','Sept', 'Oct', 'Nov', 'Dec']
+
+        for result in resultats:
+            if len(result.package_ici_cm()):
+                info = {}
+                info['unique'] = '1'
+                info['date_month'] = Monthly[function.date_convert(result.createDate).month - 1]
+                info['montant'] = result.montant
+                data.append(info)
+
+        returned = []
+        grouper = itemgetter("date_month", "unique")
+        for key, grp in groupby(sorted(data, key=grouper), grouper):
+            temp_dict = dict(zip(["date_month", "unique"], key))
+            chiffre_affaire = 0
+            commission = 0
+            for item in grp:
+                chiffre_affaire += item['montant']
+
+            if chiffre_affaire < 100000:
+                commission = (chiffre_affaire * 30) / 100
+
+            if chiffre_affaire >= 100000:
+                surplus = chiffre_affaire - 100000
+                commission_surplus = (surplus * 10) / 100
+                commission = 50000 + commission_surplus
+
+            temp_dict['commission'] = commission
+
+            returned.append(temp_dict)
+
+        return returned
+
